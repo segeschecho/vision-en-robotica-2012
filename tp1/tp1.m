@@ -14,7 +14,7 @@ function tp1(nombre_imagen)
 					%resultados del ejercicio 1
 				  %mostramos la imagen original y buscamos los puntos.
 					mostrar_imagen(imagen, map, 1,'Imagen Original')
-					puntos = leer_puntos_de_imagen(6);
+					puntos = leer_puntos_de_imagen(6,3);
 					%rectificamos la imagen con el metodo de las razones cruzadas
 					imagenRectificada = ej1(imagen, puntos(1, :), puntos(2, :), puntos(3, :), puntos(4, :), puntos(5, :), puntos(6, :));
 					%mostramos la imagen rectificada (en este caso, a menos de una afinidad)
@@ -23,7 +23,7 @@ function tp1(nombre_imagen)
 					%resultados del ejercicio 2
 				  %mostramos la imagen original y buscamos los puntos.
 					mostrar_imagen(imagen, map, 1,'Imagen Original')
-					puntos = leer_puntos_de_imagen(8);
+					puntos = leer_puntos_de_imagen(8,2);
 					%rectificamos la imagen con usando dos pares de lineas paralelas 
 					%(en el mundo) para obtener los puntos en el infinito
 					imagenRectificada = ej2(imagen, puntos(1, :), puntos(2, :), puntos(3, :), puntos(4, :), puntos(5, :), puntos(6, :), puntos(7, :), puntos(8, :));
@@ -33,14 +33,14 @@ function tp1(nombre_imagen)
 					% resultados del ejercicio 3
 					% mostramos la imagen original y tomamos 6 puntos para rectificar a menos de una afinidad
 					mostrar_imagen(imagen, map, 1,'Imagen Original (Paso 1/3)')
-					puntos = leer_puntos_de_imagen(6);
+					puntos = leer_puntos_de_imagen(6,3);
 					% rectificamos la imagen con el metodo de las razones cruzadas, a menos de una afinidad
 					% mostramos la imagen resultante, y seleccionamos 2 pares de lineas para rectificar
 					% a menos de una similaridad
 					imagen_a_menos_de_una_afinidad = ej1(imagen, puntos(1, :), puntos(2, :), puntos(3, :), puntos(4, :), puntos(5, :), puntos(6, :));
 					mostrar_imagen(imagen_a_menos_de_una_afinidad, map, 2,'Imagen rectificada a menos de una Afinidad (Paso 2/3)');
 					%rectificamos la imagen a menos de una similaridad
-					puntos = leer_puntos_de_imagen(8);
+					puntos = leer_puntos_de_imagen(8,2);
 					imagenRectificada = ej3(imagen_a_menos_de_una_afinidad, puntos(1, :), puntos(2, :), puntos(3, :), puntos(4, :), puntos(5, :), puntos(6, :), puntos(7, :), puntos(8, :));
 					%mostramos la imagen rectificada (en este caso, a menos de una afinidad)
 					mostrar_imagen(imagenRectificada, map, 3,'Imagen rectificada a menos de una Similaridad (Paso 3/3)');
