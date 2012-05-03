@@ -60,7 +60,7 @@ function imagenRectificada = ej3(imagen, pl1, pl2, pm1, pm2 ,pn1, pn2, po1, po2)
             t(2) = t(2)/t(3);
             xr = int16(t(1));
             yr = int16(t(2));
-            imagenRectificada(yr+minyo, xr+minxo) = imagen(ya, xa);
+            imagenRectificada(yr+minyo+1, xr+minxo+1) = imagen(ya, xa);
         end
     end
 

@@ -8,6 +8,8 @@ function imagenRectificada = rectificar_imagen(imagen, l_infinito_imagen)
    % tamaño de la imagen final rectificado
    maxyo = 0;
    maxxo = 0;
+
+
    for yr = 1:sizeY
        for xr = 1:sizeX
            t = Hp*[xr; yr; 1];
@@ -34,7 +36,10 @@ function imagenRectificada = rectificar_imagen(imagen, l_infinito_imagen)
            t(2) = t(2)/t(3);
            xo = round(t(1));
            yo = round(t(2));
+
            imagenRectificada(yo+1, xo+1) = imagen(yr, xr);
        end
+
+
    end
 end
