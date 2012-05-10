@@ -6,28 +6,8 @@ function imagenRectificada = rectificar_imagen(imagen, l_infinito_imagen)
 
    % hacemos una primer pasada para calcular el
    % tamaño de la imagen final rectificado
-
-	 %%%ej: esi = esquina superior izquierda
-	 esi = Hp*[1 1 1]';
-	 esd = Hp*[ 1 sizeX 1]';
-	 eii = Hp*[sizeY 1  1]';
-	 eid = Hp*[ sizeY  sizeX 1]';
-	 eii = int16((eii(1:2))/eii(3));
-	 esi = int16((esi(1:2))/esi(3));
-	 esd = int16((esd(1:2))/esd(3));
-	 eid = int16((eid(1:2))/eid(3));
-	 
-	 d_x_s = abs( esi(1) - esd(1));
-	 d_x_i = abs( eii(1) - eid(1));
-	 
-	 d_y_i = abs( esi(2) - eii(2));
-	 d_y_d = abs( esd(2) - eid(2));
-	 
-	 maxxo = min(1000, max(d_x_s, d_x_i));
-	 maxyo = min(1000, max(d_y_i, d_y_d));
-	 
-   % finalmente generamos la imagen rectificada
-   imagenRectificada = zeros(maxyo, maxxo);
+   maxyo = 0;
+   maxxo = 0;
 
    for yr = 1:sizeY
        for xr = 1:sizeX
@@ -36,10 +16,29 @@ function imagenRectificada = rectificar_imagen(imagen, l_infinito_imagen)
            t(2) = t(2)/t(3);
            xo = round(t(1));
            yo = round(t(2));
-
-           imagenRectificada(yo+1, xo+1) = imagen(yr, xr);
+           if( xo > maxxo )
+               maxxo = xo;
+           end
+           if( yo > maxyo )
+               maxyo = yo;
+           end
        end
+   end
+   
+   % finalmente generamos la imagen rectificada
+   imagenRectificada = zeros(maxyo, maxxo);
 
+   for yr = 1:maxyo
+       for xr = 1:maxxo
+           t = Hp\[double(xr); double(yr); 1.0];
+           t(1) = t(1)/t(3);
+           t(2) = t(2)/t(3);
+           xo = round(t(1));
+           yo = round(t(2));
 
+           if (1 <= xo && xo <= sizeX && 1 <= yo && yo <= sizeY)
+              imagenRectificada(yr, xr) = imagen(yo, xo);
+           end
+       end
    end
 end
