@@ -2,7 +2,7 @@ function tp1(nombre_imagen)
 		limpiar_todo();
 						
 		lista_de_ejercicios = {'Ejercicio 1','Ejercicio 2','Ejercicio 3'};
-		promt = 'Trabajo Practico Nº 1 - Benitti Raul, Gonzalez Emiliano, Gonzalez Sergio, Pire Tahiu';
+		promt = 'Trabajo Practico N? 1 - Benitti Raul, Gonzalez Emiliano, Gonzalez Sergio, Pire Tahiu';
 		[Selection ok] = listdlg('PromptString', promt,'ListString',lista_de_ejercicios, 'SelectionMode', 'single' , 'ListSize', [ 400 50], 'Name', 'Vision en Robotica 2012C1');
 		
 		if ok == 1
@@ -14,6 +14,7 @@ function tp1(nombre_imagen)
 					%resultados del ejercicio 1
 				  %mostramos la imagen original y buscamos los puntos.
 					mostrar_imagen(imagen, map, 1,'Imagen Original')
+                    %puntos = [25.0983   49.5852; 180.0339  155.1017; 464.5278  348.7713; 48.4722  359.4565; 326.9557  153.0983; 475.2130   42.2391];
 					puntos = leer_puntos_de_imagen(6,3);
 					%rectificamos la imagen con el metodo de las razones cruzadas
 					imagenRectificada = ej1(imagen, puntos(1, :), puntos(2, :), puntos(3, :), puntos(4, :), puntos(5, :), puntos(6, :));

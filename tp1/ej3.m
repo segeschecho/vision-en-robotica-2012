@@ -21,35 +21,40 @@ function imagenRectificada = ej3(imagen, pl1, pl2, pm1, pm2 ,pn1, pn2, po1, po2)
     
     [sizeY, sizeX] = size(imagen);
 
-			 %%%ej: esi = esquina superior izquierda
-	 esi = Ha\[1 1 1]';
-	 esd = Ha\[ 1 sizeX 1]';
-	 eii = Ha\[sizeY 1  1]';
-	 eid = Ha\[ sizeY  sizeX 1]';
-	 eii = int16((eii(1:2))/eii(3));
-	 esi = int16((esi(1:2))/esi(3));
-	 esd = int16((esd(1:2))/esd(3));
-	 eid = int16((eid(1:2))/eid(3));
-	 
-	 d_x_s = abs( esi(1) - esd(1));
-	 d_x_i = abs( eii(1) - eid(1));
-	 
-	 d_y_i = abs( esi(2) - eii(2));
-	 d_y_d = abs( esd(2) - eid(2));
-	 
-	maxxo = min(1000, max(d_x_s, d_x_i));
-	maxyo = min(1000, max(d_y_i, d_y_d));
+    % hacemos una primer pasada para calcular el
+    % tama??o de la imagen final rectificado
+    maxyo = 0;
+    maxxo = 0;
+
+    for yr = 1:sizeY
+        for xr = 1:sizeX
+            t = Ha\[xr; yr; 1];
+            t(1) = t(1)/t(3);
+            t(2) = t(2)/t(3);
+            xo = round(t(1));
+            yo = round(t(2));
+            if( xo > maxxo )
+                maxxo = xo;
+            end
+            if( yo > maxyo )
+                maxyo = yo;
+            end
+        end
+    end
 
     imagenRectificada = zeros(maxyo,maxxo);
 
-    for ya = 1:sizeY
-        for xa = 1:sizeX
-            t = Ha\[xa; ya; 1];
+    for yr = 1:maxyo
+        for xr = 1:maxxo
+            t = Ha*[double(xr); double(yr); 1];
             t(1) = t(1)/t(3);
             t(2) = t(2)/t(3);
-            xr = int16(t(1));
-            yr = int16(t(2));
-            imagenRectificada(yr+maxyo+1, xr+maxxo+1) = imagen(ya, xa);
+            xo = round(t(1));
+            yo = round(t(2));
+            
+           if (1 <= xo && xo <= sizeX && 1 <= yo && yo <= sizeY)
+                imagenRectificada(yr, xr) = imagen(yo, xo);
+            end
         end
     end
 

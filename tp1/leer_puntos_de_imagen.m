@@ -6,8 +6,8 @@ function  puntos = leer_puntos_de_imagen(cantidad_de_puntos, puntos_por_linea)
    for i = 1:cantidad_de_puntos
       p = getMouseXY()
       puntos(i, :) = p;
-			linea = floor((i-1)/puntos_por_linea)+1
-			mod(i,puntos_por_linea)
+			linea = floor((i-1)/puntos_por_linea)+1;
+			mod(i,puntos_por_linea);
 			if mod(i-1,puntos_por_linea) > 0
 				
 				pline=plot([puntos(i-1, 1), puntos(i, 1)], [puntos(i-1,2), puntos(i,2)]);
