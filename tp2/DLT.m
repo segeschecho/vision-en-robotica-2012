@@ -8,14 +8,12 @@ function Hest =  DLT(xs1i, xs2i)
         
         xi = xs1i(:, i)';
         
-        A(2*i - 1,:) = [ceros -xs2i(3,i)*xi -xs2i(2,i)*xi];
+        A(2*i - 1,:) = [ceros -xs2i(3,i)*xi xs2i(2,i)*xi];
 
-        A(2*i,:) = [-xs2i(3,i)*xi ceros -xs2i(2,i)*xi];
+        A(2*i,:) = [xs2i(3,i)*xi ceros -xs2i(1,i)*xi];
     end
     
-    size(A)
-    
     [U, D, V] = svd(A);
-    
+
     Hest = reshape(V(:, 9), 3, 3)';
 end
