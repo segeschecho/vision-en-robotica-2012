@@ -1,6 +1,6 @@
 function H = RANSAC(xs1i, xs2i)
     %epsilon para la cantidad de outliers
-    e = .99;
+    e = .1;
     p = .99;
     %cantidad de correspondencias a usar para estimar la homografia H.
     s = 4;
@@ -14,14 +14,13 @@ function H = RANSAC(xs1i, xs2i)
     
     iteracion = 0;
     
-    for iteracion=1:50
+    while iteracion < N
         iteracion
         %se eligen correspondencias al azar.
         [h1, h2] = generador_hipotesis(xs1i, xs2i, cant_correspondencias, s);
         
         %se calcula la homografia H
-        H = DLT_puro(h1, h2);
-        
+        H = DLT(h1, h2);
         % si el determinante de H es cercano a cero H esta cerca de no ser inversible, entonces la
         % retroproyeccion va a ser muy mala.
         if abs(det(H)) > .1
@@ -29,6 +28,8 @@ function H = RANSAC(xs1i, xs2i)
             indices_inliers = calcular_indices_inliers(xs1i, xs2i, cant_correspondencias, H, t);
             
             % Se verifica si el soporte actual es mejor que
+            length(indices_inliers)
+            length(indices_inliers_maximal)
             if length(indices_inliers) > length(indices_inliers_maximal)
                 indices_inliers_maximal = indices_inliers;
                 
@@ -38,7 +39,12 @@ function H = RANSAC(xs1i, xs2i)
                 N = log(1 - p) / log(1 - (1 - e)^s)
             end
         end
+        
+        iteracion = iteracion + 1;
     end
+    
+    indices_inliers_maximal
+    indices_inliers_maximal
     
     H = DLT(xs1i(:, indices_inliers_maximal), xs2i(:, indices_inliers_maximal));
 end
@@ -47,7 +53,7 @@ end
 function [h1, h2] = generador_hipotesis(xs1i, xs2i, cant_correspondencias, s)
     for i=1:s
         c = floor(rand() * cant_correspondencias) + 1;
-        h1(:, i) = xs1i(:, c)
+        h1(:, i) = xs1i(:, c);
         h2(:, i) = xs2i(:, c);
     end
 end
@@ -76,5 +82,5 @@ function indices_inliers = calcular_indices_inliers(xs1i, xs2i, cant_corresponde
     end
     
     %calculamos inliers (devuelve las posiciones que cumplen con la condicion)
-    indices_inliers = find(distancias < umbral^2);
+    indices_inliers = find(distancias < umbral);
 end
