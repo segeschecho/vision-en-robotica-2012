@@ -38,5 +38,6 @@ function H =  DLT(xs1i, xs2i)
     H_punto = DLT_puro(xs1_normalizados, xs2_normalizados);
 
     H = inv(H_xs2_monio) * H_punto * H_xs1_monio;
+    H = H / H(3, 3);
     
 end
