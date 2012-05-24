@@ -30,9 +30,7 @@ function H = RANSAC(xs1i, xs2i)
             if length(indices_inliers) > length(indices_inliers_maximal)
                 indices_inliers_maximal = indices_inliers;
                 
-                S_cardinal = length(indices_inliers);
-                
-                e = 1 - S_cardinal / cant_correspondencias;
+                e = 1 - length(indices_inliers) / cant_correspondencias;
                 N = log(1 - p) / log(1 - (1 - e)^s);
             end
         end
@@ -45,16 +43,13 @@ end
 
 
 function [h1, h2] = generador_hipotesis(xs1i, xs2i, cant_correspondencias, s)
-    for i=1:s
-        c = floor(rand() * cant_correspondencias) + 1;
-        h1(:, i) = xs1i(:, c);
-        h2(:, i) = xs2i(:, c);
-    end
+    random = floor(rand(1, s) * cant_correspondencias) + 1;
+    
+    h1 = xs1i(:, random);
+    h2 = xs2i(:, random);
 end
 
-function dist = distancia(xi, xi_prima, H)
-    H_inv = inv(H);
-    %se calcula la distancia entre puntos de acuerdo a lo que está en la practica.
+function dist = distancia(xi, xi_prima, H, H_inv)
     a = xi;
     b = H_inv * xi_prima;
     
@@ -68,13 +63,25 @@ end
 
 
 function indices_inliers = calcular_indices_inliers(xs1i, xs2i, cant_correspondencias, H, umbral)
-    distancias = [];
+    
+    inliers = zeros(1, cant_correspondencias);
+    cant_inliers = 0;
+    
+    H_inv = inv(H);
+
     for i=1:cant_correspondencias
-        d = distancia(xs1i(:, i), xs2i(:, i), H);
+        d = distancia(xs1i(:, i), xs2i(:, i), H, H_inv);
         
-        distancias(i) = d;
+        % Si la distancia < umbral, agregamos la correspondencia como inlier
+        if (d < umbral)
+            cant_inliers = cant_inliers + 1;
+            inliers(cant_inliers) = i;
+        end
     end
     
-    %calculamos inliers (devuelve las posiciones que cumplen con la condicion)
-    indices_inliers = find(distancias < umbral);
+    if (cant_inliers == 0)
+        indices_inliers = [];
+    else
+        indices_inliers = inliers(:, 1:cant_inliers);
+    end
 end
