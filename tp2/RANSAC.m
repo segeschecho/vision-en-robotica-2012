@@ -1,6 +1,6 @@
 function H = RANSAC(xs1i, xs2i)
     %epsilon para la cantidad de outliers
-    e = .1;
+    e = .5;
     p = .99;
     %cantidad de correspondencias a usar para estimar la homografia H.
     s = 4;
@@ -15,7 +15,6 @@ function H = RANSAC(xs1i, xs2i)
     iteracion = 0;
     
     while iteracion < N
-        iteracion
         %se eligen correspondencias al azar.
         [h1, h2] = generador_hipotesis(xs1i, xs2i, cant_correspondencias, s);
         
@@ -28,23 +27,18 @@ function H = RANSAC(xs1i, xs2i)
             indices_inliers = calcular_indices_inliers(xs1i, xs2i, cant_correspondencias, H, t);
             
             % Se verifica si el soporte actual es mejor que
-            length(indices_inliers)
-            length(indices_inliers_maximal)
             if length(indices_inliers) > length(indices_inliers_maximal)
                 indices_inliers_maximal = indices_inliers;
                 
-                s = length(indices_inliers);
+                S_cardinal = length(indices_inliers);
                 
-                e = 1 - s / cant_correspondencias;
-                N = log(1 - p) / log(1 - (1 - e)^s)
+                e = 1 - S_cardinal / cant_correspondencias;
+                N = log(1 - p) / log(1 - (1 - e)^s);
             end
         end
         
         iteracion = iteracion + 1;
     end
-    
-    indices_inliers_maximal
-    indices_inliers_maximal
     
     H = DLT(xs1i(:, indices_inliers_maximal), xs2i(:, indices_inliers_maximal));
 end
