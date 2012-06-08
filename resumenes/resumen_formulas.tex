@@ -1,0 +1,326 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[spanish] {babel}
+\usepackage[latin1]{inputenc} %para que me tome los acentos de una sin el /'
+\usepackage{theorem} %para los teoremas
+\usepackage{graphicx}%para los graficos
+\usepackage{color} % para los graficos con letra latex
+\usepackage{transparent} % para los graficos con letra latex
+\usepackage{amsfonts} % para las letras de los conjuntos reales naturales enteros
+\usepackage{float} %para poder decir donde quiero que esten las figuras
+\usepackage{amsmath} %para poner el numero de capitulo antes de cada figura
+\usepackage{fancyhdr} %para la raya superior, la cabecera
+\usepackage{lastpage} %numero de la ultima pagina lo utilice en el estilo fancy
+\usepackage{url} %para la bibliografia de URLs
+\usepackage{fancyvrb} %para decorar codigo verbatim
+\usepackage{float} %me permite poner caption en codigo
+\usepackage{placeins} %define \FloatBarrier para que los "Floats"' como las imagenes no pasen una seccion o subseccion (es una barrera para los floats, como el nombre lo indica)
+\usepackage[scanall]{psfrag} % para que aparesca la letra latex en los graficos
+\usepackage{courier} %el codigo verbatim se ve mucho mejor
+\usepackage{afterpage}
+\usepackage{stmaryrd}   
+\usepackage{fourier}    %para poder usar operadores matematicos y el simbolo \varpartialdiff
+\usepackage{amssymb}   % para poder usar el conjunto vacio
+
+%\floatstyle{ruled}
+%\newfloat{Codigo}{ht}{lop}%[chapter]
+%\fvset{fontsize=\small}
+%\floatname{Codigo}{Código} %para que aparesca Código en el caption y no Codigo
+%
+%\fancyhf{}
+%\fancyhead{}
+%\fancyfoot{} % clear all footer fields
+%\headheight = 10pt %16.5pt
+%\pagestyle{fancy}
+%\fancyhead[LE]{\slshape \leftmark}
+%\fancyhead[RO]{\slshape \rightmark}
+%\fancyhead[C]{}
+%\providecommand{\e}[1]{\ensuremath{\times 10^{#1}}}
+%\fancyfoot[C]{\thepage}
+% \headsep = 0.4cm
+% \headwidth = 16cm
+% %\hoffset = 0.3 cm
+% \marginparwidth=0cm
+% \marginparsep=0cm
+% \linespread{1.4}
+% \oddsidemargin=0,4cm
+% \evensidemargin=-0,6cm
+% \textwidth = 16cm
+% \footskip = 60pt
+
+
+%%%%%%%%%%%%%%%ANCHO DE MARGENES Y TAMAÑO DE TEXTO%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\setlength{\oddsidemargin}{0in}
+\setlength{\textwidth}{6.75in}
+\setlength{\topmargin}{-0.5in}
+\setlength{\headheight}{0in}
+\setlength{\textheight}{9.5in}
+
+%\setlength{\oddsidemargin}{0,4cm}
+%\setlength{\evensidemargin}{-0,6cm}
+%\setlength{\textwidth}{17cm}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+\setlength{\parindent}{0pt} %elimina la sangria
+
+\section{Espacio proyectivo: puntos, rectas y c\'onicas}
+
+$x \in l \Leftrightarrow x^{t}l = l^{t} x = 0$
+
+$l_{1} // l_{2} \Rightarrow l_{1} \times l_{2} = \left[ {\begin{smallmatrix}
+ x_{1}\\
+ x_{2}\\
+ 0\\
+\end{smallmatrix} } \right]
+$
+
+Linea tangente a la c\'onica: $C x = l$
+
+$C^{*} l = x$
+
+$x \in C \Leftrightarrow x^{t} C x = 0$
+
+
+$l \in C^{*} \Leftrightarrow l^{t} C^{*} l = 0$
+
+$ \exists C^{-1} \Rightarrow C^{*} = C^{-1}$
+
+$ \nexists C^{-1} \Rightarrow C_{ij}^{*} = (-1)^{ij} det(\hat{C}_{ij}) \quad i=1\dots n$
+
+$C = lm^{t}+ml^{t}$ la matriz C tiene rango 2 (es degenerada)
+
+$C^{*} = xy^{t}+yx^{t}$
+
+$(C^{*})^{*}  \neq C$
+
+$ax^{2}+bxy+cy^{2}+dx+ey+f = 0$
+
+$ax_{1}^{2}+bx_{1}x_{2}+cx_{2}^{2}+dx_{1}x_{3}+ex_{2}x_{3}+fx_{3}^{2} = 0$
+
+
+$
+C =
+\left[ {\begin{smallmatrix}
+ a & b/2 & d/2 \\
+ b/2 & c & e/2 \\
+ d/2 & e/2 & f
+\end{smallmatrix} } \right]
+$
+
+\section{Transformaciones Proyectivas}
+
+Transformaci\'on: $h(x)= Hx$ donde $H$ es no singular.
+
+Transformaci\'on de Puntos, Lineas y C\'onicas:
+
+$x'= H x$
+
+$l'= H^{-t} l$
+
+$C'= H^{-t} C H^{-1}$
+
+${C^{*}}'= H C^{*} H^{t}$
+
+Transformaciones Proyectivas:
+
+Isom\'etrica: $
+H_{E} =
+\left[ {\begin{smallmatrix}
+ \epsilon \cos \theta & -\sin \theta& t_{x} \\
+ \epsilon \sin \theta & \cos \theta& t_{y} \\
+ 0 & 0 & 1
+\end{smallmatrix} } \right]
+\quad \epsilon = \pm 1$
+
+Similaridad:$
+H_{S} =
+\left[ {\begin{smallmatrix}
+ s \cos \theta & - s \sin \theta& t_{x} \\
+ s \sin \theta & s\cos \theta& t_{y} \\
+ 0 & 0 & 1
+\end{smallmatrix} } \right]
+$
+
+Afinidad:$
+H_{A} =
+\left[ {\begin{smallmatrix}
+ A & {\bf t}\\
+ {\bf 0}^{T} & 1 \\
+\end{smallmatrix} } \right]
+$ donde $A$ es no singular
+
+$A = R(\theta)R(-\phi)DR(\phi)$ con $D = \left[ {\begin{smallmatrix}
+ \lambda_{1} & 0\\
+ 0 & \lambda_{2}\\
+\end{smallmatrix} } \right]$
+
+$
+H_{A}^{-1} =
+\left[ {\begin{smallmatrix}
+ A^{-1} & -A^{-1}{\bf t}\\
+ {\bf 0}^{\top} & 1 \\
+\end{smallmatrix} } \right]
+$
+
+$l_{\infty} = \left[ {\begin{smallmatrix}
+ 0\\
+ 0\\
+ 1\\
+\end{smallmatrix} } \right]$
+
+$l_{\infty} = H_{A} l_{\infty}$
+
+$x \in l \Rightarrow H_{A}(x) \in H_{A}(l)$
+
+$l_{1} // l_{2} \Rightarrow H_{A}(l_{1})//H_{A}(l_{2})$
+
+Proyectiva:
+
+$H_{P} =
+\left[ {\begin{smallmatrix}
+ A & {\bf t}\\
+ {\bf v}^{\top} & v \\
+\end{smallmatrix} } \right]
+$
+
+$\left[ {\begin{smallmatrix}
+ {\bf A} & {\bf t}\\
+ {\bf 0}^{\top} & 1 \\
+\end{smallmatrix} } \right] \left[ {\begin{smallmatrix}
+ x_{1}\\
+ x_{2}\\
+ 0\\
+\end{smallmatrix} } \right] = \left[ {\begin{smallmatrix}
+ A\left[ {\begin{smallmatrix}
+  x_{1}\\
+   x_{2}\\
+ \end{smallmatrix} } \right]\\
+ 0\\
+\end{smallmatrix} } \right]
+$
+
+$\left[ {\begin{smallmatrix}
+  A & {\bf t}\\
+ {\bf v}^{\top} & v \\
+\end{smallmatrix} } \right] \left[ {\begin{smallmatrix}
+ x_{1}\\
+ x_{2}\\
+ 0\\
+\end{smallmatrix} } \right] = \left[ {\begin{smallmatrix}
+ A\left[ {\begin{smallmatrix}
+  x_{1}\\
+   x_{2}\\
+ \end{smallmatrix} } \right]\\
+ v_{1}x_{1}+v_{2}x_{2}\\
+\end{smallmatrix} } \right]
+$
+
+$H = H_{S}H_{A}H_{P} = \left[ {\begin{smallmatrix}
+ sR & {\bf t}\\
+ {\bf 0}^{\top} & 1 \\
+\end{smallmatrix} } \right]\left[ {\begin{smallmatrix}
+ K & {\bf 0}\\
+ {\bf 0}^{\top} & 1 \\
+\end{smallmatrix} } \right]\left[ {\begin{smallmatrix}
+ I & {\bf 0}\\
+ {\bf v}^{\top} & v \\
+\end{smallmatrix} } \right]=\left[ {\begin{smallmatrix}
+ A & {\bf t}\\
+ {\bf v}^{\top} & v \\
+\end{smallmatrix} } \right]
+$
+
+\section{Propiedades m\'etricas de las im\'agenes}
+
+$Cross(x_{1}, x_{2}, x_{3}, x_{4}) = \dfrac{|x_{1},x_{2}||x_{3},x_{4}|}{|x_{1},x_{3}||x_{2},x_{4}|}$ donde $|x_{i},x_{j}| = det \left[ {\begin{smallmatrix}
+ x_{i1} & x_{j1}\\
+ x_{i2} & x_{j2} \\
+\end{smallmatrix} } \right]$ $x_{i} \in P^{1}$
+
+$Cross(h(x_{1}), h(x_{2}), h(x_{3}), h(x_{4})) = Cross(x_{1}, x_{2}, x_{3}, x_{4})$ donde $h:P^{1} \rightarrow P^{1}$
+
+Puntos circulares:
+
+$I = \left[ {\begin{smallmatrix}
+ 1\\
+ i\\
+ 0\\
+\end{smallmatrix} } \right]$
+$J = \left[ {\begin{smallmatrix}
+ 1\\
+ -i\\
+ 0\\
+\end{smallmatrix} } \right]$
+
+$I' = H_{S}I = se^{-i\theta}I = I$
+
+${C^{*}_{\infty}}' = {\bf IJ}^{\top} + {\bf JI}^{\top}$ degenerada de rango 2
+
+$
+{C^{*}_{\infty}} =
+\left[ {\begin{smallmatrix}
+ 1 & 0 & 0 \\
+ 0 & 1 & 0 \\
+ 0 & 0 & 0
+\end{smallmatrix} } \right]
+$
+
+%${C^{*}_{\infty}}' = H_{S}{C^{*}_{\infty}}H_{S}^{\top} = {C^{*}_{\infty}}$
+
+$H({C^{*}_{\infty}}) = {C^{*}_{\infty}}$
+
+${C^{*}_{\infty}} l_{\infty} = 0$
+
+$\cos{\theta} = \dfrac{{\bf l}^{\top} {C^{*}_{\infty}} {\bf m}}
+{\sqrt{({\bf l}^{\top} {C^{*}_{\infty}} {\bf l})({\bf m}^{\top} {C^{*}_{\infty}} {\bf m}) }}$ \hspace{2cm} ${\bf l} \bot {\bf m} \Rightarrow {\bf l}^{\top} {C^{*}_{\infty}} {\bf m} = 0$
+
+\section{C\'amaras}
+
+$R = R_{Z}(\phi_{z})R_{Y}(\phi_{y})R_{X}(\phi_{x})$
+
+$
+R_{Z}(\phi_{z}) =
+\left[ {\begin{smallmatrix}
+ \cos{\phi_{z}} & -\sin{\phi_{z}} & 0 \\
+ \sin{\phi_{z}} & \cos{\phi_{z}} & 0 \\
+ 0 & 0 & 1\\
+\end{smallmatrix} } \right] \quad R_{Y}(\phi_{y}) =
+\left[ {\begin{smallmatrix}
+	\cos{\phi_{y}} & 0 & \sin{\phi_{y}}\\
+	 0 & 1 & 0\\
+    -\sin{\phi_{y}} & 0 & \cos{\phi_{y}}\\
+\end{smallmatrix} } \right] \quad R_{X}(\phi_{x}) =
+\left[ {\begin{smallmatrix}
+	1 & 0 & 0\\ 
+    0 & \cos{\phi_{x}} & -\sin{\phi_{x}}\\
+    0 & \sin{\phi_{x}} & \cos{\phi_{x}}\\
+\end{smallmatrix} } \right]
+$
+
+$P = KR [I |- \overline{C}] = M[I|M^{-1}p_{4}] = [M|p_{4}]$ donde $M= KR$ y $p_{4}$ la \'ultima columna de $P$
+
+$M$ no singular $\Rightarrow C = \left[ {\begin{smallmatrix}
+	-M^{-1}p_{4}\\ 
+	 1\\
+\end{smallmatrix} } \right]$ 
+
+$M$ singular $\Rightarrow C = \left[ {\begin{smallmatrix}
+	{\bf d}\\ 
+	0\\
+\end{smallmatrix} } \right]$ donde $M {\bf d} = 0$
+
+$
+K = \left[ {\begin{smallmatrix}
+	\alpha_{x} & s & p_{x}\\ 
+    0 & \alpha_{y} & p_{y}\\
+    0 & 0 & 1\\
+\end{smallmatrix} } \right]
+$ donde $\alpha_{x} = f m_{x}$ y  $\alpha_{y} = f m_{y}$
+
+
+
+
+
+\end{document}
