@@ -78,7 +78,7 @@ Junio, 2012
 \section{Espacio proyectivo: puntos, rectas y c\'onicas}
 
 \begin{itemize}
-	\item $x \in l \Leftrightarrow x^{t}l = l^{t} x = 0$
+	\item $x \in l \Leftrightarrow x^{\top}l = l^{\top} x = 0$
 
 	\item $l_{1} // l_{2} \Rightarrow l_{1} \times l_{2} = \left[ {\begin{smallmatrix}
 	 x_{1}\\
@@ -91,20 +91,20 @@ Junio, 2012
 
 	\item $C^{*} l = x$
 
-	\item $x \in C \Leftrightarrow x^{t} C x = 0$
+	\item $x \in C \Leftrightarrow x^{\top} C x = 0$
 
 
-	\item $l \in C^{*} \Leftrightarrow l^{t} C^{*} l = 0$
+	\item $l \in C^{*} \Leftrightarrow l^{\top} C^{*} l = 0$
 
 	\item $ \exists C^{-1} \Rightarrow C^{*} = C^{-1}$
 
 	\item $ \nexists C^{-1} \Rightarrow C_{ij}^{*} = (-1)^{ij} det(\hat{C}_{ij}) \quad i=1\dots n$
 
-	\item $C = lm^{t}+ml^{t}$ la matriz C tiene rango 2 (es degenerada)
+	\item $C = lm^{\top}+ml^{\top}$ la matriz C tiene rango 2 (es degenerada).
 
-	\item $C^{*} = xy^{t}+yx^{t}$
+	\item $C^{*} = xy^{\top}+yx^{\top}$
 
-	\item $(C^{*})^{*}  \neq C$
+	\item $(C^{*})^{*}  \neq C$ si $C$ es singular.
 
 	\item $ax^{2}+bxy+cy^{2}+dx+ey+f = 0$
 
@@ -130,11 +130,11 @@ Transformaci\'on de Puntos, Lineas y C\'onicas:
 \begin{itemize}
 	\item $x'= H x$
 
-	\item $l'= H^{-t} l$
+	\item $l'= H^{-\top} l$
 
-	\item $C'= H^{-t} C H^{-1}$
+	\item $C'= H^{-\top} C H^{-1}$
 
-	\item ${C^{*}}'= H C^{*} H^{t}$
+	\item ${C^{*}}'= H C^{*} H^{\top}$
 \end{itemize}
 
 \subsection{Tipos de transformaciones}
@@ -147,7 +147,13 @@ Transformaci\'on de Puntos, Lineas y C\'onicas:
 	 \epsilon \sin \theta & \cos \theta& t_{y} \\
 	 0 & 0 & 1
 	\end{smallmatrix} } \right]
-	\quad \epsilon = \pm 1$
+	\quad \epsilon = \pm 1$	\hspace*{1cm}(Grados de libertad: 3)
+	
+	{\bf Invariantes:} 
+	\begin{itemize}
+		\item Longitud
+		\item \'area
+	\end{itemize}
 
 	\item {\bf Similaridad:}$
 	H_{S} =
@@ -156,15 +162,22 @@ Transformaci\'on de Puntos, Lineas y C\'onicas:
 	 s \sin \theta & s\cos \theta& t_{y} \\
 	 0 & 0 & 1
 	\end{smallmatrix} } \right]
-	$
+	$ \hspace*{1cm}(Grados de libertad: 4)
+	
+	{\bf Invariantes:} 
+	\begin{itemize}
+		\item raz\'on de longitudes
+		\item \'angulo
+		\item Puntos Circulares: {\bf I}, {\bf J}
+	\end{itemize}
 
 	\item {\bf Afinidad:}$
 	H_{A} =
 	\left[ {\begin{smallmatrix}
 	 A & {\bf t}\\
-	 {\bf 0}^{T} & 1 \\
+	 {\bf 0}^{\top} & 1 \\
 	\end{smallmatrix} } \right]
-	$ donde $A$ es {\bf no singular}
+	$ donde $A$ es {\bf no singular}  \hspace*{1cm}(Grados de libertad: 6)
 
 	\begin{enumerate}
 		\item $A = R(\theta)R(-\phi)DR(\phi)$ con $D = \left[ {\begin{smallmatrix}
@@ -192,6 +205,14 @@ Transformaci\'on de Puntos, Lineas y C\'onicas:
 
 		\item $l_{1} // l_{2} \Rightarrow H_{A}(l_{1})//H_{A}(l_{2})$
 	\end{enumerate}
+	
+	{\bf Invariantes:} 
+	\begin{itemize}
+		\item Paralelismo
+		\item Raz\'on de \'areas
+		\item Raz\'on de longitudes en lineas paralelas o colineales
+		\item $l_{\infty}$
+	\end{itemize}
 
 \item {\bf Proyectiva:}
 $H_{P} =
@@ -199,7 +220,7 @@ $H_{P} =
  A & {\bf t}\\
  {\bf v}^{\top} & v \\
 \end{smallmatrix} } \right]
-$
+$ \hspace*{1cm}(Grados de libertad: 8)
 
 	\begin{enumerate}
 		\item $\left[ {\begin{smallmatrix}
@@ -249,6 +270,12 @@ $
 		\end{smallmatrix} } \right]
 		$
 	\end{enumerate}
+	
+	{\bf Invariantes:} 
+	\begin{itemize}
+		\item Cross Ratio
+	\end{itemize}
+
 \end{itemize}
 
 \section{Propiedades m\'etricas de las im\'agenes}
@@ -378,6 +405,10 @@ $
 	\item $e = PC'$ y $e' = P'C$
 
 	\item Dadas $\{x \leftrightarrow x' \}$ se obtienen  $\{\hat{x} \leftrightarrow \hat{x}' \} \diagup \hat{x} = Hx$, $\hat{x}'=Hx'  \implies \hat{F} = H^{-\top}FH^{-1}$
+	
+	\item $x_{0} = M{\bf m^{3}}$ donde $x_{0}$ es el punto principal y ${\bf m^{3}}$ es la tercer fila de la matriz $M$.
+	
+	\item ${\bf v}= det(M){\bf m^{3}}$ donde ${\bf v}$ es el vector direcci\'on del eje principal de la c\'amara hacia el plano de la imagen.
 
 \end{itemize}
 
