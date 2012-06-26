@@ -2,23 +2,14 @@
 CC=g++
 
 SOURCES=read_values.cpp
-OBJECTS=$(SOURCES:.cpp=.o)
 
 EXECUTABLE=read_values
 
 CFLAGS := -Wall -DNDEBUG -O3 -march=native
-LDFLAGS := `pkg-config opencv --libs`
 
 # OpenCV
-CFLAGS += `pkg-config opencv --cflags`
+CFLAGS += `pkg-config --cflags --libs opencv`
 
-all: $(SOURCES) $(EXECUTABLE)
+all:
+	$(CC) $(SOURCES) -o $(EXECUTABLE) $(CFLAGS)
 
-$(EXECUTABLE): $(OBJECTS)
-	$(CC) $(LDFLAGS) $(OBJECTS) -o $@
-
-.cpp.o:
-	$(CC) -g -c $(CFLAGS) $< -o $@
-
-clean:
-	rm -f $(OBJECTS) $(EXECUTABLE) 
