@@ -3,9 +3,10 @@
 #include <fstream>
 #include <opencv/cv.h>
 #include <opencv/highgui.h>
+#include "libelas/src/elas.h"
 
 /// Global Variables
-const int alpha_slider_max = 100;
+int alpha_slider_max;
 int alpha_slider;
 double alpha_track_bar;
 double beta_track_bar;
@@ -17,12 +18,22 @@ cv::Mat undistorted_left_im, undistorted_rigth_im, dst;
  * @brief Callback for trackbar
  */
 void on_trackbar(int, void*){
- alpha_track_bar = (double) alpha_slider/alpha_slider_max;
- beta_track_bar = ( 1.0 - alpha_track_bar);
+  int height = undistorted_rigth_im.size().height;
+  int width = undistorted_rigth_im.size().width;
+  double left_transparency = 0.5;
+  double rigth_transparency = 0.5;
+  cv::Mat undistorted_rigth_im_moved;
+  undistorted_rigth_im.copyTo(undistorted_rigth_im_moved);
+  
+  for(int y = 0; y<height; ++y){
+    for(int x = 0; x<width; ++x){
+      undistorted_rigth_im_moved.at<uchar>(y,x) = undistorted_rigth_im.at<uchar>(y,x + alpha_slider);
+    }
+  }
+  
+  cv::addWeighted(undistorted_left_im, left_transparency, undistorted_rigth_im_moved, rigth_transparency, 0.0, dst);
 
- cv::addWeighted(undistorted_left_im, alpha_track_bar, undistorted_rigth_im, beta_track_bar, 0.0, dst);
-
- cv::imshow( "Linear Blend", dst );
+  cv::imshow( "Linear Blend", dst);
 }
 
 
@@ -92,8 +103,6 @@ int main(int argc, char *argv[])
   cv::remap(mat_rigth_im, undistorted_rigth_im, rigth_map1, rigth_map2, cv::INTER_LINEAR, cv::BORDER_CONSTANT, 0);
 
 
-  /* Show images*/
-
   if(! mat_left_im.data ){                              // Check for invalid input
     std::cerr <<  "Could not open or find the left image" << std::endl ;
     return -1;
@@ -114,22 +123,68 @@ int main(int argc, char *argv[])
     return -1;
   }
 
-  /// Initialize values
+  // Initialize values
   alpha_slider = 0;
+  alpha_slider_max = undistorted_left_im.size().width-1;
   
-  /// Create Windows
+  // Create Windows
   cv::namedWindow("Linear Blend", 1);
   
-  /// Create Trackbars
+  // Create Trackbars
   char TrackbarName[50];
-  sprintf(TrackbarName, "dst x %d", alpha_slider_max);
+  sprintf(TrackbarName, "dst [0,%d]", alpha_slider_max);
   
   cv::createTrackbar(TrackbarName, "Linear Blend", &alpha_slider, alpha_slider_max, on_trackbar);
   
   cv::Mat dst;
-  /// Show some stuff
+  // Show some stuff
   on_trackbar(alpha_slider, 0);
 
+  ////////////////////////////////////////////////////////////////////////////////////////////////
+
+  Elas::parameters param;
+  param.postprocess_only_left = true;
+  Elas elas(param);  
+
+  cv::Mat_<uchar> im1_out_gray, im2_out_gray;
+  cv::cvtColor(im1_out, im1_out_gray, CV_BGR2GRAY);
+  cv::cvtColor(im2_out, im2_out_gray, CV_BGR2GRAY);
+
+  // get image width and height
+  int32_t width  = im1_out_gray.size().width;
+  int32_t height = im1_out_gray.size().height;
+
+  // allocate memory for disparity images
+  const int32_t dims[3] = {width,height,width}; // bytes per line = width
+  cv::Mat_<float> D1_data(im1_out_gray.size());
+  cv::Mat_<float> D2_data(im1_out_gray.size());
+
+  // process
+  elas.process(im2_out_gray.data,im1_out_gray.data,(float*)D1_data.data,(float*)D2_data.data,dims);
+  
+  cv::Mat_<cv::Vec3b> D1_data_color(D1_data.size());
+  for (uint j = 0; j < D1_data.cols; j++) {
+    for (uint i = 0; i < D1_data.rows; i++) {    
+      cv::Vec3b v;
+      
+      float val = std::min(D1_data.at<float>(i,j) * 0.01f, 1.0f);
+      if (val <= 0) v[0] = v[1] = v[2] = 0;
+      else {
+        float h2 = 6.0f * (1.0f - val);
+        unsigned char x  = (unsigned char)((1.0f - fabs(fmod(h2, 2.0f) - 1.0f))*255);
+        if (0 <= h2&&h2<1) { v[0] = 255; v[1] = x; v[2] = 0; }
+        else if (1 <= h2 && h2 < 2)  { v[0] = x; v[1] = 255; v[2] = 0; }
+        else if (2 <= h2 && h2 < 3)  { v[0] = 0; v[1] = 255; v[2] = x; }
+        else if (3 <= h2 && h2 < 4)  { v[0] = 0; v[1] = x; v[2] = 255; }
+        else if (4 <= h2 && h2 < 5)  { v[0] = x; v[1] = 0; v[2] = 255; }
+        else if (5 <= h2 && h2 <= 6) { v[0] = 255; v[1] = 0; v[2] = x; }
+      }
+      
+      D1_data_color.at<cv::Vec3b>(i, j) = v;
+    }
+    // cout << endl;
+  }
+    
   
   cv::waitKey(0);                                          // Wait for a keystroke in the window
   
