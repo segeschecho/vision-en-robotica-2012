@@ -6,32 +6,58 @@
 #include "libelas/src/elas.h"
 
 /// Global Variables
-int alpha_slider_max;
+int trackbar_max;
 int alpha_slider;
 double alpha_track_bar;
 double beta_track_bar;
 
-cv::Mat undistorted_left_im, undistorted_rigth_im, dst;
+cv::Mat undistorted_left_im, undistorted_right_im, dst, undistorted_right_im_moved;
 
 /**
  * @function on_trackbar
  * @brief Callback for trackbar
  */
 void on_trackbar(int, void*){
-  int height = undistorted_rigth_im.size().height;
-  int width = undistorted_rigth_im.size().width;
+  int height = undistorted_right_im.size().height;
+  int width = undistorted_right_im.size().width;
   double left_transparency = 0.5;
-  double rigth_transparency = 0.5;
-  cv::Mat undistorted_rigth_im_moved;
-  undistorted_rigth_im.copyTo(undistorted_rigth_im_moved);
+  double right_transparency = 0.5;
+  int x_prima, d_prima;
+  
+  undistorted_right_im.copyTo(undistorted_right_im_moved);
+  alpha_slider -= width;
   
   for(int y = 0; y<height; ++y){
     for(int x = 0; x<width; ++x){
-      undistorted_rigth_im_moved.at<uchar>(y,x) = undistorted_rigth_im.at<uchar>(y,x + alpha_slider);
+      if (alpha_slider < 0)
+      {
+        if (x < width + alpha_slider)
+        {
+          d_prima = (width + alpha_slider - x);
+          x_prima = width - d_prima;
+          undistorted_right_im_moved.at<uchar>(y,x) = undistorted_right_im.at<uchar>(y,x_prima);
+        }
+        else
+        {
+          undistorted_right_im_moved.at<uchar>(y,x) = 0;
+        }
+      }
+      else 
+      {
+        if (x + alpha_slider < width)
+        {
+          x_prima = alpha_slider +x;
+          undistorted_right_im_moved.at<uchar>(y,x_prima) = undistorted_right_im.at<uchar>(y,x);
+        }
+        if (x < alpha_slider){
+          undistorted_right_im_moved.at<uchar>(y,x) = 0;
+        }
+          
+        }
+      }
     }
-  }
   
-  cv::addWeighted(undistorted_left_im, left_transparency, undistorted_rigth_im_moved, rigth_transparency, 0.0, dst);
+  cv::addWeighted(undistorted_left_im, left_transparency, undistorted_right_im_moved, right_transparency, 0.0, dst);
 
   cv::imshow( "Linear Blend", dst);
 }
@@ -40,12 +66,12 @@ void on_trackbar(int, void*){
 int main(int argc, char *argv[])
 {
   if (argc !=4){
-    std::cerr << "Arguments must be passing in this way: ./read_values /path/sequence/to/parameters_file.xml /path/sequence/to/left_image /path/sequence/to/rigth_image" << std::endl;
+    std::cerr << "Arguments must be passing in this way: ./read_values /path/sequence/to/parameters_file.xml /path/sequence/to/left_image /path/sequence/to/right_image" << std::endl;
     return -1;
   }
   std::string parameters_xml = argv[1];
   std::string left_image = argv[2];
-  std::string rigth_image = argv[3];
+  std::string right_image = argv[3];
 
   /*read the xml file */
   cv::FileStorage fs(parameters_xml, cv::FileStorage::READ);
@@ -56,51 +82,51 @@ int main(int argc, char *argv[])
     std::cout << "no se pude abrir el archivo" << std::endl;
   }
   
-  cv::Mat left_k, rigth_k, left_dist, rigth_dist, r, t;
+  cv::Mat left_k, right_k, left_dist, right_dist, r, t;
   fs["P1"] >> left_k;
-  fs["P2"] >> rigth_k;
+  fs["P2"] >> right_k;
   fs["dist1"] >> left_dist;
-  fs["dist2"] >> rigth_dist;
+  fs["dist2"] >> right_dist;
   fs["R"] >> r;
   fs["T"] >> t;
 
-  std::cout << left_k << std::endl << std::endl;
-  std::cout << rigth_k << std::endl << std::endl;
-  std::cout << left_dist << std::endl << std::endl;
-  std::cout << rigth_dist << std::endl << std::endl;
-  std::cout << r << std::endl << std::endl;
-  std::cout << t << std::endl << std::endl;
+  // std::cout << left_k << std::endl << std::endl;
+  // std::cout << right_k << std::endl << std::endl;
+  // std::cout << left_dist << std::endl << std::endl;
+  // std::cout << right_dist << std::endl << std::endl;
+  // std::cout << r << std::endl << std::endl;
+  // std::cout << t << std::endl << std::endl;
 
   fs.release();
   
   
   /* Read the image to undistorted */
 
-  cv::Mat mat_left_im, mat_rigth_im; 
+  cv::Mat mat_left_im, mat_right_im; 
   mat_left_im  = cv::imread(left_image, 0);
-  mat_rigth_im  = cv::imread(rigth_image, 0);
+  mat_right_im  = cv::imread(right_image, 0);
 
   /* computes the rotation matrices for each camera that (virtually) make both camera image planes the same plane */
-  cv::Mat left_r, rigth_r, left_k_prima, rigth_k_prima, q;
+  cv::Mat left_r, right_r, left_k_prima, right_k_prima, q;
   double alpha = 0;
   cv::Size new_left_image_size = mat_left_im.size();
-  cv::Size new_rigth_image_size = mat_rigth_im.size();
-  cv::Rect left_roi, rigth_roi;
+  cv::Size new_right_image_size = mat_right_im.size();
+  cv::Rect left_roi, right_roi;
 
-  cv::stereoRectify(left_k, left_dist, rigth_k, rigth_dist, mat_left_im.size(), r, t, left_r, rigth_r, left_k_prima, rigth_k_prima, q, alpha, cv::CALIB_ZERO_DISPARITY, new_left_image_size , &left_roi , &rigth_roi );
+  cv::stereoRectify(left_k, left_dist, right_k, right_dist, mat_left_im.size(), r, t, left_r, right_r, left_k_prima, right_k_prima, q, alpha, cv::CALIB_ZERO_DISPARITY, new_left_image_size , &left_roi , &right_roi );
 
 
   /* Computes the undistortion and rectification transformation map for each camera*/
 
-  cv::Mat left_map1, left_map2, rigth_map1, rigth_map2;
+  cv::Mat left_map1, left_map2, right_map1, right_map2;
   cv::initUndistortRectifyMap(left_k, left_dist, left_r, left_k_prima, new_left_image_size, CV_32FC1, left_map1, left_map2);
-  cv::initUndistortRectifyMap(rigth_k, rigth_dist, rigth_r, rigth_k_prima, new_rigth_image_size, CV_32FC1, rigth_map1, rigth_map2);
+  cv::initUndistortRectifyMap(right_k, right_dist, right_r, right_k_prima, new_right_image_size, CV_32FC1, right_map1, right_map2);
   
   /* Applies a generic geometrical transformation to an image */
 
-  //cv::Mat undistorted_left_im, undistorted_rigth_im ;
+  //cv::Mat undistorted_left_im, undistorted_right_im ;
   cv::remap(mat_left_im, undistorted_left_im, left_map1, left_map2, cv::INTER_LINEAR, cv::BORDER_CONSTANT, 0);
-  cv::remap(mat_rigth_im, undistorted_rigth_im, rigth_map1, rigth_map2, cv::INTER_LINEAR, cv::BORDER_CONSTANT, 0);
+  cv::remap(mat_right_im, undistorted_right_im, right_map1, right_map2, cv::INTER_LINEAR, cv::BORDER_CONSTANT, 0);
 
 
   if(! mat_left_im.data ){                              // Check for invalid input
@@ -108,8 +134,8 @@ int main(int argc, char *argv[])
     return -1;
   }
   
-  if(! mat_rigth_im.data ){                              // Check for invalid input
-    std::cerr <<  "Could not open or find the rigth image" << std::endl ;
+  if(! mat_right_im.data ){                              // Check for invalid input
+    std::cerr <<  "Could not open or find the right image" << std::endl ;
     return -1;
   }
 
@@ -118,37 +144,46 @@ int main(int argc, char *argv[])
     return -1;
   }
 
-  if(! undistorted_rigth_im.data ){                              // Check for invalid input
+  if(! undistorted_right_im.data ){                              // Check for invalid input
     std::cerr <<  "Could not open or find the image" << std::endl ;
     return -1;
   }
 
   // Initialize values
-  alpha_slider = 0;
-  alpha_slider_max = undistorted_left_im.size().width-1;
+  alpha_slider = -(undistorted_left_im.size().width-1);
+  trackbar_max = 2 * ( undistorted_left_im.size().width-1);
+  undistorted_right_im_moved = cv::Mat(undistorted_right_im.size(),CV_8UC1);
   
   // Create Windows
   cv::namedWindow("Linear Blend", 1);
   
   // Create Trackbars
   char TrackbarName[50];
-  sprintf(TrackbarName, "dst [0,%d]", alpha_slider_max);
+  sprintf(TrackbarName, "dst [0,%d]", trackbar_max);
   
-  cv::createTrackbar(TrackbarName, "Linear Blend", &alpha_slider, alpha_slider_max, on_trackbar);
+  cv::createTrackbar(TrackbarName, "Linear Blend", &alpha_slider, trackbar_max, on_trackbar);
   
   cv::Mat dst;
   // Show some stuff
   on_trackbar(alpha_slider, 0);
 
+  cv::waitKey(0);                                          // Wait for a keystroke in the window
+
   ////////////////////////////////////////////////////////////////////////////////////////////////
 
   Elas::parameters param;
   param.postprocess_only_left = true;
-  Elas elas(param);  
+  Elas elas(param);
 
   cv::Mat_<uchar> im1_out_gray, im2_out_gray;
-  cv::cvtColor(im1_out, im1_out_gray, CV_BGR2GRAY);
-  cv::cvtColor(im2_out, im2_out_gray, CV_BGR2GRAY);
+  
+  undistorted_left_im.copyTo(im1_out_gray);
+  std::cout << " antes del copyto" << std::endl;
+  undistorted_right_im_moved.copyTo(im2_out_gray);
+  std::cout << " despues del copyto" << std::endl;
+  
+  //cv::cvtColor(undistorted_left_im, im1_out_gray, CV_BGR2GRAY);
+  //cv::cvtColor(undistorted_right_im, im2_out_gray, CV_BGR2GRAY);
 
   // get image width and height
   int32_t width  = im1_out_gray.size().width;
@@ -163,8 +198,8 @@ int main(int argc, char *argv[])
   elas.process(im2_out_gray.data,im1_out_gray.data,(float*)D1_data.data,(float*)D2_data.data,dims);
   
   cv::Mat_<cv::Vec3b> D1_data_color(D1_data.size());
-  for (uint j = 0; j < D1_data.cols; j++) {
-    for (uint i = 0; i < D1_data.rows; i++) {    
+  for (uint j = 0; j < (uint)D1_data.cols; j++) {
+    for (uint i = 0; i < (uint)D1_data.rows; i++) {    
       cv::Vec3b v;
       
       float val = std::min(D1_data.at<float>(i,j) * 0.01f, 1.0f);
@@ -184,9 +219,13 @@ int main(int argc, char *argv[])
     }
     // cout << endl;
   }
-    
+  
+  // Create Windows
+  cv::namedWindow("Disparity", 1);
+  cv::imshow("Disparity", D1_data_color);
   
   cv::waitKey(0);                                          // Wait for a keystroke in the window
+  
   
   return 0;
 }
