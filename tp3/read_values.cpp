@@ -4,6 +4,26 @@
 #include <opencv/cv.h>
 #include <opencv/highgui.h>
 
+/// Global Variables
+const int alpha_slider_max = 100;
+int alpha_slider;
+double alpha_track_bar;
+double beta_track_bar;
+
+cv::Mat undistorted_left_im, undistorted_rigth_im, dst;
+
+/**
+ * @function on_trackbar
+ * @brief Callback for trackbar
+ */
+void on_trackbar(int, void*){
+ alpha_track_bar = (double) alpha_slider/alpha_slider_max;
+ beta_track_bar = ( 1.0 - alpha_track_bar);
+
+ cv::addWeighted(undistorted_left_im, alpha_track_bar, undistorted_rigth_im, beta_track_bar, 0.0, dst);
+
+ cv::imshow( "Linear Blend", dst );
+}
 
 
 int main(int argc, char *argv[])
@@ -67,7 +87,7 @@ int main(int argc, char *argv[])
   
   /* Applies a generic geometrical transformation to an image */
 
-  cv::Mat undistorted_left_im, undistorted_rigth_im ;
+  //cv::Mat undistorted_left_im, undistorted_rigth_im ;
   cv::remap(mat_left_im, undistorted_left_im, left_map1, left_map2, cv::INTER_LINEAR, cv::BORDER_CONSTANT, 0);
   cv::remap(mat_rigth_im, undistorted_rigth_im, rigth_map1, rigth_map2, cv::INTER_LINEAR, cv::BORDER_CONSTANT, 0);
 
@@ -84,12 +104,6 @@ int main(int argc, char *argv[])
     return -1;
   }
 
-  cv::namedWindow( "Original Left Image", CV_WINDOW_AUTOSIZE ); // Create a window for display.
-  cv::imshow( "Original Left Image", mat_left_im);                   // Show our image inside it.
-  
-  cv::namedWindow( "Original Rigth Image", CV_WINDOW_AUTOSIZE ); // Create a window for display.
-  cv::imshow( "Original Rigth Image", mat_rigth_im);                   // Show our image inside it.
-
   if(! undistorted_left_im.data ){                              // Check for invalid input
     std::cerr <<  "Could not open or find the image" << std::endl ;
     return -1;
@@ -100,13 +114,23 @@ int main(int argc, char *argv[])
     return -1;
   }
 
-  cv::namedWindow( "Undistorted Left Image", CV_WINDOW_AUTOSIZE );// Create a window for display.
-  cv::imshow( "Undistorted Left Image", undistorted_left_im);                   // Show our image inside it.
+  /// Initialize values
+  alpha_slider = 0;
+  
+  /// Create Windows
+  cv::namedWindow("Linear Blend", 1);
+  
+  /// Create Trackbars
+  char TrackbarName[50];
+  sprintf(TrackbarName, "dst x %d", alpha_slider_max);
+  
+  cv::createTrackbar(TrackbarName, "Linear Blend", &alpha_slider, alpha_slider_max, on_trackbar);
+  
+  cv::Mat dst;
+  /// Show some stuff
+  on_trackbar(alpha_slider, 0);
 
-  cv::namedWindow( "Undistorted Rigth Image", CV_WINDOW_AUTOSIZE );// Create a window for display.
-  cv::imshow( "Undistorted Rigth Image", undistorted_rigth_im);                   // Show our image inside it.
-
-
+  
   cv::waitKey(0);                                          // Wait for a keystroke in the window
   
   return 0;
