@@ -13,6 +13,59 @@ double beta_track_bar;
 
 cv::Mat undistorted_left_im, undistorted_right_im, dst, undistorted_right_im_moved;
 
+void showDisparity() {
+  Elas::parameters param;
+  param.postprocess_only_left = false;
+  Elas elas(param);
+
+  cv::Mat_<uchar> im1_out_gray, im2_out_gray;
+  
+  undistorted_left_im.copyTo(im2_out_gray);
+  undistorted_right_im_moved.copyTo(im1_out_gray);
+  
+  //cv::cvtColor(undistorted_left_im, im1_out_gray, CV_BGR2GRAY);
+  //cv::cvtColor(undistorted_right_im, im2_out_gray, CV_BGR2GRAY);
+
+  // get image width and height
+  int32_t width  = im1_out_gray.size().width;
+  int32_t height = im1_out_gray.size().height;
+
+  // allocate memory for disparity images
+  const int32_t dims[3] = {width,height,width}; // bytes per line = width
+  cv::Mat_<float> D1_data(im1_out_gray.size());
+  cv::Mat_<float> D2_data(im1_out_gray.size());
+
+  // process
+  elas.process(im2_out_gray.data, im1_out_gray.data, (float*)D1_data.data, (float*)D2_data.data, dims);
+
+  cv::Mat_<cv::Vec3b> D1_data_color(D1_data.size());
+  for (uint j = 0; j < (uint)D1_data.cols; j++) {
+    for (uint i = 0; i < (uint)D1_data.rows; i++) {    
+      cv::Vec3b v;
+      
+      float val = std::min(D1_data.at<float>(i,j) * 0.01f, 1.0f);
+      if (val <= 0) v[0] = v[1] = v[2] = 0;
+      else {
+        float h2 = 6.0f * (1.0f - val);
+        unsigned char x  = (unsigned char)((1.0f - fabs(fmod(h2, 2.0f) - 1.0f))*255);
+        if (0 <= h2&&h2<1) { v[0] = 255; v[1] = x; v[2] = 0; }
+        else if (1 <= h2 && h2 < 2)  { v[0] = x; v[1] = 255; v[2] = 0; }
+        else if (2 <= h2 && h2 < 3)  { v[0] = 0; v[1] = 255; v[2] = x; }
+        else if (3 <= h2 && h2 < 4)  { v[0] = 0; v[1] = x; v[2] = 255; }
+        else if (4 <= h2 && h2 < 5)  { v[0] = x; v[1] = 0; v[2] = 255; }
+        else if (5 <= h2 && h2 <= 6) { v[0] = 255; v[1] = 0; v[2] = x; }
+      }
+      
+      D1_data_color.at<cv::Vec3b>(i, j) = v;
+    }
+    // cout << endl;
+  }
+  
+  // Create Windows
+  cv::namedWindow("Disparity", 1);
+  cv::imshow("Disparity", D1_data_color);
+}
+
 /**
  * @function on_trackbar
  * @brief Callback for trackbar
@@ -60,8 +113,26 @@ void on_trackbar(int, void*){
   cv::addWeighted(undistorted_left_im, left_transparency, undistorted_right_im_moved, right_transparency, 0.0, dst);
 
   cv::imshow( "Linear Blend", dst);
+
+  showDisparity();
 }
 
+void listenToKeys() {
+  int keyPressed;
+  bool exit = false;
+
+  while(!exit) {
+    keyPressed = cv::waitKey(0);
+    printf("keyPressed = %d\n", keyPressed);
+
+    switch(keyPressed) {
+    case ' ': //space
+    case 1048608: //space (with numlock on)
+      exit = true;
+      break;
+    }
+  }
+}
 
 int main(int argc, char *argv[])
 {
@@ -167,66 +238,7 @@ int main(int argc, char *argv[])
   // Show some stuff
   on_trackbar(alpha_slider, 0);
 
-  cv::waitKey(0);                                          // Wait for a keystroke in the window
+  listenToKeys();
 
-  ////////////////////////////////////////////////////////////////////////////////////////////////
-
-  Elas::parameters param;
-  param.postprocess_only_left = true;
-  Elas elas(param);
-
-  cv::Mat_<uchar> im1_out_gray, im2_out_gray;
-  
-  undistorted_left_im.copyTo(im1_out_gray);
-  std::cout << " antes del copyto" << std::endl;
-  undistorted_right_im_moved.copyTo(im2_out_gray);
-  std::cout << " despues del copyto" << std::endl;
-  
-  //cv::cvtColor(undistorted_left_im, im1_out_gray, CV_BGR2GRAY);
-  //cv::cvtColor(undistorted_right_im, im2_out_gray, CV_BGR2GRAY);
-
-  // get image width and height
-  int32_t width  = im1_out_gray.size().width;
-  int32_t height = im1_out_gray.size().height;
-
-  // allocate memory for disparity images
-  const int32_t dims[3] = {width,height,width}; // bytes per line = width
-  cv::Mat_<float> D1_data(im1_out_gray.size());
-  cv::Mat_<float> D2_data(im1_out_gray.size());
-
-  // process
-  elas.process(im2_out_gray.data,im1_out_gray.data,(float*)D1_data.data,(float*)D2_data.data,dims);
-  
-  cv::Mat_<cv::Vec3b> D1_data_color(D1_data.size());
-  for (uint j = 0; j < (uint)D1_data.cols; j++) {
-    for (uint i = 0; i < (uint)D1_data.rows; i++) {    
-      cv::Vec3b v;
-      
-      float val = std::min(D1_data.at<float>(i,j) * 0.01f, 1.0f);
-      if (val <= 0) v[0] = v[1] = v[2] = 0;
-      else {
-        float h2 = 6.0f * (1.0f - val);
-        unsigned char x  = (unsigned char)((1.0f - fabs(fmod(h2, 2.0f) - 1.0f))*255);
-        if (0 <= h2&&h2<1) { v[0] = 255; v[1] = x; v[2] = 0; }
-        else if (1 <= h2 && h2 < 2)  { v[0] = x; v[1] = 255; v[2] = 0; }
-        else if (2 <= h2 && h2 < 3)  { v[0] = 0; v[1] = 255; v[2] = x; }
-        else if (3 <= h2 && h2 < 4)  { v[0] = 0; v[1] = x; v[2] = 255; }
-        else if (4 <= h2 && h2 < 5)  { v[0] = x; v[1] = 0; v[2] = 255; }
-        else if (5 <= h2 && h2 <= 6) { v[0] = 255; v[1] = 0; v[2] = x; }
-      }
-      
-      D1_data_color.at<cv::Vec3b>(i, j) = v;
-    }
-    // cout << endl;
-  }
-  
-  // Create Windows
-  cv::namedWindow("Disparity", 1);
-  cv::imshow("Disparity", D1_data_color);
-  
-  cv::waitKey(0);                                          // Wait for a keystroke in the window
-  
-  
   return 0;
 }
-
