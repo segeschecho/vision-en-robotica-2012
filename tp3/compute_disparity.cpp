@@ -13,9 +13,39 @@ double beta_track_bar;
 
 cv::Mat undistorted_left_im, undistorted_right_im, dst, undistorted_right_im_moved;
 
+void printHSV(cv::Mat_<float>& disparityData, const char* windowName) {
+  cv::Mat_<cv::Vec3b> disparity_data_color(disparityData.size());
+  for (uint j = 0; j < (uint)disparityData.cols; j++) {
+    for (uint i = 0; i < (uint)disparityData.rows; i++) {    
+      cv::Vec3b v;
+      
+      float val = std::min(disparityData.at<float>(i,j) * 0.01f, 1.0f);
+      if (val <= 0) {
+        v[0] = v[1] = v[2] = 0;
+      } else {
+        float h2 = 6.0f * (1.0f - val);
+        unsigned char x  = (unsigned char)((1.0f - fabs(fmod(h2, 2.0f) - 1.0f))*255);
+        if (0 <= h2&&h2<1) { v[0] = 255; v[1] = x; v[2] = 0; }
+        else if (1 <= h2 && h2 < 2)  { v[0] = x; v[1] = 255; v[2] = 0; }
+        else if (2 <= h2 && h2 < 3)  { v[0] = 0; v[1] = 255; v[2] = x; }
+        else if (3 <= h2 && h2 < 4)  { v[0] = 0; v[1] = x; v[2] = 255; }
+        else if (4 <= h2 && h2 < 5)  { v[0] = x; v[1] = 0; v[2] = 255; }
+        else if (5 <= h2 && h2 <= 6) { v[0] = 255; v[1] = 0; v[2] = x; }
+      }
+      
+      disparity_data_color.at<cv::Vec3b>(i, j) = v;
+    }
+  }
+  
+  // Create Windows
+  cv::namedWindow(windowName, 1);
+  cv::imshow(windowName, disparity_data_color);
+}
+
 void showDisparity() {
   Elas::parameters param;
   param.postprocess_only_left = false;
+  param.ipol_gap_width = 30; //parametro para interpolar pixels y evitar las zonas negras
   Elas elas(param);
 
   cv::Mat_<uchar> im1_out_gray, im2_out_gray;
@@ -38,32 +68,8 @@ void showDisparity() {
   // process
   elas.process(im2_out_gray.data, im1_out_gray.data, (float*)D1_data.data, (float*)D2_data.data, dims);
 
-  cv::Mat_<cv::Vec3b> D1_data_color(D1_data.size());
-  for (uint j = 0; j < (uint)D1_data.cols; j++) {
-    for (uint i = 0; i < (uint)D1_data.rows; i++) {    
-      cv::Vec3b v;
-      
-      float val = std::min(D1_data.at<float>(i,j) * 0.01f, 1.0f);
-      if (val <= 0) v[0] = v[1] = v[2] = 0;
-      else {
-        float h2 = 6.0f * (1.0f - val);
-        unsigned char x  = (unsigned char)((1.0f - fabs(fmod(h2, 2.0f) - 1.0f))*255);
-        if (0 <= h2&&h2<1) { v[0] = 255; v[1] = x; v[2] = 0; }
-        else if (1 <= h2 && h2 < 2)  { v[0] = x; v[1] = 255; v[2] = 0; }
-        else if (2 <= h2 && h2 < 3)  { v[0] = 0; v[1] = 255; v[2] = x; }
-        else if (3 <= h2 && h2 < 4)  { v[0] = 0; v[1] = x; v[2] = 255; }
-        else if (4 <= h2 && h2 < 5)  { v[0] = x; v[1] = 0; v[2] = 255; }
-        else if (5 <= h2 && h2 <= 6) { v[0] = 255; v[1] = 0; v[2] = x; }
-      }
-      
-      D1_data_color.at<cv::Vec3b>(i, j) = v;
-    }
-    // cout << endl;
-  }
-  
-  // Create Windows
-  cv::namedWindow("Disparity", 1);
-  cv::imshow("Disparity", D1_data_color);
+  printHSV(D1_data, "Disparity Right Camera");
+  printHSV(D2_data, "Disparity Left Camera");
 }
 
 /**
@@ -123,7 +129,6 @@ void listenToKeys() {
 
   while(!exit) {
     keyPressed = cv::waitKey(0);
-    printf("keyPressed = %d\n", keyPressed);
 
     switch(keyPressed) {
     case ' ': //space
@@ -227,13 +232,15 @@ int main(int argc, char *argv[])
   
   // Create Windows
   cv::namedWindow("Linear Blend", 1);
-  
+ 
   // Create Trackbars
-  char TrackbarName[50];
-  sprintf(TrackbarName, "dst [0,%d]", trackbar_max);
+  char trackbarName[50];
+  sprintf(trackbarName, "dst [0,%d]", trackbar_max);
   
-  cv::createTrackbar(TrackbarName, "Linear Blend", &alpha_slider, trackbar_max, on_trackbar);
-  
+  cv::createTrackbar(trackbarName, "Linear Blend", &alpha_slider, trackbar_max, on_trackbar);
+
+  cv::setTrackbarPos(trackbarName, "Linear Blend", 632);
+
   cv::Mat dst;
   // Show some stuff
   on_trackbar(alpha_slider, 0);
