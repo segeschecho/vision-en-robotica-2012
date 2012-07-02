@@ -15,9 +15,9 @@
 
 CC=g++
 
-SOURCES=read_values.cpp
+SOURCES=compute_disparity.cpp
 
-EXECUTABLE=read_values
+EXECUTABLE=compute_disparity
 
 CFLAGS := -Wall -DNDEBUG -O3 -march=native
 
