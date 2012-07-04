@@ -78,9 +78,9 @@ Junio, 2012
 \section{Espacio proyectivo: puntos, rectas y c\'onicas}
 
 \begin{itemize}
-	\item $x \in l \Leftrightarrow x^{\top}l = l^{\top} x = 0$
+	\item $x \in l \Longleftrightarrow x^{\top}l = l^{\top} x = 0$
 
-	\item $l_{1} // l_{2} \Rightarrow l_{1} \times l_{2} = \left[ {\begin{smallmatrix}
+	\item $l_{1} // l_{2} \implies l_{1} \times l_{2} = \left[ {\begin{smallmatrix}
 	 x_{1}\\
 	 x_{2}\\
 	 0\\
@@ -91,14 +91,14 @@ Junio, 2012
 
 	\item $C^{*} l = x$
 
-	\item $x \in C \Leftrightarrow x^{\top} C x = 0$
+	\item $x \in C \Longleftrightarrow x^{\top} C x = 0$
 
 
-	\item $l \in C^{*} \Leftrightarrow l^{\top} C^{*} l = 0$
+	\item $l \in C^{*} \Longleftrightarrow l^{\top} C^{*} l = 0$
 
-	\item $ \exists C^{-1} \Rightarrow C^{*} = C^{-1}$
+	\item $ \exists C^{-1} \implies C^{*} = C^{-1}$
 
-	\item $ \nexists C^{-1} \Rightarrow C_{ij}^{*} = (-1)^{ij} det(\hat{C}_{ij}) \quad i=1\dots n$
+	\item $ \nexists C^{-1} \implies C_{ij}^{*} = (-1)^{i+j} det(\hat{C}_{ij}) \quad i=1\dots n$
 
 	\item $C = lm^{\top}+ml^{\top}$ la matriz C tiene rango 2 (es degenerada).
 
@@ -118,12 +118,12 @@ Junio, 2012
 	 b/2 & c & e/2 \\
 	 d/2 & e/2 & f
 	\end{smallmatrix} } \right]
-	$
+	$ (Grados de libertad: 5)
 \end{itemize}
 
 \section{Transformaciones Proyectivas}
 
-{\bf Transformaci\'on:} $h(x)= Hx$. Donde $H$ es {\bf no singular}.
+{\bf Transformaci\'on:} mapping $h$ {\bf no singular}, donde $h:P^{2} \implies P^{2}$.
 
 Transformaci\'on de Puntos, Lineas y C\'onicas:
 
@@ -185,6 +185,22 @@ Transformaci\'on de Puntos, Lineas y C\'onicas:
 		 0 & \lambda_{2}\\
 		\end{smallmatrix} } \right]$
 
+		\item $\left[ {\begin{smallmatrix}
+		 {\bf A} & {\bf t}\\
+		 {\bf 0}^{\top} & 1 \\
+		\end{smallmatrix} } \right] \left[ {\begin{smallmatrix}
+		 x_{1}\\
+		 x_{2}\\
+		 0\\
+		\end{smallmatrix} } \right] = \left[ {\begin{smallmatrix}
+		 A\left[ {\begin{smallmatrix}
+		  x_{1}\\
+		   x_{2}\\
+		 \end{smallmatrix} } \right]\\
+		 0\\
+		\end{smallmatrix} } \right]
+		$
+
 		\item $
 		H_{A}^{-1} =
 		\left[ {\begin{smallmatrix}
@@ -201,9 +217,9 @@ Transformaci\'on de Puntos, Lineas y C\'onicas:
 
 		\item $l_{\infty} = H_{A} l_{\infty}$
 
-		\item $x \in l \Rightarrow H_{A}(x) \in H_{A}(l)$
+		\item $x \in l \implies H_{A}(x) \in H_{A}(l)$
 
-		\item $l_{1} // l_{2} \Rightarrow H_{A}(l_{1})//H_{A}(l_{2})$
+		\item $l_{1} // l_{2} \implies H_{A}(l_{1})//H_{A}(l_{2})$
 	\end{enumerate}
 	
 	{\bf Invariantes:} 
@@ -223,22 +239,6 @@ $H_{P} =
 $ \hspace*{1cm}(Grados de libertad: 8)
 
 	\begin{enumerate}
-		\item $\left[ {\begin{smallmatrix}
-		 {\bf A} & {\bf t}\\
-		 {\bf 0}^{\top} & 1 \\
-		\end{smallmatrix} } \right] \left[ {\begin{smallmatrix}
-		 x_{1}\\
-		 x_{2}\\
-		 0\\
-		\end{smallmatrix} } \right] = \left[ {\begin{smallmatrix}
-		 A\left[ {\begin{smallmatrix}
-		  x_{1}\\
-		   x_{2}\\
-		 \end{smallmatrix} } \right]\\
-		 0\\
-		\end{smallmatrix} } \right]
-		$
-
 		\item $\left[ {\begin{smallmatrix}
 		  A & {\bf t}\\
 		 {\bf v}^{\top} & v \\
@@ -268,7 +268,7 @@ $ \hspace*{1cm}(Grados de libertad: 8)
 		 A & {\bf t}\\
 		 {\bf v}^{\top} & v \\
 		\end{smallmatrix} } \right]
-		$
+		$ donde $K$ es triangular superior, $det(K)=1$, y $v \neq 0$
 	\end{enumerate}
 	
 	{\bf Invariantes:} 
@@ -286,7 +286,7 @@ $ \hspace*{1cm}(Grados de libertad: 8)
 	 x_{i2} & x_{j2} \\
 	\end{smallmatrix} } \right]$ $x_{i} \in P^{1}$
 
-\item $Cross(h(x_{1}), h(x_{2}), h(x_{3}), h(x_{4})) = Cross(x_{1}, x_{2}, x_{3}, x_{4})$ donde $h:P^{1} \rightarrow P^{1}$
+\item $Cross(h(x_{1}), h(x_{2}), h(x_{3}), h(x_{4})) = Cross(x_{1}, x_{2}, x_{3}, x_{4})$ donde $h:P^{1} \implies P^{1}$
 \end{enumerate}
 
 {\bf Puntos circulares:}
@@ -316,14 +316,14 @@ $ \hspace*{1cm}(Grados de libertad: 8)
 	\end{smallmatrix} } \right]
 	$
 
-	\item %${C^{*}_{\infty}}' = H_{S}{C^{*}_{\infty}}H_{S}^{\top} = {C^{*}_{\infty}}$
+	%\item ${C^{*}_{\infty}}' = H_{S}{C^{*}_{\infty}}H_{S}^{\top} = {C^{*}_{\infty}}$
 
 	\item $H({C^{*}_{\infty}}) = {C^{*}_{\infty}}$
 
 	\item ${C^{*}_{\infty}} l_{\infty} = 0$
 
 	\item $\cos{\theta} = \dfrac{{\bf l}^{\top} {C^{*}_{\infty}} {\bf m}}
-	{\sqrt{({\bf l}^{\top} {C^{*}_{\infty}} {\bf l})({\bf m}^{\top} {C^{*}_{\infty}} {\bf m}) }}$ \hspace{2cm} ${\bf l}$ $\bot$ ${\bf m} \Rightarrow {\bf l}^{\top} {C^{*}_{\infty}} {\bf m} = 0$
+	{\sqrt{({\bf l}^{\top} {C^{*}_{\infty}} {\bf l})({\bf m}^{\top} {C^{*}_{\infty}} {\bf m}) }}$ \hspace{2cm} ${\bf l}$ $\bot$ ${\bf m} \Longleftrightarrow {\bf l}^{\top} {C^{*}_{\infty}} {\bf m} = 0$
 
 \end{itemize}
 
@@ -356,12 +356,12 @@ $ \hspace*{1cm}(Grados de libertad: 8)
 
 	\item $P = KR [I |- \overline{C}] = M[I|M^{-1}p_{4}] = [M|p_{4}]$ donde $M= KR$ y $p_{4}$ la \'ultima columna de $P$
 
-	\item $M$ no singular (camara finita) $\Rightarrow C = \left[ {\begin{smallmatrix}
+	\item $M$ no singular (camara finita) $\implies C = \left[ {\begin{smallmatrix}
 		-M^{-1}p_{4}\\ 
 		 1\\
 	\end{smallmatrix} } \right]$ 
 
-	\item $M$ singular (camara en el infinito) $\Leftrightarrow C = \left[ {\begin{smallmatrix}
+	\item $M$ singular (camara en el infinito) $\Longleftrightarrow C = \left[ {\begin{smallmatrix}
 		{\bf d}\\ 
 		0\\
 	\end{smallmatrix} } \right]$ donde $M {\bf d} = 0$. Entonces el centro de la camara es un punto en el infinito.
@@ -394,7 +394,7 @@ $ \hspace*{1cm}(Grados de libertad: 8)
 
 	\item $P^{+} = P^{\top}(PP^{\top})^{-1}$
 
-	\item ${x'}{}^{\top}Fx =0$ para toda correspondencia $\{x \leftrightarrow x' \}$
+	\item ${x'}{}^{\top}Fx =0$ para toda correspondencia $\{x \Longleftrightarrow x' \}$
 
 	\item $l = F^{\top}x' \implies F' = F^{\top}$
 
@@ -404,7 +404,7 @@ $ \hspace*{1cm}(Grados de libertad: 8)
 
 	\item $e = PC'$ y $e' = P'C$
 
-	\item Dadas $\{x \leftrightarrow x' \}$ se obtienen  $\{\hat{x} \leftrightarrow \hat{x}' \} \diagup \hat{x} = Hx$, $\hat{x}'=Hx'  \implies \hat{F} = H^{-\top}FH^{-1}$
+	\item Dadas $\{x \Longleftrightarrow x' \}$ se obtienen  $\{\hat{x} \Longleftrightarrow \hat{x}' \} \diagup \hat{x} = Hx$, $\hat{x}'=Hx'  \implies \hat{F} = H^{-\top}FH^{-1}$
 	
 	\item $x_{0} = M{\bf m^{3}}$ donde $x_{0}$ es el punto principal y ${\bf m^{3}}$ es la tercer fila de la matriz $M$.
 	
