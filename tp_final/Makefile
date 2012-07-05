@@ -1,6 +1,6 @@
 CC=g++
 
-SOURCES=compute_disparity.cpp
+SOURCES=compute_disparity.cpp GlobalConfig.cpp
 
 EXECUTABLE=compute_disparity
 
