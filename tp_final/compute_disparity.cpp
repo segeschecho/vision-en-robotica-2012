@@ -1,9 +1,10 @@
 #include <iostream>
-#include <vector>
 #include <fstream>
-#include <opencv/cv.h>
 #include <opencv/highgui.h>
 #include "libelas/src/elas.h"
+#include "CameraCalibration.h"
+#include "RectifyMaps.h"
+#include "GlobalConfig.h"
 
 /// Global Variables
 int trackbar_max;
@@ -12,35 +13,6 @@ double alpha_track_bar;
 double beta_track_bar;
 
 cv::Mat undistorted_left_im, undistorted_right_im, dst, undistorted_right_im_moved;
-
-class CameraCalibration{
-
-public:
-  CameraCalibration() : k(), dist(), r(), t() {};
-  ~CameraCalibration(){};
-
-  //private:
-  cv::Mat k;
-  cv::Mat dist;
-  cv::Mat r;
-  cv::Mat t;
-
-};
-
-class RectifyMaps{
-
-public:
-  RectifyMaps() : left_map1(), left_map2(), right_map1(), right_map2() {};
-  ~RectifyMaps(){};
-
-  //private:
-  cv::Mat left_map1;
-  cv::Mat left_map2;
-  cv::Mat right_map1;
-  cv::Mat right_map2;
-
-};
-
 
 void printHSV(cv::Mat_<float>& disparityData, const char* windowName) {
   cv::Mat_<cv::Vec3b> disparity_data_color(disparityData.size());
@@ -249,20 +221,25 @@ void readStereoCalibration(const char* parameters_xml, CameraCalibration& leftCa
 
 int main(int argc, char *argv[])
 {
-  if (argc != 4)
+  if (argc != 5)
   {
-    std::cerr << "Arguments must be passing in this way: ./read_values /path/sequence/to/parameters_file.xml /path/sequence/to/video_left /path/sequence/to/video_right" << std::endl;
+    std::cerr << "Arguments must be passing in this way: ./read_values /path/sequence/to/parameters_file.xml /path/sequence/to/video_left /path/sequence/to/video_right disparity_infinite" << std::endl;
     return -1;
   }
 
   const char* parameters_xml = argv[1];
   const char* video_left_filename = argv[2];
   const char* video_right_filename = argv[3];
+  const char* disparity_infinity = argv[4];
 
   /*read the xml file */
   
-  CameraCalibration left_calib;
-  CameraCalibration right_calib;
+  GlobalConfig& global_config = GlobalConfig::getInstance();
+  
+  CameraCalibration& left_calib = global_config.getCameraCalibrationLeft();
+  CameraCalibration& right_calib = global_config.getCameraCalibrationRight();
+  
+  global_config.setDisparityInfinite(atoi(disparity_infinity));
   
   readStereoCalibration(parameters_xml, left_calib, right_calib);
 
@@ -290,7 +267,7 @@ int main(int argc, char *argv[])
   video_left >> frame_left; // get a new frame from camera
   video_right >> frame_right; // get a new frame from camera
 
-  RectifyMaps rectify_maps;
+  RectifyMaps& rectify_maps = global_config.getRectifyMaps();
   initRectifyMaps(left_calib, right_calib, frame_left, frame_right, rectify_maps);
   alpha_slider = disparityAlignImages(left_calib, right_calib, frame_left, frame_right, rectify_maps);
 
