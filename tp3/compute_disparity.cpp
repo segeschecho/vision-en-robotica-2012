@@ -13,39 +13,10 @@ double beta_track_bar;
 
 cv::Mat undistorted_left_im, undistorted_right_im, dst, undistorted_right_im_moved;
 
-class CameraCalibration{
-
-public:
-  CameraCalibration() : k(), dist(), r(), t() {};
-  ~CameraCalibration(){};
-
-  //private:
-  cv::Mat k;
-  cv::Mat dist;
-  cv::Mat r;
-  cv::Mat t;
-
-};
-
-class RectifyMaps{
-
-public:
-  RectifyMaps() : left_map1(), left_map2(), right_map1(), right_map2() {};
-  ~RectifyMaps(){};
-
-  //private:
-  cv::Mat left_map1;
-  cv::Mat left_map2;
-  cv::Mat right_map1;
-  cv::Mat right_map2;
-
-};
-
-
 void printHSV(cv::Mat_<float>& disparityData, const char* windowName) {
   cv::Mat_<cv::Vec3b> disparity_data_color(disparityData.size());
-  for (unsigned int j = 0; j < (unsigned int)disparityData.cols; j++) {
-    for (unsigned int i = 0; i < (unsigned int)disparityData.rows; i++) {    
+  for (uint j = 0; j < (uint)disparityData.cols; j++) {
+    for (uint i = 0; i < (uint)disparityData.rows; i++) {    
       cv::Vec3b v;
       
       float val = std::min(disparityData.at<float>(i,j) * 0.01f, 1.0f);
@@ -71,8 +42,7 @@ void printHSV(cv::Mat_<float>& disparityData, const char* windowName) {
   cv::imshow(windowName, disparity_data_color);
 }
 
-void showDisparity()
-{
+void showDisparity() {
   Elas::parameters param;
   param.postprocess_only_left = false;
   param.ipol_gap_width = 30; //parametro para interpolar pixels y evitar las zonas negras
@@ -80,8 +50,11 @@ void showDisparity()
 
   cv::Mat_<uchar> im1_out_gray, im2_out_gray;
   
-  cv::cvtColor(undistorted_left_im, im1_out_gray, CV_BGR2GRAY);
-  cv::cvtColor(undistorted_right_im, im2_out_gray, CV_BGR2GRAY);
+  undistorted_left_im.copyTo(im2_out_gray);
+  undistorted_right_im_moved.copyTo(im1_out_gray);
+  
+  //cv::cvtColor(undistorted_left_im, im1_out_gray, CV_BGR2GRAY);
+  //cv::cvtColor(undistorted_right_im, im2_out_gray, CV_BGR2GRAY);
 
   // get image width and height
   int32_t width  = im1_out_gray.size().width;
@@ -147,7 +120,7 @@ void on_trackbar(int, void*){
 
   cv::imshow( "Linear Blend", dst);
 
-//  showDisparity();
+  showDisparity();
 }
 
 void listenToKeys() {
@@ -166,136 +139,72 @@ void listenToKeys() {
   }
 }
 
-
-void initRectifyMaps(CameraCalibration& left_calib, CameraCalibration& right_calib, cv::Mat& left_im, cv::Mat& right_im, RectifyMaps& out_rectify_maps)
+int main(int argc, char *argv[])
 {
-  /* computes the rotation matrices for each camera that (virtually) make both camera image planes the same plane */
-  cv::Mat left_r_prima, right_r_prima, left_k_prima, right_k_prima, q;
-  double alpha = 0;
-  cv::Size new_left_image_size = left_im.size();
-  cv::Size new_right_image_size = right_im.size();
-  cv::Rect left_roi, right_roi;
-  
-  cv::stereoRectify(left_calib.k, left_calib.dist, right_calib.k, right_calib.dist, left_im.size(), right_calib.r, right_calib.t, left_r_prima, right_r_prima, left_k_prima, right_k_prima, q, alpha, cv::CALIB_ZERO_DISPARITY, new_left_image_size , &left_roi , &right_roi );
-  
+  if (argc !=4){
+    std::cerr << "Arguments must be passing in this way: ./read_values /path/sequence/to/parameters_file.xml /path/sequence/to/left_image /path/sequence/to/right_image" << std::endl;
+    return -1;
+  }
+  std::string parameters_xml = argv[1];
+  std::string left_image = argv[2];
+  std::string right_image = argv[3];
 
-  /* Computes the undistortion and rectification transformation map for each camera*/
-  cv::initUndistortRectifyMap(left_calib.k, left_calib.dist, left_r_prima, left_k_prima, new_left_image_size, CV_32FC1, out_rectify_maps.left_map1, out_rectify_maps.left_map2);
-  cv::initUndistortRectifyMap(right_calib.k, right_calib.dist, right_r_prima, right_k_prima, new_right_image_size, CV_32FC1, out_rectify_maps.right_map1, out_rectify_maps.right_map2);
-}
-
-void applyMaps(cv::Mat& left_image, cv::Mat& right_image, RectifyMaps& rectify_maps, cv::Mat& out_left_image, cv::Mat& out_right_image)
-{
-  cv::remap(left_image, out_left_image, rectify_maps.left_map1, rectify_maps.left_map2, cv::INTER_LINEAR, cv::BORDER_CONSTANT, 0);
-  cv::remap(right_image, out_right_image, rectify_maps.right_map1, rectify_maps.right_map2, cv::INTER_LINEAR, cv::BORDER_CONSTANT, 0);
-}
-
-int disparityAlignImages(CameraCalibration& left_calib, CameraCalibration& right_calib, cv::Mat& frame_left, cv::Mat& frame_right, RectifyMaps& rectify_maps)
-{
-  // Rectify the images
-  cv::Mat undistorted_left_im_color, undistorted_right_im_color;
-  applyMaps(frame_left, frame_right, rectify_maps, undistorted_left_im_color, undistorted_right_im_color);
-
-  cv::cvtColor(undistorted_left_im_color, undistorted_left_im, CV_BGR2GRAY);
-  cv::cvtColor(undistorted_right_im_color, undistorted_right_im, CV_BGR2GRAY);
-
-  // Initialize values
-  alpha_slider = -(undistorted_left_im.size().width-1);
-  trackbar_max = 2 * (undistorted_left_im.size().width-1);
-  undistorted_right_im_moved = cv::Mat(undistorted_right_im.size(),CV_8UC1);
-  
-  // Create Windows
-  cv::namedWindow("Linear Blend", 1);
-  
-  // Create Trackbars
-  char trackbarName[50];
-  sprintf(trackbarName, "dst [0,%d]", trackbar_max);
-  
-  cv::createTrackbar(trackbarName, "Linear Blend", &alpha_slider, trackbar_max, on_trackbar);
-  
-  cv::Mat dst;
-
-  // Show some stuff
-  on_trackbar(alpha_slider, 0);
-
-  listenToKeys();
-  
-  return alpha_slider;
-}
-
-void readStereoCalibration(const char* parameters_xml, CameraCalibration& leftCalib, CameraCalibration& rightCalib)
-{  
   /*read the xml file */
   cv::FileStorage fs(parameters_xml, cv::FileStorage::READ);
   
   std::cout << "se abre el archivo xml" << std::endl << std::endl;
-  
+
   if (!fs.isOpened()){
     std::cout << "no se pude abrir el archivo" << std::endl;
   }
   
-  fs["P1"] >> leftCalib.k;
-  fs["P2"] >> rightCalib.k;
-  fs["dist1"] >> leftCalib.dist;
-  fs["dist2"] >> rightCalib.dist;
-  fs["R"] >> rightCalib.r;
-  fs["T"] >> rightCalib.t;
+  cv::Mat left_k, right_k, left_dist, right_dist, r, t;
+  fs["P1"] >> left_k;
+  fs["P2"] >> right_k;
+  fs["dist1"] >> left_dist;
+  fs["dist2"] >> right_dist;
+  fs["R"] >> r;
+  fs["T"] >> t;
 
-  leftCalib.r = cv::Mat::eye(rightCalib.r.rows, rightCalib.r.cols, rightCalib.r.type());
-  leftCalib.t = cv::Mat::zeros(rightCalib.r.rows, rightCalib.r.cols, rightCalib.r.type());
+  // std::cout << left_k << std::endl << std::endl;
+  // std::cout << right_k << std::endl << std::endl;
+  // std::cout << left_dist << std::endl << std::endl;
+  // std::cout << right_dist << std::endl << std::endl;
+  // std::cout << r << std::endl << std::endl;
+  // std::cout << t << std::endl << std::endl;
 
   fs.release();
-}
-
-int main(int argc, char *argv[])
-{
-  if (argc != 4)
-  {
-    std::cerr << "Arguments must be passing in this way: ./read_values /path/sequence/to/parameters_file.xml /path/sequence/to/video_left /path/sequence/to/video_right" << std::endl;
-    return -1;
-  }
-
-  const char* parameters_xml = argv[1];
-  const char* video_left_filename = argv[2];
-  const char* video_right_filename = argv[3];
-
-  /*read the xml file */
   
-  CameraCalibration left_calib;
-  CameraCalibration right_calib;
   
-  readStereoCalibration(parameters_xml, left_calib, right_calib);
+  /* Read the image to undistorted */
+
+  cv::Mat mat_left_im, mat_right_im; 
+  mat_left_im  = cv::imread(left_image, 0);
+  mat_right_im  = cv::imread(right_image, 0);
+
+  /* computes the rotation matrices for each camera that (virtually) make both camera image planes the same plane */
+  cv::Mat left_r, right_r, left_k_prima, right_k_prima, q;
+  double alpha = 0;
+  cv::Size new_left_image_size = mat_left_im.size();
+  cv::Size new_right_image_size = mat_right_im.size();
+  cv::Rect left_roi, right_roi;
+
+  cv::stereoRectify(left_k, left_dist, right_k, right_dist, mat_left_im.size(), r, t, left_r, right_r, left_k_prima, right_k_prima, q, alpha, cv::CALIB_ZERO_DISPARITY, new_left_image_size , &left_roi , &right_roi );
 
 
-  /* Open left and right videos*/
+  /* Computes the undistortion and rectification transformation map for each camera*/
 
-  cv::VideoCapture video_left = cv::VideoCapture(); // open the default camera
-  cv::VideoCapture video_right = cv::VideoCapture(); // open the default camera
-
-  video_left.open(video_left_filename);
-  video_right.open(video_right_filename);
-
-  if (!video_left.isOpened()){  // check if we succeeded
-    std::cerr << "No se pudo leer el video " << video_left_filename << std::endl;
-    return -1;
-  }
-
-  if (!video_right.isOpened()){  // check if we succeeded
-    std::cerr << "No se pudo leer el video " << video_right_filename << std::endl;
-    return -1;
-  }
- 
+  cv::Mat left_map1, left_map2, right_map1, right_map2;
+  cv::initUndistortRectifyMap(left_k, left_dist, left_r, left_k_prima, new_left_image_size, CV_32FC1, left_map1, left_map2);
+  cv::initUndistortRectifyMap(right_k, right_dist, right_r, right_k_prima, new_right_image_size, CV_32FC1, right_map1, right_map2);
   
-  cv::Mat frame_left, frame_right;
-  video_left >> frame_left; // get a new frame from camera
-  video_right >> frame_right; // get a new frame from camera
-
-  RectifyMaps rectify_maps;
-  initRectifyMaps(left_calib, right_calib, frame_left, frame_right, rectify_maps);
-  alpha_slider = disparityAlignImages(left_calib, right_calib, frame_left, frame_right, rectify_maps);
-
   /* Applies a generic geometrical transformation to an image */
-  /*
+
+  //cv::Mat undistorted_left_im, undistorted_right_im ;
+  cv::remap(mat_left_im, undistorted_left_im, left_map1, left_map2, cv::INTER_LINEAR, cv::BORDER_CONSTANT, 0);
+  cv::remap(mat_right_im, undistorted_right_im, right_map1, right_map2, cv::INTER_LINEAR, cv::BORDER_CONSTANT, 0);
+
+
   if(! mat_left_im.data ){                              // Check for invalid input
     std::cerr <<  "Could not open or find the left image" << std::endl ;
     return -1;
@@ -310,12 +219,33 @@ int main(int argc, char *argv[])
     std::cerr <<  "Could not open or find the image" << std::endl ;
     return -1;
   }
-  
+
   if(! undistorted_right_im.data ){                              // Check for invalid input
     std::cerr <<  "Could not open or find the image" << std::endl ;
     return -1;
   }
-  */
+
+  // Initialize values
+  alpha_slider = -(undistorted_left_im.size().width-1);
+  trackbar_max = 2 * ( undistorted_left_im.size().width-1);
+  undistorted_right_im_moved = cv::Mat(undistorted_right_im.size(),CV_8UC1);
+  
+  // Create Windows
+  cv::namedWindow("Linear Blend", 1);
+ 
+  // Create Trackbars
+  char trackbarName[50];
+  sprintf(trackbarName, "dst [0,%d]", trackbar_max);
+  
+  cv::createTrackbar(trackbarName, "Linear Blend", &alpha_slider, trackbar_max, on_trackbar);
+
+  cv::setTrackbarPos(trackbarName, "Linear Blend", 632);
+
+  cv::Mat dst;
+  // Show some stuff
+  on_trackbar(alpha_slider, 0);
+
+  listenToKeys();
 
   return 0;
 }
