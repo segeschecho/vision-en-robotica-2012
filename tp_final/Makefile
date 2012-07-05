@@ -13,5 +13,5 @@ CFLAGS += `pkg-config --cflags --libs opencv`
 LIBS := -L ./libelas/build/ -lelas
 
 all:
-	$(CC) $(SOURCES) -o $(EXECUTABLE) $(CFLAGS) # $(LIBS)
+	$(CC) $(SOURCES) -o $(EXECUTABLE) $(CFLAGS)  $(LIBS)
 
