@@ -1,8 +1,8 @@
 CC=g++
 
-SOURCES=video_capture.cpp
+SOURCES=compute_disparity.cpp
 
-EXECUTABLE=video_capture
+EXECUTABLE=compute_disparity
 
 CFLAGS := -Wall -DNDEBUG -O3 -march=native
 
