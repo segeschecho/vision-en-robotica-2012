@@ -1,8 +1,8 @@
 CC=g++
 
-SOURCES=compute_disparity.cpp GlobalConfig.cpp
+SOURCES=obstacle_avoidance.cpp GlobalConfig.cpp
 
-EXECUTABLE=compute_disparity
+EXECUTABLE=obstacle_avoidance
 
 CFLAGS := -Wall -DNDEBUG -O3 -march=native
 
