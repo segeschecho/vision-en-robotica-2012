@@ -236,9 +236,9 @@ int main(int argc, char *argv[])
 
   while(!frame_left.empty() && !frame_right.empty()) {
     
-    cv::cvtColor(frame_left, frame_left_gray, CV_BGR2GRAY);
-    cv::cvtColor(frame_right, frame_right_gray, CV_BGR2GRAY);
-    
+    cv::cvtColor(frame_left, frame_left_gray, CV_RGB2GRAY);
+    cv::cvtColor(frame_right, frame_right_gray, CV_RGB2GRAY);
+
     applyMaps(frame_left_gray, frame_right_gray, rectify_maps, rectify_left_frame, rectify_right_frame);
 
     translateFrame(alpha_disparity, rectify_right_frame, aligned_right_frame);
@@ -248,8 +248,8 @@ int main(int argc, char *argv[])
     printHSV(disparity_left_frame, "Disparity Right Camera");
     printHSV(disparity_right_frame, "Disparity Left Camera");
 
-    cv::addWeighted(rectify_left_frame, 0.5, aligned_right_frame, 0.5, 0.0, dst);
-    cv::imshow("Original Left Camera", dst);
+    cv::imshow("Original Left Camera", frame_left);
+    cv::imshow("Original Right Camera", frame_right);
 
     cv::waitKey(30);
 
