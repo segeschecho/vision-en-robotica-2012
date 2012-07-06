@@ -41,33 +41,24 @@ void printHSV(cv::Mat_<float>& disparityData, const char* windowName) {
   cv::imshow(windowName, disparity_data_color);
 }
 
-void computeDisparity(cv::Mat& aligned_left_frame, cv::Mat& aligned_right_frame, cv::Mat_<float>& disparity_left_frame, cv::Mat_<float>& disparity_right_frame){
+void computeDisparity(cv::Mat& rectify_left_frame, cv::Mat& aligned_right_frame, cv::Mat_<float>& disparity_left_frame, cv::Mat_<float>& disparity_right_frame){
 
   Elas::parameters param;
   param.postprocess_only_left = false;
   param.ipol_gap_width = 30; //parametro para interpolar pixels y evitar las zonas negras
   Elas elas(param);
 
-  cv::Mat_<uchar> im1_out_gray, im2_out_gray;
-
-  //aligned_left_frame.copyTo(im1_out_gray);
-  //aligned_right_frame.copyTo(im2_out_gray);
-  
-  cv::cvtColor(aligned_left_frame, im1_out_gray, CV_BGR2GRAY);
-  cv::cvtColor(aligned_right_frame, im2_out_gray, CV_BGR2GRAY);
-
   // get image width and height
-  int32_t width  = im1_out_gray.size().width;
-  int32_t height = im1_out_gray.size().height;
+  int32_t width  = rectify_left_frame.size().width;
+  int32_t height = rectify_left_frame.size().height;
 
   // allocate memory for disparity images
   const int32_t dims[3] = {width,height,width}; // bytes per line = width
-  disparity_left_frame = cv::Mat_<float>(im1_out_gray.size());
-  disparity_right_frame = cv::Mat_<float>(im2_out_gray.size());
+  disparity_left_frame = cv::Mat_<float>(rectify_left_frame.size());
+  disparity_right_frame = cv::Mat_<float>(aligned_right_frame.size());
 
   // process
-  elas.process(im1_out_gray.data, im2_out_gray.data, (float*)disparity_left_frame.data, (float*)disparity_right_frame.data, dims);
- 
+  elas.process(rectify_left_frame.data, aligned_right_frame.data, (float*)disparity_left_frame.data, (float*)disparity_right_frame.data, dims); 
 }
 
 /**
@@ -150,15 +141,15 @@ void applyMaps(cv::Mat& left_image, cv::Mat& right_image, RectifyMaps& rectify_m
 
 
 
-void readStereoCalibration(const char* parameters_xml, CameraCalibration& leftCalib, CameraCalibration& rightCalib, int& alpha_disparity)
+bool readStereoCalibration(const char* parameters_xml, CameraCalibration& leftCalib, CameraCalibration& rightCalib, int& alpha_disparity)
 {  
   /*read the xml file */
   cv::FileStorage fs(parameters_xml, cv::FileStorage::READ);
   
-  std::cout << "se abre el archivo xml" << std::endl << std::endl;
+  std::cout << "Se abre el archivo xml." << std::endl << std::endl;
   
   if (!fs.isOpened()){
-    std::cout << "no se pude abrir el archivo" << std::endl;
+    return false;
   }
   
   fs["P1"] >> leftCalib.k;
@@ -173,6 +164,8 @@ void readStereoCalibration(const char* parameters_xml, CameraCalibration& leftCa
   leftCalib.t = cv::Mat::zeros(rightCalib.r.rows, rightCalib.r.cols, rightCalib.r.type());
 
   fs.release();
+
+  return true;
 }
 
 int main(int argc, char *argv[])
@@ -196,8 +189,12 @@ int main(int argc, char *argv[])
   RectifyMaps& rectify_maps = global_config.getRectifyMaps();
   int alpha_disparity;
 
-  readStereoCalibration(parameters_xml, left_calib, right_calib, alpha_disparity);
+  bool parametersParsed = readStereoCalibration(parameters_xml, left_calib, right_calib, alpha_disparity);
   
+  if(!parametersParsed) {    
+    std::cerr << "ERROR: No se pudo abrir el archivo xml." << std::endl;
+    return -1;
+  }
 
   global_config.setDisparityInfinite(alpha_disparity);
 
@@ -230,29 +227,29 @@ int main(int argc, char *argv[])
   cv::namedWindow("Original Left Camera", 1);
   cv::namedWindow("Original Right Camera", 1);
 
-  cv::Mat frame_left, frame_right, rectify_left_frame, rectify_right_frame, aligned_left_frame, aligned_right_frame;
+  cv::Mat frame_left, frame_right, rectify_left_frame, rectify_right_frame, aligned_right_frame;
   cv::Mat_<float> disparity_left_frame, disparity_right_frame;
+  cv::Mat_<uchar> frame_left_gray, frame_right_gray;
 
   video_left >> frame_left; // get a new frame from camera
   video_right >> frame_right; // get a new frame from camera
 
   while(!frame_left.empty() && !frame_right.empty()) {
-
     
+    cv::cvtColor(frame_left, frame_left_gray, CV_BGR2GRAY);
+    cv::cvtColor(frame_right, frame_right_gray, CV_BGR2GRAY);
     
-    applyMaps(frame_left, frame_right, rectify_maps, rectify_left_frame, rectify_right_frame);
+    applyMaps(frame_left_gray, frame_right_gray, rectify_maps, rectify_left_frame, rectify_right_frame);
 
-    translateFrame(alpha_disparity, rectify_left_frame, aligned_left_frame);
     translateFrame(alpha_disparity, rectify_right_frame, aligned_right_frame);
-
    
-    computeDisparity(aligned_left_frame, aligned_right_frame, disparity_left_frame, disparity_right_frame);
+    computeDisparity(rectify_left_frame, aligned_right_frame, disparity_left_frame, disparity_right_frame);
     
     printHSV(disparity_left_frame, "Disparity Right Camera");
     printHSV(disparity_right_frame, "Disparity Left Camera");
 
-    cv::imshow("Original Left Camera", frame_left);
-    cv::imshow("Original Right Camera", frame_right);
+    cv::addWeighted(rectify_left_frame, 0.5, aligned_right_frame, 0.5, 0.0, dst);
+    cv::imshow("Original Left Camera", dst);
 
     cv::waitKey(30);
 
