@@ -1,7 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <opencv/highgui.h>
-#include "libelas/src/elas.h"
+#include "../library/libelas/src/elas.h"
 #include "CameraCalibration.h"
 #include "RectifyMaps.h"
 #include "GlobalConfig.h"

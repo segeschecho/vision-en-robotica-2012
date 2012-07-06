@@ -3,7 +3,7 @@
 #include <fstream>
 #include <opencv/cv.h>
 #include <opencv/highgui.h>
-#include "../libelas/src/elas.h"
+#include "../library/libelas/src/elas.h"
 
 /// Global Variables
 int trackbar_max;
