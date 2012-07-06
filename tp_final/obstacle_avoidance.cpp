@@ -41,7 +41,7 @@ void printHSV(cv::Mat_<float>& disparityData, const char* windowName) {
   cv::imshow(windowName, disparity_data_color);
 }
 
-void computeDisparity(cv::Mat& rectify_left_frame, cv::Mat& rectify_right_frame, cv::Mat_<float>& disparity_left_frame, cv::Mat_<float>& disparity_right_frame){
+void computeDisparity(cv::Mat& aligned_left_frame, cv::Mat& aligned_right_frame, cv::Mat_<float>& disparity_left_frame, cv::Mat_<float>& disparity_right_frame){
 
   Elas::parameters param;
   param.postprocess_only_left = false;
@@ -49,9 +49,12 @@ void computeDisparity(cv::Mat& rectify_left_frame, cv::Mat& rectify_right_frame,
   Elas elas(param);
 
   cv::Mat_<uchar> im1_out_gray, im2_out_gray;
+
+  //aligned_left_frame.copyTo(im1_out_gray);
+  //aligned_right_frame.copyTo(im2_out_gray);
   
-  cv::cvtColor(rectify_left_frame, im1_out_gray, CV_BGR2GRAY);
-  cv::cvtColor(rectify_right_frame, im2_out_gray, CV_BGR2GRAY);
+  cv::cvtColor(aligned_left_frame, im1_out_gray, CV_BGR2GRAY);
+  cv::cvtColor(aligned_right_frame, im2_out_gray, CV_BGR2GRAY);
 
   // get image width and height
   int32_t width  = im1_out_gray.size().width;
@@ -194,6 +197,7 @@ int main(int argc, char *argv[])
   int alpha_disparity;
 
   readStereoCalibration(parameters_xml, left_calib, right_calib, alpha_disparity);
+  
 
   global_config.setDisparityInfinite(alpha_disparity);
 
@@ -223,7 +227,8 @@ int main(int argc, char *argv[])
 
   cv::namedWindow("Disparity Left Camera", 1);
   cv::namedWindow("Disparity Right Camera", 1);
-
+  cv::namedWindow("Original Left Camera", 1);
+  cv::namedWindow("Original Right Camera", 1);
 
   cv::Mat frame_left, frame_right, rectify_left_frame, rectify_right_frame, aligned_left_frame, aligned_right_frame;
   cv::Mat_<float> disparity_left_frame, disparity_right_frame;
@@ -233,16 +238,21 @@ int main(int argc, char *argv[])
 
   while(!frame_left.empty() && !frame_right.empty()) {
 
+    
+    
     applyMaps(frame_left, frame_right, rectify_maps, rectify_left_frame, rectify_right_frame);
 
     translateFrame(alpha_disparity, rectify_left_frame, aligned_left_frame);
     translateFrame(alpha_disparity, rectify_right_frame, aligned_right_frame);
 
    
-    computeDisparity(rectify_left_frame, rectify_right_frame, disparity_left_frame, disparity_right_frame);
+    computeDisparity(aligned_left_frame, aligned_right_frame, disparity_left_frame, disparity_right_frame);
     
     printHSV(disparity_left_frame, "Disparity Right Camera");
     printHSV(disparity_right_frame, "Disparity Left Camera");
+
+    cv::imshow("Original Left Camera", frame_left);
+    cv::imshow("Original Right Camera", frame_right);
 
     cv::waitKey(30);
 
