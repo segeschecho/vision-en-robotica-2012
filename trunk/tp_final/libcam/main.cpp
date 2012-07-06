@@ -1,12 +1,15 @@
 #include <iostream>
-#include <cv.h>
-#include <highgui.h>
+#include <opencv/cv.h>
+#include <opencv/highgui.h>
 #include <stdexcept>
 #include <string>
 #include <signal.h>
-#include <libcam.h>
 #include "timer.h"
-#include "libcam/libcam.h"
+#include "libcam.h"
+
+// para pasar los avi a mp4 sin perdida de calidad.
+// ffmpeg -i out.avi -sameq -vcodec libx264 -acodec libfaac out.mp4
+
 using namespace std;
 using namespace cv;
 
@@ -62,13 +65,16 @@ int main(int argc, char** argv) {
     t.start();
     cam1.Update((unsigned int)1);
     cam2.Update((unsigned int)1);
-
+    
     cam1.toIplImage(frame1);
     cvWriteFrame(writer1, frame1);
-    cv::imshow("cam1", frame1);
+    Mat img1(frame1);
+    cv::imshow("cam1", img1);
+    
     cam2.toIplImage(frame2);
     cvWriteFrame(writer2, frame2);
-    cv::imshow("cam2", frame2);
+    Mat img2(frame2);
+    cv::imshow("cam2", img2);
 
     //uint disp = 10;
     //cv::Mat new_frame2(frame2_mat.size(), frame2_mat.type());
@@ -84,7 +90,7 @@ int main(int argc, char** argv) {
 
     t.stop();
     tsegundo.pause();
-    if (tsegundo.getSec() >= 1) {
+    if (tsegundo.getSec() >= 0) {
       cout << "delta: " << t << "FPS: " << frames << endl;
       tsegundo.start();
       tsegundo.stop(); 

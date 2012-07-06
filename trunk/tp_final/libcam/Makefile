@@ -1,15 +1,17 @@
-CXXFLAGS=-fPIC -O4 `pkg-config opencv --cflags` -Wall #-msoft-float -march=armv4t
-LDFLAGS=`pkg-config opencv --libs` -fPIC -shared 
+CC=g++
 
-all: libcam.so
+SOURCES=main.cpp timer.cpp libcam.cpp
 
-libcam.so: libcam.o
-	g++ -o libcam.so $< $(LDFLAGS)
+EXECUTABLE=stereocam
 
-clean:
-	rm -f *.o *.so
+CFLAGS := -Wall -DNDEBUG -O3 -march=native
 
+# OpenCV
+CFLAGS += `pkg-config --cflags --libs opencv`
 
+#LIBCAM
+# LIBS := # -L . -lcam
 
-
+all:
+	$(CC) $(SOURCES) -o $(EXECUTABLE) $(CFLAGS)
 
