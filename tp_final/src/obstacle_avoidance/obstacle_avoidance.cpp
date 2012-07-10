@@ -6,6 +6,11 @@
 #include "RectifyMaps.h"
 #include "GlobalConfig.h"
 
+#define HIGH_DISPARITY_THRESHOLD 20
+#define HIGH_AVERAGE_THRESHOLD .3   // percentage
+#define PERCENTAGE_FIRST_ZONE .333
+#define PERCENTAGE_SECOND_ZONE .333
+
 /// Global Variables
 int trackbar_max;
 int alpha_slider;
@@ -13,6 +18,57 @@ double alpha_track_bar;
 double beta_track_bar;
 
 cv::Mat undistorted_left_im, undistorted_right_im, dst, undistorted_right_im_moved;
+
+float compute_average_disparity(cv::Mat_<float>& disparity_frame, int begin_zone_pixels, int end_zone_pixels) {
+  int high_disparity_counter = 0;
+  float average              = 0;
+  int total_pixels           = disparity_frame.rows * (end_zone_pixels - begin_zone_pixels);
+  
+  
+  // counting high disparity pixels
+  for (int row = 0; row < disparity_frame.rows; ++row) {
+    for (int col = begin_zone_pixels; col < end_zone_pixels; ++col) {
+      if (disparity_frame.at<float>(row, col) >= HIGH_DISPARITY_THRESHOLD) {
+        high_disparity_counter++;
+      }
+    }
+  }
+  
+  // calculate average
+  average = (float)high_disparity_counter / (float)total_pixels;
+  return average;
+}
+
+
+float computeDirectionFromDisparity(cv::Mat_<float>& disparity_frame ) {
+  float direction = 0;
+  float disparity_center_percentage = 0;
+  float disparity_left_percentage = 0;
+  float disparity_right_percentage = 0;
+  
+  // calculate percentage of high disparity in the center of the image
+  int begin_center_zone = PERCENTAGE_FIRST_ZONE * disparity_frame.cols;
+  int end_center_zone = begin_center_zone + PERCENTAGE_SECOND_ZONE * disparity_frame.cols;
+  
+  disparity_center_percentage = compute_average_disparity(disparity_frame, begin_center_zone, end_center_zone);
+  
+  std::cout << "disparity_center_percentage " << disparity_center_percentage << std::endl;
+  
+  if (disparity_center_percentage >= HIGH_AVERAGE_THRESHOLD) {
+    // compute average disparity for frame's left and right sides
+    disparity_left_percentage = compute_average_disparity(disparity_frame, 0, begin_center_zone);
+    disparity_right_percentage = compute_average_disparity(disparity_frame, end_center_zone, disparity_frame.cols);
+    
+    if (disparity_left_percentage < disparity_right_percentage) {
+      direction = 90;
+    } else {
+      direction = -90;
+    }
+  }
+  
+  return direction;
+}
+
 
 void printHSV(cv::Mat_<float>& disparityData, const char* windowName) {
   cv::Mat_<cv::Vec3b> disparity_data_color(disparityData.size());
@@ -250,8 +306,13 @@ int main(int argc, char *argv[])
 
     cv::imshow("Original Left Camera", frame_left);
     cv::imshow("Original Right Camera", frame_right);
-
+    
     cv::waitKey(30);
+    
+        
+    // obstacle avoidance strategy
+    float angle = computeDirectionFromDisparity(disparity_left_frame);
+    std::cout << angle << std::endl;
 
     video_left >> frame_left; // get a new frame from camera
     video_right >> frame_right; // get a new frame from camera
