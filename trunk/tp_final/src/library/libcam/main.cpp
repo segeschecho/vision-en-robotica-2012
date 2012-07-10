@@ -9,6 +9,8 @@
 
 // para pasar los avi a mp4 sin perdida de calidad.
 // ffmpeg -i out.avi -sameq -vcodec libx264 -acodec libfaac out.mp4
+// para editar el video y sacar partes.
+// ffmpeg -i desfilando_cam2.mp4 -sameq -vcodec libx264 -acodec libfaac -ss 00:00:06 -t 00:00:13  test_left.mp4
 
 using namespace std;
 using namespace cv;
