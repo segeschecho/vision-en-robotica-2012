@@ -1,23 +1,102 @@
 #include <iostream>
 #include <fstream>
+#include <math.h>
 #include <opencv/highgui.h>
 #include "../library/libelas/src/elas.h"
 #include "CameraCalibration.h"
 #include "RectifyMaps.h"
 #include "GlobalConfig.h"
+#include "../library/libexabot-remote/libexabot-remote.h"
+#include <signal.h>
 
-#define HIGH_DISPARITY_THRESHOLD 20
-#define HIGH_AVERAGE_THRESHOLD .3   // percentage
-#define PERCENTAGE_FIRST_ZONE .333
-#define PERCENTAGE_SECOND_ZONE .333
+#define PI 3.14159265f
+
+#define HIGH_DISPARITY_THRESHOLD  20
+#define HIGH_AVERAGE_THRESHOLD    0.3f   // percentage
+#define PERCENTAGE_FIRST_ZONE     0.333
+#define PERCENTAGE_SECOND_ZONE    0.333f
+
+#define Y_DELTA                   0.15f
+
+#define EXABOT_VELOCITY           0.5f
+
+struct Vector2D {
+  float x;
+  float y;
+};
 
 /// Global Variables
 int trackbar_max;
 int alpha_slider;
 double alpha_track_bar;
 double beta_track_bar;
+bool end = false;
 
 cv::Mat undistorted_left_im, undistorted_right_im, dst, undistorted_right_im_moved;
+
+// for libexabot
+void interrupt_signal(int s) {
+  exa_remote_set_motors(0, 0);
+  end = true;
+}
+
+void translateVectorToExabotVelocity(const Vector2D& movementVector, Vector2D& result) {
+  if (movementVector.x == 0.0f && movementVector.y == 0.0f) {
+    result.x = 0.0f;
+    result.y = 0.0f;
+
+    return;
+  }
+  
+  result.x = 1.0f;
+  result.y = 1.0f;
+  
+  float tanAngle = movementVector.y / movementVector.x;
+  double angle = atan(tanAngle);
+  
+  if (movementVector.x < 0)
+  {
+    result.x = (float)(angle / (PI/2));
+  }
+  else if(movementVector.x > 0)
+  {
+    result.y = (float)(angle / (PI/2));
+  }
+  
+  if(fabs(movementVector.y) < Y_DELTA)
+  {
+    // Must turn staying in the same place
+    if (movementVector.x < 0)
+    {
+      result.x = -result.y;
+    }
+    else if(movementVector.x > 0)
+    {
+      result.y = -result.x;
+    }
+  }
+  else
+  {
+    if (movementVector.y < 0)
+    {
+      result.x = -fabs(result.x);
+      result.y = -fabs(result.y);
+    }
+    else if (movementVector.y > 0)
+    {
+      result.x = fabs(result.x);
+      result.y = fabs(result.y);
+    }
+  }
+  
+  float vectorLength = (float)sqrt(movementVector.x * movementVector.x + movementVector.y * movementVector.y);
+  
+  result.x *= vectorLength;
+  result.y *= vectorLength;
+}
+
+
+
 
 float compute_average_disparity(cv::Mat_<float>& disparity_frame, int begin_zone_pixels, int end_zone_pixels) {
   int high_disparity_counter = 0;
@@ -60,9 +139,9 @@ float computeDirectionFromDisparity(cv::Mat_<float>& disparity_frame ) {
     disparity_right_percentage = compute_average_disparity(disparity_frame, end_center_zone, disparity_frame.cols);
     
     if (disparity_left_percentage < disparity_right_percentage) {
-      direction = 90;
+      direction = PI/2;
     } else {
-      direction = -90;
+      direction = -PI/2;
     }
   }
   
@@ -289,7 +368,11 @@ int main(int argc, char *argv[])
 
   video_left >> frame_left; // get a new frame from camera
   video_right >> frame_right; // get a new frame from camera
-
+  
+  // initializate libexabot
+  exa_remote_initialize("10.1.200.90");
+  signal(SIGINT, &interrupt_signal);
+  
   while(!frame_left.empty() && !frame_right.empty()) {
     
     cv::cvtColor(frame_left, frame_left_gray, CV_RGB2GRAY);
@@ -312,11 +395,24 @@ int main(int argc, char *argv[])
         
     // obstacle avoidance strategy
     float angle = computeDirectionFromDisparity(disparity_left_frame);
-    std::cout << angle << std::endl;
+    Vector2D direction_from_disparity;
+    Vector2D exabot_engine_speed;
+    
+    direction_from_disparity.y = sin(angle + PI/2) * EXABOT_VELOCITY;
+    direction_from_disparity.x = cos(angle + PI/2) * EXABOT_VELOCITY;
+    
+    translateVectorToExabotVelocity(direction_from_disparity, exabot_engine_speed);
+    
+    std::cout << "Angle: " << angle << " LEFT:  " << exabot_engine_speed.x << " RIGHT: " << exabot_engine_speed.y << std::endl;
+    
+    exa_remote_set_motors(exabot_engine_speed.x, exabot_engine_speed.y);
 
     video_left >> frame_left; // get a new frame from camera
     video_right >> frame_right; // get a new frame from camera
   }
 
+  // close exabot connection
+  exa_remote_deinitialize();
+    
   return 0;
 }
