@@ -100,11 +100,11 @@ void translateVectorToExabotVelocity(const Vector2D& movementVector, Vector2D& r
 float compute_average_disparity(cv::Mat_<float>& disparity_frame, int begin_zone_pixels, int end_zone_pixels) {
   int high_disparity_counter = 0;
   float average              = 0;
-  int total_pixels           = disparity_frame.rows * (end_zone_pixels - begin_zone_pixels);
+  int total_pixels           = disparity_frame.rows/2 * (end_zone_pixels - begin_zone_pixels);
   
   
   // counting high disparity pixels
-  for (int row = 0; row < disparity_frame.rows; ++row) {
+  for (int row = 0; row < disparity_frame.rows/2; ++row) {
     for (int col = begin_zone_pixels; col < end_zone_pixels; ++col) {
       if (disparity_frame.at<float>(row, col) >= HIGH_DISPARITY_THRESHOLD) {
         high_disparity_counter++;
