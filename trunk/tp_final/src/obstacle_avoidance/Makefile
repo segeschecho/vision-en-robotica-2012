@@ -10,7 +10,7 @@ CFLAGS := -Wall -DNDEBUG -O3 -march=native
 CFLAGS += `pkg-config --cflags --libs opencv`
 
 #LIBELAS
-LIBS := -L ../library/libelas/build/ -lelas
+LIBS := -L ../library/libelas/build/ -lelas -L ../library/libexabot-remote/build -lexabot-remote
 
 all:
 	$(CC) $(SOURCES) -o $(EXECUTABLE) $(CFLAGS)  $(LIBS)
