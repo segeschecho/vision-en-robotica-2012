@@ -36,7 +36,6 @@ cv::Mat undistorted_left_im, undistorted_right_im, dst, undistorted_right_im_mov
 
 // for libexabot
 void interrupt_signal(int s) {
-  exa_remote_set_motors(0, 0);
   end = true;
 }
 
@@ -373,7 +372,7 @@ int main(int argc, char *argv[])
   exa_remote_initialize("10.1.200.90");
   signal(SIGINT, &interrupt_signal);
   
-  while(!frame_left.empty() && !frame_right.empty()) {
+  while(!frame_left.empty() && !frame_right.empty() && !end) {
     
     cv::cvtColor(frame_left, frame_left_gray, CV_RGB2GRAY);
     cv::cvtColor(frame_right, frame_right_gray, CV_RGB2GRAY);
@@ -412,6 +411,7 @@ int main(int argc, char *argv[])
   }
 
   // close exabot connection
+  exa_remote_set_motors(0, 0);
   exa_remote_deinitialize();
     
   return 0;
