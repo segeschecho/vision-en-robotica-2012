@@ -1,12 +1,15 @@
 CC=g++
 
-DIRS=../library/libelas/src/
+DIR_LIBRARY=../library/
 
-SOURCES=obstacle_avoidance.cpp GlobalConfig.cpp VideoFileFrameGenerator.cpp $(DIRS)elas.cpp $(DIRS)descriptor.cpp $(DIRS)filter.cpp $(DIRS)matrix.cpp $(DIRS)triangle.cpp
+DIR_LIBELAS=$(DIR_LIBRARY)libelas/src/
+DIR_LIBCAM=$(DIR_LIBRARY)libcam/
+
+SOURCES=obstacle_avoidance.cpp GlobalConfig.cpp VideoFileFrameGenerator.cpp CameraFrameGenerator.cpp $(DIR_LIBCAM)libcam.cpp $(DIR_LIBELAS)elas.cpp $(DIR_LIBELAS)descriptor.cpp $(DIR_LIBELAS)filter.cpp $(DIR_LIBELAS)matrix.cpp $(DIR_LIBELAS)triangle.cpp
 
 EXECUTABLE=obstacle_avoidance
 
-CFLAGS := -Wall -DNDEBUG -O3 -march=native
+CFLAGS := -DNDEBUG -O3 -march=native
 
 # OpenCV
 CFLAGS += `pkg-config --cflags --libs opencv`
