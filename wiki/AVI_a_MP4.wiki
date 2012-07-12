@@ -1,0 +1,12 @@
+#summary Comando para pasar videos del formato AVI a MP4
+#labels Phase-Deploy
+
+= Comando =
+
+Comando para pasar videos del formato AVI a MP4.
+
+ * ffmpeg -i cam2.avi -sameq -vcodec libx264 -acodec libfaac cam2.mp4
+
+Si:
+ * cam2.avi es el video original y
+ * cam1.mp4 es el video de salida.
