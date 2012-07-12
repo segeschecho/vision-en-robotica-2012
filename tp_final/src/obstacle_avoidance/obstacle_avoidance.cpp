@@ -1,13 +1,14 @@
 #include <iostream>
 #include <fstream>
 #include <math.h>
-#include <opencv/highgui.h>
+#include <signal.h>
+#include <opencv/cv.h>
 #include "../library/libelas/src/elas.h"
+#include "../library/libexabot-remote/libexabot-remote.h"
 #include "CameraCalibration.h"
 #include "RectifyMaps.h"
 #include "GlobalConfig.h"
-#include "../library/libexabot-remote/libexabot-remote.h"
-#include <signal.h>
+#include "VideoFileFrameGenerator.h"
 
 #define PI 3.14159265f
 
@@ -332,28 +333,22 @@ int main(int argc, char *argv[])
 
   global_config.setDisparityInfinite(alpha_disparity);
 
-  /* Open left and right videos*/
+  IFrameGenerator* frame_generator_left = new VideoFileFrameGenerator(video_left_filename);
+  IFrameGenerator* frame_generator_right = new VideoFileFrameGenerator(video_right_filename);
 
-  cv::VideoCapture video_left = cv::VideoCapture(); // open the default camera
-  cv::VideoCapture video_right = cv::VideoCapture(); // open the default camera
-
-  video_left.open(video_left_filename);
-  video_right.open(video_right_filename);
-
-  if (!video_left.isOpened()){  // check if we succeeded
+  if (!frame_generator_left->init()){  // check if we succeeded
     std::cerr << "No se pudo leer el video " << video_left_filename << std::endl;
     return -1;
   }
 
-  if (!video_right.isOpened()){  // check if we succeeded
+  if (!frame_generator_right->init()){  // check if we succeeded
     std::cerr << "No se pudo leer el video " << video_right_filename << std::endl;
     return -1;
   }
  
-  cv::Size size_left = cv::Size(video_left.get(CV_CAP_PROP_FRAME_WIDTH), video_left.get(CV_CAP_PROP_FRAME_HEIGHT));  
-  cv::Size size_right = cv::Size(video_right.get(CV_CAP_PROP_FRAME_WIDTH), video_right.get(CV_CAP_PROP_FRAME_HEIGHT));
+  cv::Size size_left = cv::Size(frame_generator_left->getFrameWidth(), frame_generator_left->getFrameHeight());  
+  cv::Size size_right = cv::Size(frame_generator_right->getFrameWidth(), frame_generator_right->getFrameHeight());
 
- 
   initRectifyMaps(left_calib, right_calib, size_left, size_right, rectify_maps);
 
   cv::namedWindow("Disparity Left Camera", 1);
@@ -365,14 +360,19 @@ int main(int argc, char *argv[])
   cv::Mat_<float> disparity_left_frame, disparity_right_frame;
   cv::Mat_<uchar> frame_left_gray, frame_right_gray;
 
-  video_left >> frame_left; // get a new frame from camera
-  video_right >> frame_right; // get a new frame from camera
+//  video_left >> frame_left; // get a new frame from camera
+//  video_right >> frame_right; // get a new frame from camera
   
   // initializate libexabot
   exa_remote_initialize("10.1.200.90");
   signal(SIGINT, &interrupt_signal);
   
-  while(!frame_left.empty() && !frame_right.empty() && !end) {
+//  while(!frame_left.empty() && !frame_right.empty() && !end) {
+
+  bool has_next_frame_left = frame_generator_left->getNextFrame(frame_left);     // get a new frame from left camera
+  bool has_next_frame_right = frame_generator_right->getNextFrame(frame_right);  // get a new frame from right camera
+
+  while(has_next_frame_left && has_next_frame_right && !end) {
     
     cv::cvtColor(frame_left, frame_left_gray, CV_RGB2GRAY);
     cv::cvtColor(frame_right, frame_right_gray, CV_RGB2GRAY);
@@ -406,10 +406,16 @@ int main(int argc, char *argv[])
     
     exa_remote_set_motors(exabot_engine_speed.x, exabot_engine_speed.y);
 
-    video_left >> frame_left; // get a new frame from camera
-    video_right >> frame_right; // get a new frame from camera
+    has_next_frame_left = frame_generator_left->getNextFrame(frame_left);     // get a new frame from left camera
+    has_next_frame_right = frame_generator_right->getNextFrame(frame_right);  // get a new frame from right camera
   }
 
+  frame_generator_left->release();
+  frame_generator_right->release();
+  
+  delete frame_generator_left;
+  delete frame_generator_right;
+  
   // close exabot connection
   exa_remote_set_motors(0, 0);
   exa_remote_deinitialize();
