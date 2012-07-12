@@ -2,7 +2,7 @@ CC=g++
 
 DIRS=../library/libelas/src/
 
-SOURCES=obstacle_avoidance.cpp GlobalConfig.cpp $(DIRS)elas.cpp $(DIRS)descriptor.cpp $(DIRS)filter.cpp $(DIRS)matrix.cpp $(DIRS)triangle.cpp
+SOURCES=obstacle_avoidance.cpp GlobalConfig.cpp VideoFileFrameGenerator.cpp $(DIRS)elas.cpp $(DIRS)descriptor.cpp $(DIRS)filter.cpp $(DIRS)matrix.cpp $(DIRS)triangle.cpp
 
 EXECUTABLE=obstacle_avoidance
 
