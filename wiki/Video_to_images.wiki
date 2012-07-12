@@ -1,0 +1,14 @@
+#summary Comando para pasar un video a imagenes.
+#labels Phase-Support
+
+= Comando =
+
+Para extraer una imagen (*-vframes 1*) de un video a los 5 segundos (*-itsoffset*).
+
+ * ffmpeg -itsoffset -5 -i cam1.mp4 -vcodec mjpeg -vframes 1 -an -f rawvideo -s 640x480 test.jpg
+
+
+
+= Detalles =
+
+Hay mas opciones, por ejemplo para extraer todo el video en imágenes. Habría que agregarlo
