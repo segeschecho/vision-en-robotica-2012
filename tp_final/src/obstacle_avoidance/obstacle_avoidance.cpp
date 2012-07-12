@@ -9,6 +9,7 @@
 #include "RectifyMaps.h"
 #include "GlobalConfig.h"
 #include "VideoFileFrameGenerator.h"
+#include "CameraFrameGenerator.h"
 
 #define PI 3.14159265f
 
@@ -305,16 +306,28 @@ bool readStereoCalibration(const char* parameters_xml, CameraCalibration& leftCa
 
 int main(int argc, char *argv[])
 {
-  if (argc != 4)
+  if (argc < 4 || argc > 5)
   {
-    std::cerr << "Arguments must be passing in this way: ./read_values /path/sequence/to/parameters_file.xml /path/sequence/to/video_left /path/sequence/to/video_right" << std::endl;
+    std::cout << "Arguments must be passing in this way: " << argv[0] << " <Parameters File> <Left Frames Source> <Right Frames Source> [Source Type]" << std::endl;
+    std::cout << std::endl;
+    std::cout << "Parameters File: Path to parameters.xml file." << std::endl;
+    std::cout << "Left Frames Source: Path to left video format file or left video device (eg. /dev/video1)" << std::endl;
+    std::cout << "Right Frame Source: Path to right video format file or right video device (eg. /dev/video2)" << std::endl;
+    std::cout << "Source Type [OPTIONAL]:" << std::endl;
+    std::cout << "   vid: video source type. Left frames source and right source frame are loaded from video format file." << std::endl;
+    std::cout << "   cam: video source type. Left frames source and right source frame are loaded from camera device." << std::endl;
+    
     return -1;
   }
 
   const char* parameters_xml = argv[1];
-  const char* video_left_filename = argv[2];
-  const char* video_right_filename = argv[3];
+  const char* left_frame_sourcename = argv[2];
+  const char* right_frame_sourcename = argv[3];
+  const char* frame_source_type = "";
   
+  if(argc == 5) {
+    frame_source_type = argv[4];
+  }
   /*read the xml file */
   
   GlobalConfig& global_config = GlobalConfig::getInstance();
@@ -326,23 +339,31 @@ int main(int argc, char *argv[])
 
   bool parametersParsed = readStereoCalibration(parameters_xml, left_calib, right_calib, alpha_disparity);
   
-  if(!parametersParsed) {    
+  if(!parametersParsed) {
     std::cerr << "ERROR: No se pudo abrir el archivo xml." << std::endl;
     return -1;
   }
 
   global_config.setDisparityInfinite(alpha_disparity);
 
-  IFrameGenerator* frame_generator_left = new VideoFileFrameGenerator(video_left_filename);
-  IFrameGenerator* frame_generator_right = new VideoFileFrameGenerator(video_right_filename);
+  IFrameGenerator* frame_generator_left = NULL;
+  IFrameGenerator* frame_generator_right = NULL;
 
+  if (strcmp(frame_source_type, "cam") == 0) {
+    frame_generator_left = new CameraFrameGenerator(left_frame_sourcename);
+    frame_generator_right = new CameraFrameGenerator(right_frame_sourcename);
+  } else {
+    frame_generator_left = new VideoFileFrameGenerator(left_frame_sourcename);
+    frame_generator_right = new VideoFileFrameGenerator(right_frame_sourcename);
+  }
+  
   if (!frame_generator_left->init()){  // check if we succeeded
-    std::cerr << "No se pudo leer el video " << video_left_filename << std::endl;
+    std::cerr << "No se pudo iniciar el generador de frames a partir de " << left_frame_sourcename << std::endl;
     return -1;
   }
 
   if (!frame_generator_right->init()){  // check if we succeeded
-    std::cerr << "No se pudo leer el video " << video_right_filename << std::endl;
+    std::cerr << "No se pudo iniciar el generador de frames a partir de " << right_frame_sourcename << std::endl;
     return -1;
   }
  
