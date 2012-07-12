@@ -9,6 +9,6 @@ Para extraer una imagen (*-vframes 1*) de un video a los 5 segundos (*-itsoffset
 
 
 
-= Detalles =
+== Detalles ==
 
 Hay mas opciones, por ejemplo para extraer todo el video en imágenes. Habría que agregarlo
