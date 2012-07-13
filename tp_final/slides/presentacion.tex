@@ -1,0 +1,56 @@
+%\documentclass[draft]{beamer} % para compilar mas rapido cuando se esta haciendo la transparencia
+\documentclass[svgnames]{beamer}
+\usefonttheme{professionalfonts}% font de LaTeX
+\usetheme{Warsaw}
+\usecolortheme{seahorse}
+\usecolortheme{rose}
+%\usefonttheme[onlylarge]{structuresmallcapsserif}
+%\usefonttheme[onlysmall]{structurebold}
+\setbeamertemplate{headline}{} %elimina la subsecciones de las transparencias
+
+% Tema escogido en este ejemplo
+\setbeamercovered{transparent}
+%%%% packages y comandos personales %%%%
+\usepackage[spanish]{babel}
+\usepackage[latin1]{inputenc}
+\usepackage{latexsym}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{fancyvrb} %para decorar codigo verbatim
+\usepackage{multimedia}
+\usepackage{times}
+\usepackage{color}
+\usepackage{transparent}
+\usepackage[ruled,vlined]{algorithm2e} % para escribir algotirmos
+\usepackage{float} % para escribir algotirmos
+\usepackage[noend]{algpseudocode} % para escribir algotirmos
+\usepackage{colortbl} %para colorear celdas de una tabla
+\usepackage{multirow} % para que una celda ocupe varias columnas
+\usepackage{comment} % para comentar una gran cantidad de codigo latex
+
+
+\graphicspath{{./images_unit6/}} % es necesaria esta linea para incorporar los archivos con extension pdf_tex
+\title[Evasi\'on de obst\'aculos basada en visi\'on est\'ereo]{Algoritmo de evasi\'on de obst\'aculos en tiempo real basado en visi\'on est\'ereo}
+\author[T. Pire, E. Gonz\'ales, S. Gonz\'ales, R. Benitti]{{Taih\'u Pire\\ Emiliano Gonz\'ales\\ Sergio Gonz\'ales\\ Ra\'ul Benitti} \\ \vspace*{0.5cm} {\small Facultad de Ciencias Exactas y Naturales}\\ {\small Universidad de Buenos Aires}}
+\date{}
+
+% {\small Materia: Visi\'on en Rob\'otica} \\ \vspace*{0.5cm} {\small Docentes: Marta Mejail \\ Pablo De Crist\'oforis \\ Mat\'ias Nitsche} \\ \vspace*{0.5cm}
+
+\begin{document}
+\frame{\titlepage}
+
+\begin{frame}
+\frametitle{\'Indice}
+\tableofcontents%[pausesections]
+\end{frame}
+
+\section{Introducci\'on}
+
+\begin{frame}
+\frametitle{Introducci\'on}
+En este trabajo se presenta un algoritmo de evasi\'on de obst\'aculos basado \'unicamente en visi\'on est\'ereo, el mismo fue pensado ser aplicado en la navegaci\'on aut\'onomade un robot.
+
+
+\end{frame}
+
+\end{document}
