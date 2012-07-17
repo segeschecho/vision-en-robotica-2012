@@ -33,7 +33,7 @@
 
 \graphicspath{{./images_unit6/}} % es necesaria esta linea para incorporar los archivos con extension pdf_tex
 \title[Evasi\'on de obst\'aculos basada en visi\'on est\'ereo]{Algoritmo de evasi\'on de obst\'aculos en tiempo real basado en visi\'on est\'ereo}
-\author[T. Pire, E. Gonz\'ales, S. Gonz\'ales, R. Benitti]{{Taih\'u Pire\\ Emiliano Gonz\'ales\\ Sergio Gonz\'ales\\ Ra\'ul Benitti} \\ \vspace*{0.5cm} {\small Facultad de Ciencias Exactas y Naturales}\\ {\small Universidad de Buenos Aires}}
+\author[T. Pire, E. Gonz\'alez, S. Gonz\'alez, R. Benitti]{{Taih\'u Pire\\ Emiliano Gonz\'alez\\ Sergio Gonz\'alez\\ Ra\'ul Benitti} \\ \vspace*{0.5cm} {\small Facultad de Ciencias Exactas y Naturales}\\ {\small Universidad de Buenos Aires}}
 \date{}
 
 % {\small Materia: Visi\'on en Rob\'otica} \\ \vspace*{0.5cm} {\small Docentes: Marta Mejail \\ Pablo De Crist\'oforis \\ Mat\'ias Nitsche} \\ \vspace*{0.5cm}
@@ -51,7 +51,7 @@
 \begin{frame}
 \frametitle{Introducci\'on}
 \begin{itemize}
-	\item En este trabajo se presenta un algoritmo de evasi\'on de obst\'aculos basado \'unicamente en visi\'on est\'ereo para la navegaci\'on aut\'onoma de un robot.
+	\item Presentaci\'on de un algoritmo de evasi\'on de obst\'aculos basado \'unicamente en visi\'on est\'ereo para la navegaci\'on aut\'onoma de un robot.
 
 	\item El presente se elabor\'o como proyecto final para la asignatura Visi\'on en Rob\'ica de Licenciatura en Ciencias de la Computaci\'on de la Universidad Nacional de Buenos Aires.
 \end{itemize}
@@ -78,10 +78,10 @@ Un robot es	una maquina que mide (sensa) un entorno, realiza un procesamiento in
 
 A grandes rasgos el algoritmo puede ser segmentado en los siguientes pasos:
 \begin{enumerate}
-	\item Calibraci\'on de ambas c\'amara
-	\item Rectificaci\'on y alineaci\'on de las imagenes adquiridas
-	\item C\'alculo de mapas de disparidad
-	\item Determinaci\'on de una heur\'istica para la evasi\'on de obst\'aculos
+	\item Calibraci\'on de ambas c\'amaras.
+	\item Rectificaci\'on y alineaci\'on de las imagenes adquiridas.
+	\item C\'alculo de mapas de disparidad.
+	\item Determinaci\'on de una heur\'istica para la evasi\'on de obst\'aculos.
 \end{enumerate}
 
 \end{frame}
@@ -89,6 +89,7 @@ A grandes rasgos el algoritmo puede ser segmentado en los siguientes pasos:
 \begin{frame}
 \frametitle{Calibraci\'on}
 Para la obtenci\'on de los par\'amemtros intr\'insecos y extr\'insecos de las c\'amaras se utiliz\'o el toolbox de Matlab desarrolado por Jean-Yves Bouguet disponible en:
+\medskip
 
 \url{www.vision.caltech.edu/bouguetj/calib_doc/}
 
@@ -96,12 +97,12 @@ Para la obtenci\'on de los par\'amemtros intr\'insecos y extr\'insecos de las c\
 
 \begin{frame}
 \frametitle{Rectificaci\'on y alineaci\'on}
-Para la etapa de rectificaci\'on y alineaci\'on se hizo uso de la libreria OpenCV (Open Source Computer Vision) que implementa diversas funciones para el desarrollo de software para visi\'on por computadora en tiempo real.
+Para la etapa de rectificaci\'on y alineaci\'on se hizo uso de la libreria OpenCV (Open Source Computer Vision) que implementa diversas funciones para el desarrollo de software de visi\'on por computadora en tiempo real.
 Algunas de las funciones utilizadas son:
 \begin{itemize}
-	\item stereoRectify() computa la matriz de rotaci\'on para cada c\'amara que (virtualmente) hace que ambas imagenes de las c\'amaras esten en el mismo plano.
-	\item initUndistortRectifyMap() c\'alcula el mapa transformaci\'on de des-distorci\'on y rectificaci\'on para cada c\'amara.
-	\item remap() aplica una transformaci\'on geom\'etrica a una imagen.
+	\item {\bf stereoRectify()} calcula la matriz de rotaci\'on para cada c\'amara que (virtualmente) hace que ambas imagenes de las c\'amaras esten en el mismo plano.
+	\item {\bf initUndistortRectifyMap()} c\'alcula el mapa transformaci\'on de des-distorci\'on y rectificaci\'on para cada c\'amara.
+	\item {\bf remap()} aplica una transformaci\'on geom\'etrica a una imagen.
 \end{itemize}
                                                                                                                                                      
 \end{frame}
@@ -109,6 +110,7 @@ Algunas de las funciones utilizadas son:
 %\section{Visi\'on est\'ereo}
 
 \begin{frame}
+
 \frametitle{Disparidad}
 \begin{block}{Definicio\'on: Disparidad}
 Dado un objeto en el mundo real visualizado por dos c\'amaras, la disparidad es la diferencia entre la posici\'on del objeto en la imagen izquierda y la posici\'on en la imagen derecha.
@@ -122,11 +124,13 @@ Dado un objeto en el mundo real visualizado por dos c\'amaras, la disparidad es 
 
 \begin{frame}
 \frametitle{Mapas de disparidad}
-Para lograr la detecci\'on de obst\'aculos cercanos el algoritmo hace uso de \emph{mapas de disparidad} o \emph{mapas de profundidad}, los cuales resultan de calcular la \emph{disparidad} para cada punto del mundo visto desde ambas c\'amaras.
+
+Para lograr la detecci\'on de obst\'aculos cercanos, el algoritmo hace uso de \emph{mapas de disparidad} o \emph{mapas de profundidad}, los cuales resultan de calcular la \emph{disparidad} para cada punto del mundo visto desde ambas c\'amaras.
 
 La disparidad de un punto se obtiene a partir de la diferencia en la coordenada $x$ de los p\'ixeles correspondientes a ese punto proyectado en los planos de las im\'agenes de ambas c\'amaras.
 
-Para la obtenci\'on de mapas de disparidad se utiliz\'o la librer\'ia LIBELAS (Library for Efficient LArge-scale Stereo Matching) desarrollada por Andreas Geiger disponible en \url{www.cvlibs.net/software/libelas.html}
+Para la obtenci\'on de mapas de disparidad se utiliz\'o la librer\'ia {\bf LIBELAS} (Library for Efficient LArge-scale Stereo Matching) desarrollada por Andreas Geiger (disponible en \url{www.cvlibs.net/software/libelas.html}).
+
 \end{frame}
 
 
@@ -152,8 +156,10 @@ Para la obtenci\'on de mapas de disparidad se utiliz\'o la librer\'ia LIBELAS (L
 \frametitle{Experimentos}
 En la etapa experimental se realizaron dos tipos de pr\'acticas:
 \begin{itemize}
-	\item Se usaron videos off-line tomados con una c\'amara est\'ereo \emph{Minoru} donde se ver\'ifico el correcto funcionamiento del algoritmo.
-	\item Se utiliz\'o el robot \emph{exabot} montado con una c\'amara est\'ereo \emph{Minoru} en un escenario con diversos objetos y se observo la correcta evasi\'on de los obst\'aculos por parte del robot.
+
+	\item Utilizando videos off-line, tomados con una c\'amara est\'ereo \emph{Minoru} donde se ver\'ifico el correcto funcionamiento del algoritmo.
+	
+	\item Utilizando el robot \emph{Exabot}, montado con una c\'amara est\'ereo \emph{Minoru} en un escenario con diversos objetos y se observo la correcta evasi\'on de los obst\'aculos por parte del robot.
 \end{itemize}
 
 
