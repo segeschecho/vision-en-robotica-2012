@@ -126,13 +126,11 @@
 
 % *** GRAPHICS RELATED PACKAGES ***
 %
+\usepackage[pdftex]{graphicx}
+\DeclareGraphicsExtensions{.pdf,.jpeg,.png}
+\usepackage[center]{caption}
+% \graphicspath{{../pdf/}{../jpeg/}}
 \ifCLASSINFOpdf
-  % \usepackage[pdftex]{graphicx}
-  % declare the path(s) where your graphic files are
-  % \graphicspath{{../pdf/}{../jpeg/}}
-  % and their extensions so you won't have to specify these with
-  % every instance of \includegraphics
-  % \DeclareGraphicsExtensions{.pdf,.jpeg,.png}
 \else
   % or other class option (dvipsone, dvipdf, if not using dvips). graphicx
   % will default to the driver specified in the system graphics.cfg if no
@@ -530,7 +528,27 @@ La utilizaci√≥n de c\'amaras est\'ereo en particular, puede ser utilizada para l
 
 \section{Hardware Utilizado}
 % Descripcion del robot, descripcion de la minoru, explicacion (breve) de la calibracion (uso de toolbox calib)
+
+En este trabajo se utiliz\'o el robot {\bf Exabot}, diseñado y fabricado en la facultad FCEyN-UBA, Argentina. Se trata de un veh\'iculo m\'ovil con cuatro ruedas, unidas por dos orugas, y dos motores, lo que permite movimientos con dos grados de libertad en el plano. Se configur\'o con una c\'amara est\'ereo y montaje para computadoras port\'atiles. La interfaz de comunicaci\'on con el mismo es v\'ia red, que se utiliza \'unicamente para enviar comandos.
+
+\begin{figure}[ht]
+	\begin{center}
+		\includegraphics[width=6cm]{./images/exabot_04.png}
+		\includegraphics[width=6cm]{./images/exabot_03.png}
+		\caption{Configuraci\'on de Exabot utilizada}
+	\end{center}
+\end{figure}
+
+El equipo de visi\'on est\'ereo montado en este trabajo es una c\'amara est\'ereo {\bf Minoru}. La misma se conecta v\'ia USB a la computadora port\'atil. Sus caracter\'isticas son las siguientes: 60 mm de base est\'ereo, USB 2.0, resoluciones desde 320x240 a 1280x480, 15~30fps, 1.5 W en modo operativo y 2 mW en modo suspendido. La resoluci\'on utilizada en este trabajo para las im\'agenes es de 640x480, capturadas a 15fps. Cabe aclarar que si bien la cantidad de im\'agenes disponibles por segundo es la mencionada anteriormente, las que realmente se procesan en general son menos, debido a la complejidad del algoritmo y el poder de c\'omputo del hardware.
+
+En el contexto de algoritmos de Visi\'on, es mandatario calibrar las c\'amaras para poder identificar sus par\'ametros intr\'insecos (relativos a la c\'amara: distancia focal, punto principal, distorsi\'on radial) y extr\'insecos (de la c\'amara con respecto al mundo: rotaci\'on y traslaci\'on). Estos par\'ametros son luego utilizados para realizar las correctas transformaciones proyectivas a la imagen, que logran extraer informaci\'on de cada p\'ixel.
+
+En este trabajo, utilizamos la matriz de calibraci\'on de cada c\'amara para rectificar las im\'agenes y calcular su mapa de disparidad correspondiente, como veremos en la secci\'on \ref{pro_img}.
+
+La calibraci\'on de las c\'amaras se realiz\'o utilizando un paquete de MATLAB llamado {\bf Toolbox Calib} \cite{B00}. El producto de esta calibraci\'on est\'ereo es un archivo con los valores de los par\'ametros para ambas c\'amaras. Con este archivo se procede a generar otro con formato XML de una estructura en particular, que permite leerlo con la librer\'ia OpenCV.
+
 \section{Procesamiento de las Ima\'genes}
+\label{pro_img}
 %explicar la rectificacion y alineacion usando libelas y opencv y la generacion de mapas de disparidad
 \section{Heur\'istica de Evasi\'on de Obst\'aculos}
 %Explicacion de como se usa el mapa de disparidad (partiendo en 3 zonas etc.)(decir que solo se utiliza el mapa de un solo lado, izquierdo)
