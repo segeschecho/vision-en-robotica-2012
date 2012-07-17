@@ -136,28 +136,34 @@ Para el c\'alculo de mapas de disparidad, se utiliz\'o la librer\'ia {\bf LIBELA
 
 \begin{frame}
 \frametitle{Heur\'istica para la evasi\'on de obst\'aculos}
-Cada par de frames (imagenes) tomados por la c\'amara est\'ereo es divido virtualmente en tres ventanas (iquierda, central y derecha).
+Cada par de frames (imagenes) tomados por la c\'amara est\'ereo es divido virtualmente en tres ventanas (izquierda, central y derecha).
 Luego se sigue el siguiente procedimiento:
 
 \begin{enumerate}
-	\item En la ventana central, se cuentan los p\'ixeles con disparidad mayor a un cierto umbral dado ($HIGH\_DISPARITY\_THRESHOLD = 20)$.
-	\item Si dicha suma es menor que cierto porcentaje dado ($HIGH\_AVERAGE\_THRESHOLD = \% 30$) de toda la ventana central significa que no hay obst\'aculos y por lo tanto que el robot puede avanzar.
-	\item Por otro lado, si la suma es mayor que el porcentaje dado, se recomputan los pasos $1$ y $2$ para alguna de las dos ventanas, y elije la primera cuyos p\'ixeles activos no excede el porcentaje establecido.
+	\item En la ventana central, se cuentan los p\'ixeles con disparidad mayor a un cierto umbral dado ($HIGH\_DISPARITY\_THRESHOLD = 70)$, llamados p\'ixeles activos.
+	
+	\item Luego, cuentan los p\'ixeles (de la ventana central) a los que no se pudo determinar la disparidad y se los pondera con un valor. Este resultado es a\~nadido a los activos.
+	
+	\item Si dicha suma es menor que cierto porcentaje dado ($HIGH\_AVERAGE\_THRESHOLD = \% 30$) significa que no hay obst\'aculos y por lo tanto que el robot puede avanzar.
+	
+	\item Por otro lado, si la suma es mayor o igual que el porcentaje dado, se computan los pasos $1$, $2$ y $3$ para las ventanas izquierda y derecha, y se elije aquella que no excede el porcentaje establecido.
 \end{enumerate}
+
+\begin{block}{Observaci\'on}
+Luego de realizar el c\'alculo de disparidad se 
+
+\end{block}
 
 \end{frame}
 
 \begin{frame}
-\frametitle{Detalles de la Implementaci\'on}
-Hay varios par\'ametros que puden ser modificados para ajustar el alogritmo, estos son:
-\begin{itemize}
-	\item $HIGH\_DISPARITY\_THRESHOLD$: umbral que determina el valor m\'inimo de disparidad que debe ser considerado. 
-	\item $HIGH\_AVERAGE\_THRESHOLD$: porcentaje m\'inimo a ser cubierto por los p\'exeles activos para determinar si se esta en direcci\'on a un objeto o no.
-	\item $WINDOWS\_SIZE$: tama\~no de las ventanas virtuales (izquierda, central y derecha).
-\end{itemize} 
+\frametitle{Heur\'istica para la evasi\'on de obst\'aculos}
+\begin{block}{Observaci\'on}
+El software presenta un par\'ametro para que luego de realizar el c\'alculo de disparidad, \'unicamente se tengan en cuenta los p\'ixeles que se encuentren por encima de un margen.
+
+\end{block}
 
 \end{frame}
-
 
 %\begin{frame}
 %\frametitle{}
@@ -167,12 +173,6 @@ Hay varios par\'ametros que puden ser modificados para ajustar el alogritmo, est
 %\end{center}
 %
 %\end{frame}
-
-\begin{frame}
-\frametitle{Algoritmo de evasi\'on de obst\'aculos}
-
-
-\end{frame}
 
 \section{Experimentos}
 
@@ -189,15 +189,16 @@ En la etapa experimental se realizaron dos tipos de pr\'acticas:
 \end{frame}
 
 
-\section{Conclusiones}
+%\section{Conclusiones}
 
-\begin{frame}
-\frametitle{Conclusiones}
+%\begin{frame}
+%\frametitle{Conclusiones}
+%\begin{itemize}
+%	\item En este trabajo se desarroll\'o un algoritmo para la evasi\'on de obst\'aculos basado enteramente en est\'ereo visi\'on.
+%	\item El algoritmo implementado 
+%\end{itemize}
 
-
-
-
-\end{frame}
+%\end{frame}
 
 \section{Bibliograf\'ia}
 
@@ -205,7 +206,11 @@ En la etapa experimental se realizaron dos tipos de pr\'acticas:
 \frametitle{Referencias} 
 
 \begin{thebibliography}{10} 
-\beamertemplatebookbibitems 
+\beamertemplatebookbibitems
+%\beamertemplatearticlebibitems
+%\beamertemplatetextbibitems
+%\beamertemplatearrowbibitems
+
 \bibitem{K10}
 Ioannis Kostavelis and Lazaros Nalpantidis and Antonios Gasteratos
 \newblock \emph{Comparative Presentation of Real-Time Obstacle Avoidance Algorithms Using Solely Stereo Vision}
@@ -213,7 +218,7 @@ Ioannis Kostavelis and Lazaros Nalpantidis and Antonios Gasteratos
 
 \bibitem{K10}
 ToolboxCalib (Utilidad de calibraci\'on de c\'amaras para MatLab)
-\newblock \url{www.vision.caltech.edu/bouguetj/calib_doc/}
+\url{www.vision.caltech.edu/bouguetj/calib_doc/}
 
 
 \bibitem{K10}
