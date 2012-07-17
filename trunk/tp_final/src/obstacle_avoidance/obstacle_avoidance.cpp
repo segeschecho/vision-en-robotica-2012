@@ -13,14 +13,14 @@
 
 #define PI 3.14159265f
 
-#define HIGH_DISPARITY_THRESHOLD  20
-#define HIGH_AVERAGE_THRESHOLD    0.3f   // percentage
-#define PERCENTAGE_FIRST_ZONE     0.333
-#define PERCENTAGE_SECOND_ZONE    0.333f
+#define HIGH_DISPARITY_THRESHOLD  75
+#define PERCENTAGE_FIRST_ZONE     0.2f
+#define PERCENTAGE_SECOND_ZONE    0.6f
+#define NEGATIVE_DISPARITY_WEIGHT 0.6f   //
 
-#define Y_DELTA                   0.15f
+#define Y_DELTA                   0.09f
 
-#define EXABOT_VELOCITY           0.5f
+#define TEST
 
 struct Vector2D {
   float x;
@@ -34,11 +34,35 @@ double alpha_track_bar;
 double beta_track_bar;
 bool end = false;
 
+#ifdef TEST
+cv::Mat_<uchar> pixels_high_disparity;
+#endif
+
 cv::Mat undistorted_left_im, undistorted_right_im, dst, undistorted_right_im_moved;
+
+// Configuration
+int g_disparity_rows_treshold = 240;
+float g_exabot_speed = 0.0f;
+float g_high_average_threshold = 0.3;
+
+void onTrackbarDisparityIgnoreRowsPercentage(int trackbar_position, void*) {
+}
+
+void onTrackbarExabotSpeed(int trackbar_position, void*) {
+  g_exabot_speed = (float)trackbar_position / 10.0f;
+}
+
+void onTrackbarAverageThreshold(int trackbar_position, void*) {
+  g_high_average_threshold = (float)trackbar_position / 100.0f;
+}
 
 // for libexabot
 void interrupt_signal(int s) {
   end = true;
+}
+
+int sgn(double x){
+  return x < 0 ? -1 : 1;
 }
 
 void translateVectorToExabotVelocity(const Vector2D& movementVector, Vector2D& result) {
@@ -100,27 +124,43 @@ void translateVectorToExabotVelocity(const Vector2D& movementVector, Vector2D& r
 
 
 float compute_average_disparity(cv::Mat_<float>& disparity_frame, int begin_zone_pixels, int end_zone_pixels) {
-  int high_disparity_counter = 0;
-  float average              = 0;
-  int total_pixels           = disparity_frame.rows/2 * (end_zone_pixels - begin_zone_pixels);
-  
-  
+  int high_disparity_counter     = 0;
+  int negative_disparity_counter = 0; //black zone in disparity map
+  float average                  = 0;
+  int image_rows                 = disparity_frame.rows - g_disparity_rows_treshold;
+  int total_pixels               = image_rows * (end_zone_pixels - begin_zone_pixels);
+
   // counting high disparity pixels
-  for (int row = 0; row < disparity_frame.rows/2; ++row) {
+  for (int row = 0; row < image_rows; ++row) {
     for (int col = begin_zone_pixels; col < end_zone_pixels; ++col) {
-      if (disparity_frame.at<float>(row, col) >= HIGH_DISPARITY_THRESHOLD) {
+      int pixel_disparity = disparity_frame.at<float>(row, col);
+      
+      if(pixel_disparity < 0){
+        negative_disparity_counter++;
+#ifdef TEST
+        pixels_high_disparity.at<uchar>(row, col) = 60;
+#endif
+      }
+      else if (pixel_disparity >= HIGH_DISPARITY_THRESHOLD) {
         high_disparity_counter++;
+#ifdef TEST
+        pixels_high_disparity.at<uchar>(row, col) = 255;
+#endif
       }
     }
   }
   
+#ifdef TEST
+  cv::imshow("Pixels detected as High Disparity", pixels_high_disparity);
+#endif
   // calculate average
-  average = (float)high_disparity_counter / (float)total_pixels;
+  average =  NEGATIVE_DISPARITY_WEIGHT * (float)negative_disparity_counter / (float)total_pixels;
+  average += (float)high_disparity_counter / (float)total_pixels;
   return average;
 }
 
 
-float computeDirectionFromDisparity(cv::Mat_<float>& disparity_frame ) {
+float computeDirectionFromDisparity(cv::Mat_<float>& disparity_frame) {
   float direction = 0;
   float disparity_center_percentage = 0;
   float disparity_left_percentage = 0;
@@ -129,12 +169,16 @@ float computeDirectionFromDisparity(cv::Mat_<float>& disparity_frame ) {
   // calculate percentage of high disparity in the center of the image
   int begin_center_zone = PERCENTAGE_FIRST_ZONE * disparity_frame.cols;
   int end_center_zone = begin_center_zone + PERCENTAGE_SECOND_ZONE * disparity_frame.cols;
-  
+
+#ifdef TEST
+  pixels_high_disparity = cv::Mat::zeros(disparity_frame.rows, disparity_frame.cols, CV_8UC1);
+#endif
+
   disparity_center_percentage = compute_average_disparity(disparity_frame, begin_center_zone, end_center_zone);
   
   std::cout << "disparity_center_percentage " << disparity_center_percentage << std::endl;
   
-  if (disparity_center_percentage >= HIGH_AVERAGE_THRESHOLD) {
+  if (disparity_center_percentage >= g_high_average_threshold) {
     // compute average disparity for frame's left and right sides
     disparity_left_percentage = compute_average_disparity(disparity_frame, 0, begin_center_zone);
     disparity_right_percentage = compute_average_disparity(disparity_frame, end_center_zone, disparity_frame.cols);
@@ -157,7 +201,7 @@ void printHSV(cv::Mat_<float>& disparityData, const char* windowName) {
       cv::Vec3b v;
       
       float val = std::min(disparityData.at<float>(i,j) * 0.01f, 1.0f);
-      if (val <= 0) {
+      if (val < 0) {
         v[0] = v[1] = v[2] = 0;
       } else {
         float h2 = 6.0f * (1.0f - val);
@@ -197,10 +241,6 @@ void computeDisparity(cv::Mat& rectify_left_frame, cv::Mat& aligned_right_frame,
   elas.process(rectify_left_frame.data, aligned_right_frame.data, (float*)disparity_left_frame.data, (float*)disparity_right_frame.data, dims); 
 }
 
-/**
- * @function on_trackbar
- * @brief Callback for trackbar
- */
 void translateFrame(int alpha_disparity, cv::Mat& frame, cv::Mat& translated_frame){
   
   int width = frame.size().width;
@@ -304,6 +344,25 @@ bool readStereoCalibration(const char* parameters_xml, CameraCalibration& leftCa
   return true;
 }
 
+void openConfigurationWindow(int frame_height) {
+  cv::namedWindow("Configuration", 1);
+
+  // Disparity Ignore Rows
+  cv::createTrackbar("Disparity Rows Limit", "Configuration", &g_disparity_rows_treshold, frame_height, onTrackbarDisparityIgnoreRowsPercentage);
+
+  cv::setTrackbarPos("Disparity Rows Limit", "Configuration", g_disparity_rows_treshold);
+
+  // Exabot Speed
+  cv::createTrackbar("Exabot Speed", "Configuration", NULL, 10, onTrackbarExabotSpeed);
+
+  cv::setTrackbarPos("Exabot Speed", "Configuration", g_exabot_speed * 10);
+  
+  // Average of disparity pixels
+  cv::createTrackbar("Average of disparity pixels", "Configuration", NULL, 100, onTrackbarAverageThreshold);
+
+  cv::setTrackbarPos("Average of disparity pixels", "Configuration", g_high_average_threshold);
+}
+
 int main(int argc, char *argv[])
 {
   if (argc < 4 || argc > 5)
@@ -373,9 +432,15 @@ int main(int argc, char *argv[])
   initRectifyMaps(left_calib, right_calib, size_left, size_right, rectify_maps);
 
   cv::namedWindow("Disparity Left Camera", 1);
-  cv::namedWindow("Disparity Right Camera", 1);
+//  cv::namedWindow("Disparity Right Camera", 1);
   cv::namedWindow("Original Left Camera", 1);
-  cv::namedWindow("Original Right Camera", 1);
+//  cv::namedWindow("Original Right Camera", 1);
+
+#ifdef TEST
+  cv::namedWindow("Pixels detected as High Disparity", 1);
+#endif
+
+  openConfigurationWindow(frame_generator_left->getFrameHeight());
 
   cv::Mat frame_left, frame_right, rectify_left_frame, rectify_right_frame, aligned_right_frame;
   cv::Mat_<float> disparity_left_frame, disparity_right_frame;
@@ -385,7 +450,7 @@ int main(int argc, char *argv[])
 //  video_right >> frame_right; // get a new frame from camera
   
   // initializate libexabot
-  exa_remote_initialize("10.1.200.90");
+  exa_remote_initialize("192.168.1.2");
   signal(SIGINT, &interrupt_signal);
   
 //  while(!frame_left.empty() && !frame_right.empty() && !end) {
@@ -397,18 +462,19 @@ int main(int argc, char *argv[])
     
     cv::cvtColor(frame_left, frame_left_gray, CV_RGB2GRAY);
     cv::cvtColor(frame_right, frame_right_gray, CV_RGB2GRAY);
-
+    
     applyMaps(frame_left_gray, frame_right_gray, rectify_maps, rectify_left_frame, rectify_right_frame);
 
     translateFrame(alpha_disparity, rectify_right_frame, aligned_right_frame);
    
     computeDisparity(rectify_left_frame, aligned_right_frame, disparity_left_frame, disparity_right_frame);
     
-    printHSV(disparity_left_frame, "Disparity Right Camera");
-    printHSV(disparity_right_frame, "Disparity Left Camera");
+    printHSV(disparity_left_frame, "Disparity Left Camera");
+//    printHSV(disparity_right_frame, "Disparity Right Camera");
 
+    cv::line(frame_left, cv::Point(0, frame_left.rows - g_disparity_rows_treshold), cv::Point(frame_left.cols, frame_left.rows - g_disparity_rows_treshold), CV_RGB(0, 255, 0));
     cv::imshow("Original Left Camera", frame_left);
-    cv::imshow("Original Right Camera", frame_right);
+//    cv::imshow("Original Right Camera", frame_right);
     
     cv::waitKey(30);
     
@@ -418,14 +484,19 @@ int main(int argc, char *argv[])
     Vector2D direction_from_disparity;
     Vector2D exabot_engine_speed;
     
-    direction_from_disparity.y = sin(angle + PI/2) * EXABOT_VELOCITY;
-    direction_from_disparity.x = cos(angle + PI/2) * EXABOT_VELOCITY;
+    direction_from_disparity.y = sin(angle + PI/2) * g_exabot_speed;
+    direction_from_disparity.x = cos(angle + PI/2) * g_exabot_speed;
     
     translateVectorToExabotVelocity(direction_from_disparity, exabot_engine_speed);
     
     std::cout << "Angle: " << angle << " LEFT:  " << exabot_engine_speed.x << " RIGHT: " << exabot_engine_speed.y << std::endl;
     
-    exa_remote_set_motors(exabot_engine_speed.x, exabot_engine_speed.y);
+    if(sgn(exabot_engine_speed.x) != sgn(exabot_engine_speed.y)){
+      exa_remote_set_motors(sgn(exabot_engine_speed.x) * 0.3, sgn(exabot_engine_speed.y) * 0.3);
+    }
+    else{
+      exa_remote_set_motors(exabot_engine_speed.x, exabot_engine_speed.y); 
+    }
 
     has_next_frame_left = frame_generator_left->getNextFrame(frame_left);     // get a new frame from left camera
     has_next_frame_right = frame_generator_right->getNextFrame(frame_right);  // get a new frame from right camera
@@ -440,6 +511,8 @@ int main(int argc, char *argv[])
   // close exabot connection
   exa_remote_set_motors(0, 0);
   exa_remote_deinitialize();
+  
+  cv::destroyAllWindows();
     
   return 0;
 }
