@@ -2,14 +2,11 @@
 \documentclass[svgnames]{beamer}
 \usefonttheme{professionalfonts}% font de LaTeX
 \usetheme{Warsaw}
-%\usecolortheme{seahorse}
-%\usecolortheme{rose}
-%\usefonttheme[onlylarge]{structuresmallcapsserif}
-%\usefonttheme[onlysmall]{structurebold}
 \setbeamertemplate{headline}{} %elimina la subsecciones de las transparencias
 
 % Tema escogido en este ejemplo
 \setbeamercovered{transparent}
+
 %%%% packages y comandos personales %%%%
 \usepackage[spanish]{babel}
 \usepackage[utf8]{inputenc}
@@ -31,7 +28,6 @@
 
 %\graphicspath{{./images/}} % es necesaria esta linea para incorporar los archivos con extension pdf_tex
 
-\graphicspath{{./images_unit6/}} % es necesaria esta linea para incorporar los archivos con extension pdf_tex
 \title[Evasi\'on de obst\'aculos basada en visi\'on est\'ereo]{Algoritmo de evasi\'on de obst\'aculos en tiempo real basado en visi\'on est\'ereo}
 \author[T. Pire, E. Gonz\'alez, S. Gonz\'alez, R. Benitti]{{Taih\'u Pire\\ Emiliano Gonz\'alez\\ Sergio Gonz\'alez\\ Ra\'ul Benitti} \\ \vspace*{0.5cm} {\small Facultad de Ciencias Exactas y Naturales}\\ {\small Universidad de Buenos Aires}}
 \date{}
@@ -138,6 +134,29 @@ Para el c\'alculo de mapas de disparidad, se utiliz\'o la librer\'ia {\bf LIBELA
 
 \end{frame}
 
+\begin{frame}
+\frametitle{Heur\'istica para la evasi\'on de obst\'aculos}
+Cada par de frames (imagenes) tomados por la c\'amara est\'ereo es divido virtualmente en tres ventanas (iquierda, central y derecha).
+Luego se sigue el siguiente procedimiento:
+
+\begin{enumerate}
+	\item En la ventana central, se cuentan los p\'ixeles con disparidad mayor a un cierto umbral dado ($HIGH\_DISPARITY\_THRESHOLD = 20)$.
+	\item Si dicha suma es menor que cierto porcentaje dado ($HIGH\_AVERAGE\_THRESHOLD = \% 30$) de toda la ventana central significa que no hay obst\'aculos y por lo tanto que el robot puede avanzar.
+	\item Por otro lado, si la suma es mayor que el porcentaje dado, se recomputan los pasos $1$ y $2$ para alguna de las dos ventanas, y elije la primera cuyos p\'ixeles activos no excede el porcentaje establecido.
+\end{enumerate}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Detalles de la Implementaci\'on}
+Hay varios par\'ametros que puden ser modificados para ajustar el alogritmo, estos son:
+\begin{itemize}
+	\item $HIGH\_DISPARITY\_THRESHOLD$: umbral que determina el valor m\'inimo de disparidad que debe ser considerado. 
+	\item $HIGH\_AVERAGE\_THRESHOLD$: porcentaje m\'inimo a ser cubierto por los p\'exeles activos para determinar si se esta en direcci\'on a un objeto o no.
+	\item $WINDOWS\_SIZE$: tama\~no de las ventanas virtuales (izquierda, central y derecha).
+\end{itemize} 
+
+\end{frame}
 
 
 %\begin{frame}
@@ -167,8 +186,6 @@ En la etapa experimental se realizaron dos tipos de pr\'acticas:
 	\item {\bf Utilizando el robot Exabot:} Montado con una c\'amara stereo \emph{Minoru} en un escenario con diversos objetos y se observ\'o la correcta evasi\'on de los obst\'aculos por parte del robot.
 \end{itemize}
 
-
-
 \end{frame}
 
 
@@ -176,6 +193,8 @@ En la etapa experimental se realizaron dos tipos de pr\'acticas:
 
 \begin{frame}
 \frametitle{Conclusiones}
+
+
 
 
 \end{frame}
@@ -204,17 +223,5 @@ Librería LIBELAS
 \end{thebibliography} 
 
 \end{frame} 
-
-
-%@inproceedings{Kostavelis2010_RISE,
-%	Address = {Sheffield, UK},
-%	Author = {Ioannis Kostavelis and Lazaros Nalpantidis and Antonios Gasteratos},
-%	Booktitle = {{IARP/EURON} International Workshop on Robotics for risky interventions and Environmental Surveillance-Maintenance},
-%	Date-Added = {2010-06-12 23:07:24 +0300},
-%	Date-Modified = {2010-10-26 00:39:42 +0300},
-%	Keywords = {PhD},
-%	Month = {January},
-%	Title = {Comparative Presentation of Real-Time Obstacle Avoidance Algorithms Using Solely Stereo Vision},
-%	Year = {2010}}
 
 \end{document}
