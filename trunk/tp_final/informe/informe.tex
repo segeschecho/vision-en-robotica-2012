@@ -468,8 +468,7 @@
 
 
 \begin{abstract}
-%\boldmath
-
+En el presente trabajo se evaluar\'a un algoritmo de evasi\'on de obst\'aculos para navegaci\'on aut\'onoma de robots basado en mapas de profundidad. Aunque existen diversas tecnolog\'ias que permiten generar dichos mapas, los m\'etodos de visi\'on est\'ereo que generan mapas de disparidad han ganado relevancia en los \'ultimos a\~nos debido a la accesibilidad de los elementos de hardware necesarios tanto como para obtener la informaci\'on sobre el entorno inmediato, como para procesarla. Se considerar\'an dos partes principales en el desarrollo propuesto: en primer lugar, se utilizar\'an las librer\'ias open source de procesamiento gr\'afico OpenCV y Libelas para, a partir de las im\'agenes provistas por una c\'amara \'estereo, generar mapas de disparidad de los que se pueda deducir informaci\'on relevante a la distancia de los objetos dentro de la ventana de visibilidad del robot; luego, se procesar\'an estos mapas para decidir si existe un obst\'aculo frente al robot y, de ser as\'i, divisar que acci\'on debe tomarse para evitarlo.
 \end{abstract}
 % IEEEtran.cls defaults to using nonbold math in the Abstract.
 % This preserves the distinction between vectors and scalars. However,
@@ -501,12 +500,14 @@ IEEEtran, journal, \LaTeX, paper, template.
 
 \section{Introducci\'on}
 %comentar el uso de un sistema de navegacion, basado en camaras stereo. justificando (barato, accesible, costo computacional)
-\hfill 17 de Julio de 2012
 
-En este trabajo se prensenta un algoritmo de evansi\'on de obst\'aculos basado \'unicamente en visi\'on est\'ereo para la navegaci\'on aut\'onoma de un robot. El algoritmo de evasi\'on de obst\'aculos puede ser adapatado a cualquier dispositivo que cuente con una c\'amara est\'ereo, en particulas, se utiliz\'o como plataforma de prueba el robot \emph{exabot} []. Adem\'as debe ser eficiente dado que debe adaptarse a los recursos escasos con lo que cuenta una plataforma m\'ovil. 
+
+En la \'ultima d\'ecada se ha dado un gran impulso al \'area de rob\'otica abocada a la navegaci\'on aut\'onoma de veh\'iculos. Dado que el campo de aplicaci\'on es diverso, abarcando desde sistemas tan cr\'iticos como la exploraci\'on de lugares inaccesibles para veh\'iculos tripulados, hasta sistemas tan sencillos como la realizaci\'on de tareas dom\'esticas aut\'onomas, se han desarrollados tecnologias de distinta complejidad y costo operativo. En especial se ha hecho principal incapi\'e en los sistemas basados visi\'on dado la variedad y el bajo costo que presentan las c\'amaras hoy en d\'ia.
+
+En este trabajo se prensenta un algoritmo de evansi\'on de obst\'aculos basado \'unicamente en visi\'on est\'ereo para la navegaci\'on aut\'onoma de un robot. Dicho algoritmo de evasi\'on de obst\'aculos puede ser adaptado a cualquier dispositivo que cuente con una c\'amara est\'ereo. Para nuestro caso particular, se utiliz\'o como plataforma de prueba el robot \emph{exabot} \cite{DPSC09}. Por otro lado, la eficiencia permite adaptarse a los recursos escasos con lo que cuenta una plataforma m\'ovil. 
  
-Visi\'on est\'ereo es una herramienta muy usada en los \'ultimos a\~nos debido al bajo precio de las c\'amaras y a la gran cantidad de informaci\'on que brinda. Una de sus principales aplicaciones es la navegaci\'on aut\'onoma, ya que permite no solo construir mapas 3D del entorno si no que tambi\'en construir el mapa y simult\'anea conocer su localizaci\'on
-
+Visi\'on est\'ereo es una herramienta muy utilizada para la navegaci\'on aut\'onoma en los \'ultimos a\~nos debido al bajo costo de las c\'amaras y a la gran cantidad de informaci\'on que estas brindan. Estas, entre otras aplicaciones, permiten construir un mapa del entorno y simult\'aneamente conocer la localizaci\'on del robot
+\hfill 20 de Julio de 2012
 
 \section{Trabajo Relacionado}
 
@@ -529,7 +530,7 @@ La utilizaciÃ³n de c\'amaras est\'ereo en particular, puede ser utilizada para l
 \section{Hardware Utilizado}
 % Descripcion del robot, descripcion de la minoru, explicacion (breve) de la calibracion (uso de toolbox calib)
 
-En este trabajo se utiliz\'o el robot {\bf Exabot}, dise–ado y fabricado en la facultad FCEyN-UBA, Argentina. Se trata de un veh\'iculo m\'ovil con cuatro ruedas, unidas por dos orugas, y dos motores, lo que permite movimientos con dos grados de libertad en el plano. Se configur\'o con una c\'amara est\'ereo y montaje para computadoras port\'atiles. La interfaz de comunicaci\'on con el mismo es v\'ia red, que se utiliza \'unicamente para enviar comandos.
+En este trabajo se utiliz\'o el robot {\bf Exabot}, diseï¿½ado y fabricado en la facultad FCEyN-UBA, Argentina. Se trata de un veh\'iculo m\'ovil con cuatro ruedas, unidas por dos orugas, y dos motores, lo que permite movimientos con dos grados de libertad en el plano. Se configur\'o con una c\'amara est\'ereo y montaje para computadoras port\'atiles. La interfaz de comunicaci\'on con el mismo es v\'ia red, que se utiliza \'unicamente para enviar comandos.
 
 \begin{figure}[ht]
 	\begin{center}
@@ -561,6 +562,7 @@ La calibraci\'on de las c\'amaras se realiz\'o utilizando un paquete de MATLAB l
 \nocite{opencv}
 \nocite{B00}
 \nocite{H04}
+\nocite{DPSC09}
 
 \bibliographystyle{unsrt}
 \bibliography{biblio}
