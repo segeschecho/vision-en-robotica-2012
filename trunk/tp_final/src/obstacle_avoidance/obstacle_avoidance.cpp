@@ -14,13 +14,14 @@
 #define PI 3.14159265f
 
 #define HIGH_DISPARITY_THRESHOLD  75
-#define PERCENTAGE_FIRST_ZONE     0.2f
+#define PERCENTAGE_FIRST_ZONE     0.25f
 #define PERCENTAGE_SECOND_ZONE    0.6f
-#define NEGATIVE_DISPARITY_WEIGHT 0.6f   //
+#define NEGATIVE_DISPARITY_WEIGHT 0.3f   //
 
 #define Y_DELTA                   0.09f
 
 #define TEST
+//#define EXABOT_SEND_COMMANDS
 
 struct Vector2D {
   float x;
@@ -41,9 +42,17 @@ cv::Mat_<uchar> pixels_high_disparity;
 cv::Mat undistorted_left_im, undistorted_right_im, dst, undistorted_right_im_moved;
 
 // Configuration
-int g_disparity_rows_treshold = 240;
+int g_old_alpha_disp_trackbar;
+int g_disparity_rows_treshold = 120;
 float g_exabot_speed = 0.0f;
 float g_high_average_threshold = 0.3;
+
+void onTrackbarAlphaDisparity(int trackbar_position, void*) {
+  int newDisparityInfinite = GlobalConfig::getInstance().getDisparityInfinite() + g_old_alpha_disp_trackbar - trackbar_position;
+
+  GlobalConfig::getInstance().setDisparityInfinite(newDisparityInfinite);
+  g_old_alpha_disp_trackbar = trackbar_position;
+}
 
 void onTrackbarDisparityIgnoreRowsPercentage(int trackbar_position, void*) {
 }
@@ -160,28 +169,29 @@ float compute_average_disparity(cv::Mat_<float>& disparity_frame, int begin_zone
 }
 
 
-float computeDirectionFromDisparity(cv::Mat_<float>& disparity_frame) {
+float computeDirectionFromDisparity(cv::Mat_<float>& disparity_frame_left, cv::Mat_<float>& disparity_frame_right) {
   float direction = 0;
   float disparity_center_percentage = 0;
   float disparity_left_percentage = 0;
   float disparity_right_percentage = 0;
   
   // calculate percentage of high disparity in the center of the image
-  int begin_center_zone = PERCENTAGE_FIRST_ZONE * disparity_frame.cols;
-  int end_center_zone = begin_center_zone + PERCENTAGE_SECOND_ZONE * disparity_frame.cols;
+  int begin_center_zone = PERCENTAGE_FIRST_ZONE * disparity_frame_left.cols;
+  int end_center_zone = begin_center_zone + PERCENTAGE_SECOND_ZONE * disparity_frame_left.cols;
 
 #ifdef TEST
-  pixels_high_disparity = cv::Mat::zeros(disparity_frame.rows, disparity_frame.cols, CV_8UC1);
+  pixels_high_disparity = cv::Mat::zeros(disparity_frame_left.rows, disparity_frame_left.cols, CV_8UC1);
 #endif
 
-  disparity_center_percentage = compute_average_disparity(disparity_frame, begin_center_zone, end_center_zone);
+  disparity_center_percentage = compute_average_disparity(disparity_frame_left, begin_center_zone, end_center_zone);
   
   std::cout << "disparity_center_percentage " << disparity_center_percentage << std::endl;
   
   if (disparity_center_percentage >= g_high_average_threshold) {
     // compute average disparity for frame's left and right sides
-    disparity_left_percentage = compute_average_disparity(disparity_frame, 0, begin_center_zone);
-    disparity_right_percentage = compute_average_disparity(disparity_frame, end_center_zone, disparity_frame.cols);
+    disparity_left_percentage = compute_average_disparity(disparity_frame_left, 0, begin_center_zone);
+//    disparity_right_percentage = compute_average_disparity(disparity_frame_right, end_center_zone, disparity_frame_right.cols);
+    disparity_right_percentage = compute_average_disparity(disparity_frame_left, end_center_zone, disparity_frame_left.cols);
     
     if (disparity_left_percentage < disparity_right_percentage) {
       direction = PI/2;
@@ -317,10 +327,12 @@ void applyMaps(cv::Mat& left_image, cv::Mat& right_image, RectifyMaps& rectify_m
 
 
 
-bool readStereoCalibration(const char* parameters_xml, CameraCalibration& leftCalib, CameraCalibration& rightCalib, int& alpha_disparity)
+bool readStereoCalibration(const char* parameters_xml, CameraCalibration& leftCalib, CameraCalibration& rightCalib)
 {  
   /*read the xml file */
   cv::FileStorage fs(parameters_xml, cv::FileStorage::READ);
+  
+  int alpha_disparity;
   
   std::cout << "Se abre el archivo xml." << std::endl << std::endl;
   
@@ -336,6 +348,7 @@ bool readStereoCalibration(const char* parameters_xml, CameraCalibration& leftCa
   fs["T"] >> rightCalib.t;
   fs["ALPHA_DISPARITY"] >> alpha_disparity;
 
+  GlobalConfig::getInstance().setDisparityInfinite(alpha_disparity);
   leftCalib.r = cv::Mat::eye(rightCalib.r.rows, rightCalib.r.cols, rightCalib.r.type());
   leftCalib.t = cv::Mat::zeros(rightCalib.r.rows, rightCalib.r.cols, rightCalib.r.type());
 
@@ -344,8 +357,15 @@ bool readStereoCalibration(const char* parameters_xml, CameraCalibration& leftCa
   return true;
 }
 
-void openConfigurationWindow(int frame_height) {
+void openConfigurationWindow(int frame_width, int frame_height) {
   cv::namedWindow("Configuration", 1);
+
+  // Alpha disparity
+  cv::createTrackbar("Alpha disparity", "Configuration", NULL, frame_width*2, onTrackbarAlphaDisparity);
+
+  g_old_alpha_disp_trackbar = frame_width + GlobalConfig::getInstance().getDisparityInfinite();
+  std::cout << g_old_alpha_disp_trackbar << std::endl;
+  cv::setTrackbarPos("Alpha disparity", "Configuration", g_old_alpha_disp_trackbar);
 
   // Disparity Ignore Rows
   cv::createTrackbar("Disparity Rows Limit", "Configuration", &g_disparity_rows_treshold, frame_height, onTrackbarDisparityIgnoreRowsPercentage);
@@ -360,7 +380,7 @@ void openConfigurationWindow(int frame_height) {
   // Average of disparity pixels
   cv::createTrackbar("Average of disparity pixels", "Configuration", NULL, 100, onTrackbarAverageThreshold);
 
-  cv::setTrackbarPos("Average of disparity pixels", "Configuration", g_high_average_threshold);
+  cv::setTrackbarPos("Average of disparity pixels", "Configuration", (int)(g_high_average_threshold * 100.0f));
 }
 
 int main(int argc, char *argv[])
@@ -394,16 +414,13 @@ int main(int argc, char *argv[])
   CameraCalibration& left_calib = global_config.getCameraCalibrationLeft();
   CameraCalibration& right_calib = global_config.getCameraCalibrationRight();
   RectifyMaps& rectify_maps = global_config.getRectifyMaps();
-  int alpha_disparity;
 
-  bool parametersParsed = readStereoCalibration(parameters_xml, left_calib, right_calib, alpha_disparity);
+  bool parametersParsed = readStereoCalibration(parameters_xml, left_calib, right_calib);
   
   if(!parametersParsed) {
     std::cerr << "ERROR: No se pudo abrir el archivo xml." << std::endl;
     return -1;
   }
-
-  global_config.setDisparityInfinite(alpha_disparity);
 
   IFrameGenerator* frame_generator_left = NULL;
   IFrameGenerator* frame_generator_right = NULL;
@@ -440,7 +457,7 @@ int main(int argc, char *argv[])
   cv::namedWindow("Pixels detected as High Disparity", 1);
 #endif
 
-  openConfigurationWindow(frame_generator_left->getFrameHeight());
+  openConfigurationWindow(frame_generator_left->getFrameWidth(), frame_generator_left->getFrameHeight());
 
   cv::Mat frame_left, frame_right, rectify_left_frame, rectify_right_frame, aligned_right_frame;
   cv::Mat_<float> disparity_left_frame, disparity_right_frame;
@@ -449,8 +466,11 @@ int main(int argc, char *argv[])
 //  video_left >> frame_left; // get a new frame from camera
 //  video_right >> frame_right; // get a new frame from camera
   
+#ifdef EXABOT_SEND_COMMANDS
   // initializate libexabot
   exa_remote_initialize("192.168.1.2");
+#endif
+
   signal(SIGINT, &interrupt_signal);
   
 //  while(!frame_left.empty() && !frame_right.empty() && !end) {
@@ -465,7 +485,7 @@ int main(int argc, char *argv[])
     
     applyMaps(frame_left_gray, frame_right_gray, rectify_maps, rectify_left_frame, rectify_right_frame);
 
-    translateFrame(alpha_disparity, rectify_right_frame, aligned_right_frame);
+    translateFrame(global_config.getDisparityInfinite(), rectify_right_frame, aligned_right_frame);
    
     computeDisparity(rectify_left_frame, aligned_right_frame, disparity_left_frame, disparity_right_frame);
     
@@ -480,7 +500,7 @@ int main(int argc, char *argv[])
     
         
     // obstacle avoidance strategy
-    float angle = computeDirectionFromDisparity(disparity_left_frame);
+    float angle = computeDirectionFromDisparity(disparity_left_frame, disparity_right_frame);
     Vector2D direction_from_disparity;
     Vector2D exabot_engine_speed;
     
@@ -489,15 +509,16 @@ int main(int argc, char *argv[])
     
     translateVectorToExabotVelocity(direction_from_disparity, exabot_engine_speed);
     
-    std::cout << "Angle: " << angle << " LEFT:  " << exabot_engine_speed.x << " RIGHT: " << exabot_engine_speed.y << std::endl;
+    std::cout << "DISPARITY_INFINITE: " << global_config.getDisparityInfinite() << " LEFT:  " << exabot_engine_speed.x << " RIGHT: " << exabot_engine_speed.y << std::endl;
     
-    if(sgn(exabot_engine_speed.x) != sgn(exabot_engine_speed.y)){
-      exa_remote_set_motors(sgn(exabot_engine_speed.x) * 0.3, sgn(exabot_engine_speed.y) * 0.3);
-    }
-    else{
+#ifdef EXABOT_SEND_COMMANDS
+//    if(sgn(exabot_engine_speed.x) != sgn(exabot_engine_speed.y)){
+//      exa_remote_set_motors(sgn(exabot_engine_speed.x) * 0.2, sgn(exabot_engine_speed.y) * 0.2);
+//    }
+//    else{
       exa_remote_set_motors(exabot_engine_speed.x, exabot_engine_speed.y); 
-    }
-
+//    }
+#endif
     has_next_frame_left = frame_generator_left->getNextFrame(frame_left);     // get a new frame from left camera
     has_next_frame_right = frame_generator_right->getNextFrame(frame_right);  // get a new frame from right camera
   }
@@ -508,10 +529,12 @@ int main(int argc, char *argv[])
   delete frame_generator_left;
   delete frame_generator_right;
   
+#ifdef EXABOT_SEND_COMMANDS
   // close exabot connection
   exa_remote_set_motors(0, 0);
   exa_remote_deinitialize();
-  
+#endif
+
   cv::destroyAllWindows();
     
   return 0;
