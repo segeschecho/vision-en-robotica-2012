@@ -563,7 +563,22 @@ La calibraci\'on de las c\'amaras se realiz\'o utilizando un paquete de MATLAB l
 
 \section{Procesamiento de las Ima\'genes}
 \label{sec:pro_img}
-%explicar la rectificacion y alineacion usando libelas y opencv y la generacion de mapas de disparidad
+%explicar la rectificacion vertical y alineacion horizontal usando libelas y opencv y la generacion de mapas de disparidad
+
+Para realizar un algoritmo de evasi\'on de obst\'a culos, es necesario obtener mapas de disparidad, que contienen informaci\'on de profundidad para cada uno de los pixeles con respecto a la c\'amara. Esto es posible gracias a la visi\'on est\'ereo. Una de las pre-condiciones consiste en tener ambas im\'agenes de forma tal que, una l\'inea se corresponda con sigo misma en la otra imagen a la misma altura. Los mapas de disparidad entonces, se obtienen calculando la distancia de un pixel en una imagen con su correspondiente en la otra imagen. Dicha distancia es la disparidad que tiene ese punto. Aquellos pertenecientes a un objeto cercano, tendr\'an mayor disparidad que otros pertenecientes a un objeto lejano. Los puntos en com\'un en cada imagen se buscan por medio de un algoritmo de correspondencia.
+
+La precondici\'on se debe cumplir antes de generar el mapa, por esta razo\'n se debe realizar una alineaci\'on vertical y una rotaci\'on (dada la disposici\'on de ambas c\'amaras) de forma que una l\'inea se encuentre a la misma altura en una imagen y en otra. Estos par\'ametros son obtenidos con la ayuda de la librer\'ia $OpenCV$.
+
+Dependiendo del lugar donde se requiera utilizar los mapas, se debe configurar un valor que indique cual es la distancia considerada como muy lejana (o a veces llamada tambi\'en distancia al infinito) y que sea conveniente para el trabajo que se quiere realizar.
+
+
+% rectificacion
+El proceso de rectificaci\'on que se realiza para ambas im\'agenes consiste en disponer las c\'amaras sobre un plano virtual, haciendo que se encuentren a la misma altura una con la otra. El objetivo de realizar dicha operaci\'on es la de poder encontrar 
+
+% alineacion
+
+
+%mapas de disparidad
 
 \begin{figure}[ht]
 	\begin{center}
