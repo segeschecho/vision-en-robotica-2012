@@ -502,14 +502,19 @@ IEEEtran, journal, \LaTeX, paper, template.
 %comentar el uso de un sistema de navegacion, basado en camaras stereo. justificando (barato, accesible, costo computacional)
 
 
-En la \'ultima d\'ecada se ha dado un gran impulso al \'area de rob\'otica abocada a la navegaci\'on aut\'onoma de veh\'iculos. Dado que el campo de aplicaci\'on es diverso, abarcando desde sistemas tan cr\'iticos como la exploraci\'on de lugares inaccesibles para veh\'iculos tripulados, hasta sistemas tan sencillos como la realizaci\'on de tareas dom\'esticas aut\'onomas, se han desarrollados tecnologias de distinta complejidad y costo operativo. En especial se ha hecho principal incapi\'e en los sistemas basados visi\'on dado la variedad y el bajo costo que presentan las c\'amaras hoy en d\'ia.
+En la \'ultima d\'ecada se ha dado un gran impulso al \'area de rob\'otica abocada a la navegaci\'on aut\'onoma de veh\'iculos. Dado que el campo de aplicaci\'on es diverso, abarcando desde sistemas tan cr\'iticos como la exploraci\'on de lugares inaccesibles para veh\'iculos tripulados, hasta sistemas tan sencillos como la realizaci\'on de tareas dom\'esticas aut\'onomas, se han desarrollados tecnologias de distinta complejidad y costo operativo. En especial, se ha hecho principal incapi\'e en los sistemas basados en visi\'on dado la variedad y el bajo costo que presentan las c\'amaras hoy en d\'ia.
 
-En este trabajo se prensenta un algoritmo de evansi\'on de obst\'aculos basado \'unicamente en visi\'on est\'ereo para la navegaci\'on aut\'onoma de un robot. Dicho algoritmo de evasi\'on de obst\'aculos puede ser adaptado a cualquier dispositivo que cuente con una c\'amara est\'ereo. Para nuestro caso particular, se utiliz\'o como plataforma de prueba el robot \emph{exabot} \cite{DPSC09}. Por otro lado, la eficiencia permite adaptarse a los recursos escasos con lo que cuenta una plataforma m\'ovil. 
- 
-Visi\'on est\'ereo es una herramienta muy utilizada para la navegaci\'on aut\'onoma en los \'ultimos a\~nos debido al bajo costo de las c\'amaras y a la gran cantidad de informaci\'on que estas brindan. Estas, entre otras aplicaciones, permiten construir un mapa del entorno y simult\'aneamente conocer la localizaci\'on del robot
+En el presente informe se exhibe un algoritmo de evansi\'on de obst\'aculos basado \'unicamente en visi\'on est\'ereo para la navegaci\'on aut\'onoma de un robot. Visi\'on est\'ereo es una herramienta muy utilizada para la navegaci\'on aut\'onoma en los \'ultimos a\~nos debido al bajo costo de las c\'amaras y a la gran cantidad de informaci\'on que brindan. El software aqu\'i presentado para lograr la detecci\'on de obst\'aculos hace uso de una c\'amara est\'ereo permitiendo aproximar la distancia relativa en la que se encuentran los objetos con respecto a la c\'amara.
+Cabe destacar, que dicho algoritmo puede ser adaptado a cualquier dispositivo que cuente con una c\'amara est\'ereo. En lo que aqu\'i refiere, se utiliz\'o la c\'amara est\'ereo \emph{Minoru}, y como plataforma de prueba el robot \emph{exabot} \cite{DPSC09}.
+
+%Otra de las ventajas de utilizar visi\'on est\'ereo para la navegaci\'on aut\'onoma, es la posibilidad de crear mapas 3D del entorno, si bien aqu\'i no se
+
+El documento esta estructurado de la siquienta manera: la secci\'on~\ref{sec:trabajajo_relacionado} introduce el estado del arte en sistemas de evasi\'on de obst\'aculos mediante el uso de visi\'on est\'ereo, la secci\'on~\ref{sec:hardware} detalla el hardware utilizado durante el desarrollo del algoritmo, la secci\'on~\ref{sec:pro_img} presenta las librer\'ias OpenCV y LIBELAS utilizadas para el procesamiento de im\'agenes y la generaci\'on de mapas de disparidad, la secci\'on~\ref{sec:heuristica} explica el algoritmo de evasi\'on de obst\'aculos propuesto, finalmente la secci\'on~\ref{sec:conclusiones} comenta algunas conclusiones y trabajo futuro.
+
 \hfill 20 de Julio de 2012
 
 \section{Trabajo Relacionado}
+\label{sec:trabajajo_relacionado}
 
 Una de las \'areas de mayor inter\'es dentro del campo de la rob\'otica es la de navegaci\'on aut\'onoma. Con el pasar del tiempo se han propuesto y creado diversos sistemas de navegaci\'on, que adem\'as de las metodolig\'ias algor\'itmicas utilizadas, se diferencian por la tecnolog\'ia utilizada para obtener la informaci\'on del mundo exterior que le permitir\'a realizar dicho desplazamiento.
 
@@ -531,6 +536,8 @@ En el trabajo realizado por Kostavelis, Nalpantidis y Gasteratos \cite{KNG10}, s
 
 \section{Hardware Utilizado}
 % Descripcion del robot, descripcion de la minoru, explicacion (breve) de la calibracion (uso de toolbox calib)
+\label{sec:hardware}
+
 
 En este trabajo se utiliz\'o el robot {\bf Exabot}, dise�ado y fabricado en la facultad FCEyN-UBA, Argentina. Se trata de un veh\'iculo m\'ovil con cuatro ruedas, unidas por dos orugas, y dos motores, lo que permite movimientos con dos grados de libertad en el plano. Se configur\'o con una c\'amara est\'ereo y montaje para computadoras port\'atiles. La interfaz de comunicaci\'on con el mismo es v\'ia red, que se utiliza \'unicamente para enviar comandos.
 
@@ -546,18 +553,31 @@ El equipo de visi\'on est\'ereo montado en este trabajo es una c\'amara est\'ere
 
 En el contexto de algoritmos de Visi\'on, es mandatario calibrar las c\'amaras para poder identificar sus par\'ametros intr\'insecos (relativos a la c\'amara: distancia focal, punto principal, distorsi\'on radial) y extr\'insecos (de la c\'amara con respecto al mundo: rotaci\'on y traslaci\'on). Estos par\'ametros son luego utilizados para realizar las correctas transformaciones proyectivas a la imagen, que logran extraer informaci\'on de cada p\'ixel.
 
-En este trabajo, utilizamos la matriz de calibraci\'on de cada c\'amara para rectificar las im\'agenes y calcular su mapa de disparidad correspondiente, como veremos en la secci\'on \ref{pro_img}.
+En este trabajo, utilizamos la matriz de calibraci\'on de cada c\'amara para rectificar las im\'agenes y calcular su mapa de disparidad correspondiente, como veremos en la secci\'on~\ref{sec:pro_img}.
 
 La calibraci\'on de las c\'amaras se realiz\'o utilizando un paquete de MATLAB llamado {\bf Toolbox Calib} \cite{B00}. El producto de esta calibraci\'on est\'ereo es un archivo con los valores de los par\'ametros para ambas c\'amaras. Con este archivo se procede a generar otro con formato XML de una estructura en particular, que permite leerlo con la librer\'ia OpenCV.
 
 \section{Procesamiento de las Ima\'genes}
-\label{pro_img}
+\label{sec:pro_img}
 %explicar la rectificacion y alineacion usando libelas y opencv y la generacion de mapas de disparidad
+
+\begin{figure}[ht]
+	\begin{center}
+		\includegraphics[width=6cm]{./images/original.jpg}
+		\includegraphics[width=6cm]{./images/disparidad.jpg}
+		\caption{Captura de la c\'amara izquierda de la c\'amara Minoru (imagen superior) y su correspondiente mapa de disparidad (imagen inferiror).}
+	\end{center}
+\end{figure}
+
 \section{Heur\'istica de Evasi\'on de Obst\'aculos}
 %Explicacion de como se usa el mapa de disparidad (partiendo en 3 zonas etc.)(decir que solo se utiliza el mapa de un solo lado, izquierdo)
+\label{sec:heuristica}
 \section{Trabajo a Futuro}
 %comentar que se pueden usar los dos mapas (de la parte derecha e izquierdas, etc)
+
 \section{Conclusiones}
+\label{sec:conclusiones}
+
 
 \nocite{KNG10}
 \nocite{G10}
