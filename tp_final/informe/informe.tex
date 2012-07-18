@@ -576,6 +576,10 @@ La calibraci\'on de las c\'amaras se realiz\'o utilizando un paquete de MATLAB l
 \section{Conclusiones}
 %comentar que se pueden usar los dos mapas (de la parte derecha e izquierdas, etc)
 \label{sec:conclusiones}
+Se desarrollo un algoritmo para la evasi\'on de obst\'aculos basado en mapas de disparidad. Para el procesamiento de los mapas de profundida, se utilizaron las librer\'ias OpenCV (Open Source Computer Vision) que cuenta con funciones para visi\'on en computadora en tiempo real y LIBELAS (Library for Efficient LArge-scale Stereo Matching) espec\'ifica para la manipulaci\'on de imagenes est\'ereo de gran resoluci\'on. Por otro lado, se realizaron experimentos que verificaron el correcto comportamiento del m\'etodo implementado para la evasi\'on de obst\'aculos en tiempo real. Como trabajo futuro se podr\'ia integrar la informaci\'on provista por los mapas de disparidad resultantes de las imagenes izquierda y derecha logrando as\'i una mejor aproximaci\'on de profundidad. Adem\'as queda abierta la posibilidad de incorporar un m\'etodo de localizaci\'on y construcci\'on simult\'anea de Mapas, SLAM (por sus siglas en ingl\'es de Simultaneous localization and mapping) junto con un mecanismo de planeamiento de navegaci\'on.
+
+
+
 
 
 \nocite{KNG10}
@@ -584,6 +588,7 @@ La calibraci\'on de las c\'amaras se realiz\'o utilizando un paquete de MATLAB l
 \nocite{B00}
 \nocite{H04}
 \nocite{DPSC09}
+\nocite{RH04}
 
 \bibliographystyle{unsrt}
 \bibliography{biblio}
