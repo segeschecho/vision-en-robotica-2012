@@ -1,539 +1,76 @@
-
-%% bare_jrnl.tex
-%% V1.3
-%% 2007/01/11
-%% by Michael Shell
-%% see http://www.michaelshell.org/
-%% for current contact information.
-%%
-%% This is a skeleton file demonstrating the use of IEEEtran.cls
-%% (requires IEEEtran.cls version 1.7 or later) with an IEEE journal paper.
-%%
-%% Support sites:
-%% http://www.michaelshell.org/tex/ieeetran/
-%% http://www.ctan.org/tex-archive/macros/latex/contrib/IEEEtran/
-%% and
-%% http://www.ieee.org/
-
-
-
-% *** Authors should verify (and, if needed, correct) their LaTeX system  ***
-% *** with the testflow diagnostic prior to trusting their LaTeX platform ***
-% *** with production work. IEEE's font choices can trigger bugs that do  ***
-% *** not appear when using other class files.                            ***
-% The testflow support page is at:
-% http://www.michaelshell.org/tex/testflow/
-
-
-%%*************************************************************************
-%% Legal Notice:
-%% This code is offered as-is without any warranty either expressed or
-%% implied; without even the implied warranty of MERCHANTABILITY or
-%% FITNESS FOR A PARTICULAR PURPOSE! 
-%% User assumes all risk.
-%% In no event shall IEEE or any contributor to this code be liable for
-%% any damages or losses, including, but not limited to, incidental,
-%% consequential, or any other damages, resulting from the use or misuse
-%% of any information contained here.
-%%
-%% All comments are the opinions of their respective authors and are not
-%% necessarily endorsed by the IEEE.
-%%
-%% This work is distributed under the LaTeX Project Public License (LPPL)
-%% ( http://www.latex-project.org/ ) version 1.3, and may be freely used,
-%% distributed and modified. A copy of the LPPL, version 1.3, is included
-%% in the base LaTeX documentation of all distributions of LaTeX released
-%% 2003/12/01 or later.
-%% Retain all contribution notices and credits.
-%% ** Modified files should be clearly indicated as such, including  **
-%% ** renaming them and changing author support contact information. **
-%%
-%% File list of work: IEEEtran.cls, IEEEtran_HOWTO.pdf, bare_adv.tex,
-%%                    bare_conf.tex, bare_jrnl.tex, bare_jrnl_compsoc.tex
-%%*************************************************************************
-
-% Note that the a4paper option is mainly intended so that authors in
-% countries using A4 can easily print to A4 and see how their papers will
-% look in print - the typesetting of the document will not typically be
-% affected with changes in paper size (but the bottom and side margins will).
-% Use the testflow package mentioned above to verify correct handling of
-% both paper sizes by the user's LaTeX system.
-%
-% Also note that the "draftcls" or "draftclsnofoot", not "draft", option
-% should be used if it is desired that the figures are to be displayed in
-% draft mode.
-%
 \documentclass[journal]{IEEEtran}
 \usepackage{subfigure}
-%\usepackage[spanish]{babel}
-%
-% If IEEEtran.cls has not been installed into the LaTeX system files,
-% manually specify the path to it like:
-% \documentclass[journal]{../sty/IEEEtran}
-
-
-
-
-
-% Some very useful LaTeX packages include:
-% (uncomment the ones you want to load)
-
-
-% *** MISC UTILITY PACKAGES ***
-%
-%\usepackage{ifpdf}
-% Heiko Oberdiek's ifpdf.sty is very useful if you need conditional
-% compilation based on whether the output is pdf or dvi.
-% usage:
-% \ifpdf
-%   % pdf code
-% \else
-%   % dvi code
-% \fi
-% The latest version of ifpdf.sty can be obtained from:
-% http://www.ctan.org/tex-archive/macros/latex/contrib/oberdiek/
-% Also, note that IEEEtran.cls V1.7 and later provides a builtin
-% \ifCLASSINFOpdf conditional that works the same way.
-% When switching from latex to pdflatex and vice-versa, the compiler may
-% have to be run twice to clear warning/error messages.
-
-
-
-
-
-
-% *** CITATION PACKAGES ***
-%
-%\usepackage{cite}
-% cite.sty was written by Donald Arseneau
-% V1.6 and later of IEEEtran pre-defines the format of the cite.sty package
-% \cite{} output to follow that of IEEE. Loading the cite package will
-% result in citation numbers being automatically sorted and properly
-% "compressed/ranged". e.g., [1], [9], [2], [7], [5], [6] without using
-% cite.sty will become [1], [2], [5]--[7], [9] using cite.sty. cite.sty's
-% \cite will automatically add leading space, if needed. Use cite.sty's
-% noadjust option (cite.sty V3.8 and later) if you want to turn this off.
-% cite.sty is already installed on most LaTeX systems. Be sure and use
-% version 4.0 (2003-05-27) and later if using hyperref.sty. cite.sty does
-% not currently provide for hyperlinked citations.
-% The latest version can be obtained at:
-% http://www.ctan.org/tex-archive/macros/latex/contrib/cite/
-% The documentation is contained in the cite.sty file itself.
-
-
-
-
-
-
-% *** GRAPHICS RELATED PACKAGES ***
-%
 \usepackage[pdftex]{graphicx}
 \DeclareGraphicsExtensions{.pdf,.jpeg,.png}
 \usepackage[center]{caption}
-% \graphicspath{{../pdf/}{../jpeg/}}
-\ifCLASSINFOpdf
-\else
-  % or other class option (dvipsone, dvipdf, if not using dvips). graphicx
-  % will default to the driver specified in the system graphics.cfg if no
-  % driver is specified.
-  % \usepackage[dvips]{graphicx}
-  % declare the path(s) where your graphic files are
-  % \graphicspath{{../eps/}}
-  % and their extensions so you won't have to specify these with
-  % every instance of \includegraphics
-  % \DeclareGraphicsExtensions{.eps}
-\fi
-% graphicx was written by David Carlisle and Sebastian Rahtz. It is
-% required if you want graphics, photos, etc. graphicx.sty is already
-% installed on most LaTeX systems. The latest version and documentation can
-% be obtained at: 
-% http://www.ctan.org/tex-archive/macros/latex/required/graphics/
-% Another good source of documentation is "Using Imported Graphics in
-% LaTeX2e" by Keith Reckdahl which can be found as epslatex.ps or
-% epslatex.pdf at: http://www.ctan.org/tex-archive/info/
-%
-% latex, and pdflatex in dvi mode, support graphics in encapsulated
-% postscript (.eps) format. pdflatex in pdf mode supports graphics
-% in .pdf, .jpeg, .png and .mps (metapost) formats. Users should ensure
-% that all non-photo figures use a vector format (.eps, .pdf, .mps) and
-% not a bitmapped formats (.jpeg, .png). IEEE frowns on bitmapped formats
-% which can result in "jaggedy"/blurry rendering of lines and letters as
-% well as large increases in file sizes.
-%
-% You can find documentation about the pdfTeX application at:
-% http://www.tug.org/applications/pdftex
-
-
-
-
-
-% *** MATH PACKAGES ***
-%
-%\usepackage[cmex10]{amsmath}
-% A popular package from the American Mathematical Society that provides
-% many useful and powerful commands for dealing with mathematics. If using
-% it, be sure to load this package with the cmex10 option to ensure that
-% only type 1 fonts will utilized at all point sizes. Without this option,
-% it is possible that some math symbols, particularly those within
-% footnotes, will be rendered in bitmap form which will result in a
-% document that can not be IEEE Xplore compliant!
-%
-% Also, note that the amsmath package sets \interdisplaylinepenalty to 10000
-% thus preventing page breaks from occurring within multiline equations. Use:
-%\interdisplaylinepenalty=2500
-% after loading amsmath to restore such page breaks as IEEEtran.cls normally
-% does. amsmath.sty is already installed on most LaTeX systems. The latest
-% version and documentation can be obtained at:
-% http://www.ctan.org/tex-archive/macros/latex/required/amslatex/math/
-
-
-
-
-
-% *** SPECIALIZED LIST PACKAGES ***
-%
-%\usepackage{algorithmic}
-% algorithmic.sty was written by Peter Williams and Rogerio Brito.
-% This package provides an algorithmic environment fo describing algorithms.
-% You can use the algorithmic environment in-text or within a figure
-% environment to provide for a floating algorithm. Do NOT use the algorithm
-% floating environment provided by algorithm.sty (by the same authors) or
-% algorithm2e.sty (by Christophe Fiorio) as IEEE does not use dedicated
-% algorithm float types and packages that provide these will not provide
-% correct IEEE style captions. The latest version and documentation of
-% algorithmic.sty can be obtained at:
-% http://www.ctan.org/tex-archive/macros/latex/contrib/algorithms/
-% There is also a support site at:
-% http://algorithms.berlios.de/index.html
-% Also of interest may be the (relatively newer and more customizable)
-% algorithmicx.sty package by Szasz Janos:
-% http://www.ctan.org/tex-archive/macros/latex/contrib/algorithmicx/
-
-
-
-
-% *** ALIGNMENT PACKAGES ***
-%
-%\usepackage{array}
-% Frank Mittelbach's and David Carlisle's array.sty patches and improves
-% the standard LaTeX2e array and tabular environments to provide better
-% appearance and additional user controls. As the default LaTeX2e table
-% generation code is lacking to the point of almost being broken with
-% respect to the quality of the end results, all users are strongly
-% advised to use an enhanced (at the very least that provided by array.sty)
-% set of table tools. array.sty is already installed on most systems. The
-% latest version and documentation can be obtained at:
-% http://www.ctan.org/tex-archive/macros/latex/required/tools/
-
-
-%\usepackage{mdwmath}
-%\usepackage{mdwtab}
-% Also highly recommended is Mark Wooding's extremely powerful MDW tools,
-% especially mdwmath.sty and mdwtab.sty which are used to format equations
-% and tables, respectively. The MDWtools set is already installed on most
-% LaTeX systems. The lastest version and documentation is available at:
-% http://www.ctan.org/tex-archive/macros/latex/contrib/mdwtools/
-
-
-% IEEEtran contains the IEEEeqnarray family of commands that can be used to
-% generate multiline equations as well as matrices, tables, etc., of high
-% quality.
-
-
-%\usepackage{eqparbox}
-% Also of notable interest is Scott Pakin's eqparbox package for creating
-% (automatically sized) equal width boxes - aka "natural width parboxes".
-% Available at:
-% http://www.ctan.org/tex-archive/macros/latex/contrib/eqparbox/
-
-
-
-
-
-% *** SUBFIGURE PACKAGES ***
-%\usepackage[tight,footnotesize]{subfigure}
-% subfigure.sty was written by Steven Douglas Cochran. This package makes it
-% easy to put subfigures in your figures. e.g., "Figure 1a and 1b". For IEEE
-% work, it is a good idea to load it with the tight package option to reduce
-% the amount of white space around the subfigures. subfigure.sty is already
-% installed on most LaTeX systems. The latest version and documentation can
-% be obtained at:
-% http://www.ctan.org/tex-archive/obsolete/macros/latex/contrib/subfigure/
-% subfigure.sty has been superceeded by subfig.sty.
-
-
-
-%\usepackage[caption=false]{caption}
-%\usepackage[font=footnotesize]{subfig}
-% subfig.sty, also written by Steven Douglas Cochran, is the modern
-% replacement for subfigure.sty. However, subfig.sty requires and
-% automatically loads Axel Sommerfeldt's caption.sty which will override
-% IEEEtran.cls handling of captions and this will result in nonIEEE style
-% figure/table captions. To prevent this problem, be sure and preload
-% caption.sty with its "caption=false" package option. This is will preserve
-% IEEEtran.cls handing of captions. Version 1.3 (2005/06/28) and later 
-% (recommended due to many improvements over 1.2) of subfig.sty supports
-% the caption=false option directly:
-%\usepackage[caption=false,font=footnotesize]{subfig}
-%
-% The latest version and documentation can be obtained at:
-% http://www.ctan.org/tex-archive/macros/latex/contrib/subfig/
-% The latest version and documentation of caption.sty can be obtained at:
-% http://www.ctan.org/tex-archive/macros/latex/contrib/caption/
-
-
-
-
-% *** FLOAT PACKAGES ***
-%
-%\usepackage{fixltx2e}
-% fixltx2e, the successor to the earlier fix2col.sty, was written by
-% Frank Mittelbach and David Carlisle. This package corrects a few problems
-% in the LaTeX2e kernel, the most notable of which is that in current
-% LaTeX2e releases, the ordering of single and double column floats is not
-% guaranteed to be preserved. Thus, an unpatched LaTeX2e can allow a
-% single column figure to be placed prior to an earlier double column
-% figure. The latest version and documentation can be found at:
-% http://www.ctan.org/tex-archive/macros/latex/base/
-
-
-
-%\usepackage{stfloats}
-% stfloats.sty was written by Sigitas Tolusis. This package gives LaTeX2e
-% the ability to do double column floats at the bottom of the page as well
-% as the top. (e.g., "\begin{figure*}[!b]" is not normally possible in
-% LaTeX2e). It also provides a command:
-%\fnbelowfloat
-% to enable the placement of footnotes below bottom floats (the standard
-% LaTeX2e kernel puts them above bottom floats). This is an invasive package
-% which rewrites many portions of the LaTeX2e float routines. It may not work
-% with other packages that modify the LaTeX2e float routines. The latest
-% version and documentation can be obtained at:
-% http://www.ctan.org/tex-archive/macros/latex/contrib/sttools/
-% Documentation is contained in the stfloats.sty comments as well as in the
-% presfull.pdf file. Do not use the stfloats baselinefloat ability as IEEE
-% does not allow \baselineskip to stretch. Authors submitting work to the
-% IEEE should note that IEEE rarely uses double column equations and
-% that authors should try to avoid such use. Do not be tempted to use the
-% cuted.sty or midfloat.sty packages (also by Sigitas Tolusis) as IEEE does
-% not format its papers in such ways.
-
-
-%\ifCLASSOPTIONcaptionsoff
-%  \usepackage[nomarkers]{endfloat}
-% \let\MYoriglatexcaption\caption
-% \renewcommand{\caption}[2][\relax]{\MYoriglatexcaption[#2]{#2}}
-%\fi
-% endfloat.sty was written by James Darrell McCauley and Jeff Goldberg.
-% This package may be useful when used in conjunction with IEEEtran.cls'
-% captionsoff option. Some IEEE journals/societies require that submissions
-% have lists of figures/tables at the end of the paper and that
-% figures/tables without any captions are placed on a page by themselves at
-% the end of the document. If needed, the draftcls IEEEtran class option or
-% \CLASSINPUTbaselinestretch interface can be used to increase the line
-% spacing as well. Be sure and use the nomarkers option of endfloat to
-% prevent endfloat from "marking" where the figures would have been placed
-% in the text. The two hack lines of code above are a slight modification of
-% that suggested by in the endfloat docs (section 8.3.1) to ensure that
-% the full captions always appear in the list of figures/tables - even if
-% the user used the short optional argument of \caption[]{}.
-% IEEE papers do not typically make use of \caption[]'s optional argument,
-% so this should not be an issue. A similar trick can be used to disable
-% captions of packages such as subfig.sty that lack options to turn off
-% the subcaptions:
-% For subfig.sty:
-% \let\MYorigsubfloat\subfloat
-% \renewcommand{\subfloat}[2][\relax]{\MYorigsubfloat[]{#2}}
-% For subfigure.sty:
-% \let\MYorigsubfigure\subfigure
-% \renewcommand{\subfigure}[2][\relax]{\MYorigsubfigure[]{#2}}
-% However, the above trick will not work if both optional arguments of
-% the \subfloat/subfig command are used. Furthermore, there needs to be a
-% description of each subfigure *somewhere* and endfloat does not add
-% subfigure captions to its list of figures. Thus, the best approach is to
-% avoid the use of subfigure captions (many IEEE journals avoid them anyway)
-% and instead reference/explain all the subfigures within the main caption.
-% The latest version of endfloat.sty and its documentation can obtained at:
-% http://www.ctan.org/tex-archive/macros/latex/contrib/endfloat/
-%
-% The IEEEtran \ifCLASSOPTIONcaptionsoff conditional can also be used
-% later in the document, say, to conditionally put the References on a 
-% page by themselves.
-
-
-
-
-
-% *** PDF, URL AND HYPERLINK PACKAGES ***
-%
-%\usepackage{url}
-% url.sty was written by Donald Arseneau. It provides better support for
-% handling and breaking URLs. url.sty is already installed on most LaTeX
-% systems. The latest version can be obtained at:
-% http://www.ctan.org/tex-archive/macros/latex/contrib/misc/
-% Read the url.sty source comments for usage information. Basically,
-% \url{my_url_here}.
-
-
-
-
-
-% *** Do not adjust lengths that control margins, column widths, etc. ***
-% *** Do not use packages that alter fonts (such as pslatex).         ***
-% There should be no need to do such things with IEEEtran.cls V1.6 and later.
-% (Unless specifically asked to do so by the journal or conference you plan
-% to submit to, of course. )
-
-
-% correct bad hyphenation here
-%\hyphenation{op-tical net-works semi-conduc-tor}
-
-
 \begin{document}
 %
 % paper title
 % can use linebreaks \\ within to get better formatting as desired
 \title{Algoritmo de evasi\'on de obst\'aculos en tiempo real basado en visi\'on est\'ereo}
-%
-%
-% author names and IEEE memberships
-% note positions of commas and nonbreaking spaces ( ~ ) LaTeX will not break
-% a structure at a ~ so this keeps an author's name from being broken across
-% two lines.
-% use \thanks{} to gain access to the first footnote area
-% a separate \thanks must be used for each paragraph as LaTeX2e's \thanks
-% was not built to handle multiple paragraphs
-%
 
-\author{Taih\'u Pire,~\IEEEmembership{Member,~FCEyN-UBA,}
-        Sergio Gonz\'alez,~\IEEEmembership{Fellow,~FCEyN-UBA,}
-        Emiliano Gonz\'alez,~\IEEEmembership{Life~Fellow,~FCEyN-UBA}
-        Ra\'ul Benniti,~\IEEEmembership{Fellow,~FCEyN-UBA,}% <-this % stops a space
+\author{Taih\'u Pire,~\IEEEmembership{FCEyN-UBA,}
+        Sergio Gonz\'alez,~\IEEEmembership{FCEyN-UBA,}
+        Emiliano Gonz\'alez,~\IEEEmembership{FCEyN-UBA,}
+        Ra\'ul Benniti,~\IEEEmembership{FCEyN-UBA}% <-this % stops a space
         }
-%\thanks{M. Shell is with the Department
-%of Electrical and Computer Engineering, Georgia Institute of Technology, Atlanta,
-%GA, 30332 USA e-mail: (see http://www.michaelshell.org/contact.html).}% <-this % stops a space
-%\thanks{J. Doe and J. Doe are with Anonymous University.}% <-this % stops a space
-%\thanks{Manuscript received April 19, 2005; revised January 11, 2007.}}
-
-% note the % following the last \IEEEmembership and also \thanks - 
-% these prevent an unwanted space from occurring between the last author name
-% and the end of the author line. i.e., if you had this:
-% 
-% \author{....lastname \thanks{...} \thanks{...} }
-%                     ^------------^------------^----Do not want these spaces!
-%
-% a space would be appended to the last name and could cause every name on that
-% line to be shifted left slightly. This is one of those "LaTeX things". For
-% instance, "\textbf{A} \textbf{B}" will typeset as "A B" not "AB". To get
-% "AB" then you have to do: "\textbf{A}\textbf{B}"
-% \thanks is no different in this regard, so shield the last } of each \thanks
-% that ends a line with a % and do not let a space in before the next \thanks.
-% Spaces after \IEEEmembership other than the last one are OK (and needed) as
-% you are supposed to have spaces between the names. For what it is worth,
-% this is a minor point as most people would not even notice if the said evil
-% space somehow managed to creep in.
-
-
 
 % The paper headers
-\markboth{Journal of \LaTeX\ Class Files,~Vol.~6, No.~1, January~2007}%
-{Shell \MakeLowercase{\textit{et al.}}: Bare Demo of IEEEtran.cls for Journals}
-% The only time the second header will appear is for the odd numbered pages
-% after the title page when using the twoside option.
-% 
-% *** Note that you probably will NOT want to include the author's ***
-% *** name in the headers of peer review papers.                   ***
-% You can use \ifCLASSOPTIONpeerreview for conditional compilation here if
-% you desire.
-
-
-
-
-% If you want to put a publisher's ID mark on the page you can do it like
-% this:
-%\IEEEpubid{0000--0000/00\$00.00~\copyright~2007 IEEE}
-% Remember, if you use this you must call \IEEEpubidadjcol in the second
-% column for its text to clear the IEEEpubid mark.
-
-
-
-% use for special paper notices
-%\IEEEspecialpapernotice{(Invited Paper)}
-
-
-
+%\markboth{Journal of \LaTeX\ Class Files,~Vol.~6, No.~1, January~2007}%
+%{Shell \MakeLowercase{\textit{et al.}}: Bare Demo of IEEEtran.cls for Journals}
 
 % make the title area
 \maketitle
 
 
 \begin{abstract}
-En el presente trabajo se evaluar\'a un algoritmo de evasi\'on de obst\'aculos para navegaci\'on aut\'onoma de robots basado en mapas de profundidad. Aunque existen diversas tecnolog\'ias que permiten generar dichos mapas, los m\'etodos de visi\'on est\'ereo que generan mapas de disparidad han ganado relevancia en los \'ultimos a\~nos debido a la accesibilidad de los elementos de hardware necesarios tanto como para obtener la informaci\'on sobre el entorno inmediato, como para procesarla. Se considerar\'an dos partes principales en el desarrollo propuesto: en primer lugar, se utilizar\'an las librer\'ias open source de procesamiento gr\'afico OpenCV y Libelas para, a partir de las im\'agenes provistas por una c\'amara \'estereo, generar mapas de disparidad de los que se pueda deducir informaci\'on relevante a la distancia de los objetos dentro de la ventana de visibilidad del robot; luego, se procesar\'an estos mapas para decidir si existe un obst\'aculo frente al robot y, de ser as\'i, divisar que acci\'on debe tomarse para evitarlo.
+En el presente trabajo se evaluar\'a un algoritmo de evasi\'on de obst\'aculos para navegaci\'on aut\'onoma de robots basado en mapas de profundidad. Aunque existen diversas tecnolog\'ias que permiten generar dichos mapas, los m\'etodos de visi\'on est\'ereo que generan mapas de disparidad han ganado relevancia en los \'ultimos a\~nos debido a la accesibilidad de los elementos de hardware necesarios, tanto como para obtener la informaci\'on sobre el entorno inmediato, como para procesarla. Se considerar\'an dos partes principales en el desarrollo propuesto: en primer lugar, se utilizar\'an las librer\'ias open source de procesamiento gr\'afico OpenCV y LIBELAS para, a partir de las im\'agenes provistas por una c\'amara \'estereo, generar mapas de disparidad de los que se pueda deducir informaci\'on relevante sobre la distancia de los objetos dentro de la ventana de visibilidad del robot; luego, se procesar\'an estos mapas para decidir si existe un obst\'aculo frente al robot y, de ser as\'i, divisar que acci\'on debe tomarse para evitarlo.
 \end{abstract}
-% IEEEtran.cls defaults to using nonbold math in the Abstract.
-% This preserves the distinction between vectors and scalars. However,
-% if the journal you are submitting to favors bold math in the abstract,
-% then you can use LaTeX's standard command \boldmath at the very start
-% of the abstract to achieve this. Many IEEE journals frown on math
-% in the abstract anyway.
 
-% Note that keywords are not normally used for peerreview papers.
 \begin{IEEEkeywords}
-IEEEtran, journal, \LaTeX, paper, template.
+Mapa de disparidad, Visi\'on est\'ereo, Evasi\'on de obst\'aculos, Navegaci\'on aut\'onoma.
 \end{IEEEkeywords}
 
 
-
-
-
-
-% For peer review papers, you can put extra information on the cover
-% page as needed:
-% \ifCLASSOPTIONpeerreview
-% \begin{center} \bfseries EDICS Category: 3-BBND \end{center}
-% \fi
-%
-% For peerreview papers, this IEEEtran command inserts a page break and
-% creates the second title. It will be ignored for other modes.
 \IEEEpeerreviewmaketitle
 
 
 \section{Introducci\'on}
 %comentar el uso de un sistema de navegacion, basado en camaras stereo. justificando (barato, accesible, costo computacional)
 
+En la \'ultima d\'ecada se ha dado un gran impulso al \'area de rob\'otica abocada a la navegaci\'on aut\'onoma de veh\'iculos. Dado que el campo de aplicaci\'on es diverso, abarcando desde sistemas tan cr\'iticos como la exploraci\'on de lugares inaccesibles para veh\'iculos tripulados, hasta sistemas tan sencillos como la realizaci\'on de tareas dom\'esticas aut\'onomas, se han desarrollado tecnolog\'ias de distinta complejidad y costo operativo. En especial, se ha hecho principal incapi\'e en los sistemas basados en visi\'on, dada la variedad y el bajo costo que presentan las c\'amaras hoy en d\'ia.
 
-En la \'ultima d\'ecada se ha dado un gran impulso al \'area de rob\'otica abocada a la navegaci\'on aut\'onoma de veh\'iculos. Dado que el campo de aplicaci\'on es diverso, abarcando desde sistemas tan cr\'iticos como la exploraci\'on de lugares inaccesibles para veh\'iculos tripulados, hasta sistemas tan sencillos como la realizaci\'on de tareas dom\'esticas aut\'onomas, se han desarrollados tecnologias de distinta complejidad y costo operativo. En especial, se ha hecho principal incapi\'e en los sistemas basados en visi\'on dado la variedad y el bajo costo que presentan las c\'amaras hoy en d\'ia.
-
-En el presente informe se exhibe un algoritmo de evansi\'on de obst\'aculos basado \'unicamente en visi\'on est\'ereo para la navegaci\'on aut\'onoma de un robot. Visi\'on est\'ereo es una herramienta muy utilizada para la navegaci\'on aut\'onoma en los \'ultimos a\~nos debido al bajo costo de las c\'amaras y a la gran cantidad de informaci\'on que brindan. El software aqu\'i presentado para lograr la detecci\'on de obst\'aculos hace uso de una c\'amara est\'ereo permitiendo aproximar la distancia relativa en la que se encuentran los objetos con respecto a la c\'amara.
-Cabe destacar, que dicho algoritmo puede ser adaptado a cualquier dispositivo que cuente con una c\'amara est\'ereo. En lo que aqu\'i refiere, se utiliz\'o la c\'amara est\'ereo \emph{Minoru}, y como plataforma de prueba el robot \emph{exabot} \cite{DPSC09}.
+En el presente informe se exhibe un algoritmo de evasi\'on de obst\'aculos basado \'unicamente en visi\'on est\'ereo para la navegaci\'on aut\'onoma de un robot. Visi\'on est\'ereo es una herramienta muy utilizada para la navegaci\'on aut\'onoma en los \'ultimos a\~nos debido al bajo costo de las c\'amaras y a la gran cantidad de informaci\'on que brindan. El software aqu\'i presentado para lograr la detecci\'on de obst\'aculos hace uso de una c\'amara est\'ereo permitiendo aproximar la distancia relativa en la que se encuentran los objetos con respecto a la c\'amara. Cabe destacar, que dicho algoritmo puede ser adaptado a cualquier dispositivo que cuente con una c\'amara del tipo mencionado. En lo que aqu\'i refiere, se utiliz\'o la c\'amara \emph{Minoru}, y como plataforma de prueba el robot \emph{exabot} \cite{DPSC09}.
 
 %Otra de las ventajas de utilizar visi\'on est\'ereo para la navegaci\'on aut\'onoma, es la posibilidad de crear mapas 3D del entorno, si bien aqu\'i no se
 
-El documento esta estructurado de la siquienta manera: la secci\'on~\ref{sec:trabajajo_relacionado} introduce el estado del arte en sistemas de evasi\'on de obst\'aculos mediante el uso de visi\'on est\'ereo, la secci\'on~\ref{sec:hardware} detalla el hardware utilizado durante el desarrollo del algoritmo, la secci\'on~\ref{sec:pro_img} presenta las librer\'ias OpenCV y LIBELAS utilizadas para el procesamiento de im\'agenes y la generaci\'on de mapas de disparidad, la secci\'on~\ref{sec:heuristica} explica el algoritmo de evasi\'on de obst\'aculos propuesto, finalmente la secci\'on~\ref{sec:conclusiones} comenta algunas conclusiones y trabajo futuro.
+El documento se encuentra estructurado de la siguiente manera: la secci\'on~\ref{sec:trabajajo_relacionado} introduce el estado del arte en sistemas de evasi\'on de obst\'aculos mediante el uso de visi\'on est\'ereo, la secci\'on~\ref{sec:hardware} detalla el hardware utilizado durante el desarrollo del algoritmo, la secci\'on~\ref{sec:pro_img} presenta las librer\'ias OpenCV y LIBELAS utilizadas para el procesamiento de im\'agenes y la generaci\'on de mapas de disparidad, la secci\'on~\ref{sec:heuristica} explica el algoritmo de evasi\'on de obst\'aculos propuesto, finalmente la secci\'on~\ref{sec:conclusiones} comenta algunas conclusiones y trabajo futuro.
+\medskip
 
 \hfill 20 de Julio de 2012
 
 \section{Trabajo Relacionado}
 \label{sec:trabajajo_relacionado}
 
-Una de las \'areas de mayor inter\'es dentro del campo de la rob\'otica es la de navegaci\'on aut\'onoma. Con el pasar del tiempo se han propuesto y creado diversos sistemas de navegaci\'on, que adem\'as de las metodolig\'ias algor\'itmicas utilizadas, se diferencian por la tecnolog\'ia utilizada para obtener la informaci\'on del mundo exterior que le permitir\'a realizar dicho desplazamiento.
+Una de las \'areas de mayor inter\'es dentro del campo de la rob\'otica es la de navegaci\'on aut\'onoma. Con el pasar del tiempo se han propuesto y creado diversos sistemas de navegaci\'on, que adem\'as de las metodolig\'ias algor\'itmicas utilizadas (detecci\'on de caracter\'isticas, odometr\'ia, odometr\'ia visual, etc), se diferencian por la tecnolog\'ia utilizada para obtener la informaci\'on del mundo exterior que le permitir\'a realizar dicho desplazamiento.
 
 Dentro de las tecnolog\'ias m\'as utilizadas, se encuentran entre otras:
 
 \begin{itemize}
-	\item La utilizaci\'on de {\bf c\'amaras de video}, que obtienen la informaci\'on en forma de im\'agenes. Los m\'etodos mas populares, utilizan una c\'amara (visi\'on monocular) o dos c\'amaras (visi\'on est\'ereo).
+	\item La utilizaci\'on de \emph{c\'amaras de video}, que obtienen la informaci\'on en forma de im\'agenes. Los m\'etodos mas populares, utilizan una c\'amara (visi\'on monocular) o dos c\'amaras (visi\'on est\'ereo).
 	
-	\item La utilizaci\'on de sensores como por ejemplo {\bf sonares} o {\bf l\'aser}, para detectar objetos pr\'oximos.
+	\item La utilizaci\'on de sensores de tipo \emph{sonar} o \emph{l\'aser}, para detectar objetos pr\'oximos.
 	
-	\item Utilizar {\bf GPS} sumado a un mapa del terreno donde el robot se desplazar\'a.
+	\item Utilizar \emph{GPS} sumado a un mapa del terreno donde el robot se desplazar\'a.
 \end{itemize}
 
-Adem\'as ex\'isten m\'etodos, que combinan distintas tecnolog\'ias y pueden ser utilizados en problemas de localizaci\'on y mapeo \cite{KNG10}.
+Adem\'as ex\'isten m\'etodos, que combinan distintas tecnolog\'ias y pueden ser utilizados en problemas de localizaci\'on y construcci\'on de mapas \cite{KNG10}.
 
-La utilizaci\'on de c\'amaras est\'ereo en particular, puede ser utilizada para la detecc\'ion de elementos en el espacio por donde se desplaza el robot y de forma muy eficiente, dado que es posible calcular la profundidad relativa de los objetos en el \'area de visi\'on. Teniendo en cuenta lo anteriormente mencionado, el trabajo actual demuestra que es posible realizar un sistema de evasi\'on de obstaculos, utilizando \'unicamente una c\'amara est\'ereo.
+La utilizaci\'on de c\'amaras est\'ereo en particular, puede ser utilizada para la detecc\'ion de elementos en el espacio por donde se desplaza el robot y de forma muy eficiente, dado que es posible calcular la profundidad relativa de los objetos en el \'area de visi\'on. Teniendo en cuenta lo anteriormente mencionado, el trabajo actual demuestra que es posible realizar un sistema de evasi\'on de obst\'aculos, utilizando \'unicamente una c\'amara est\'ereo.
 
-En \cite{KNG10}, se plantean diversas t\'ecnicas para mejorar el desempeño en la tarea de evasi\'on de obst\'aculos. La primera de ellas, sugiere tomar la imagen y separarla en tres partes, una parte izquierda, una central y una derecha. Para cada una de las zonas mencionadas se calcula entonces el promedio de disparidad y luego se toma aquella con menor promedio, indicando la direcci\'on a tomar, asumiendo que dicha zona es la que contiene menor cantidad de obst\'aculos. Si bien pareciera ser una t\'ecnica efectiva, se puede mejorar solo agregando algunas restricciones a lo definido. Es cuando se plantea el segundo m\'etodo (siendo este una evoluc\'ion del primero). Teniendo la imagen dividida en tres zonas, primeramente se toma la parte central y se buscan los p\'ixels que tengan una disparidad mayor a cierto valor l\'imite (de ahora en adelante T), se realiza un conteo, de forma de calcular el porcentaje de pixels con disparidad alta en la zona y poder determinar si, frente a la c\'amara hay un obst\'aculo cercano. Para realizar dicha decisi\'on, se dispone de otro valor l\'imite sobre el promedio calculado y si este lo sobrepasa se considera que existe un objeto lo suficientemente cerca y es entonces cuando hay que esquivarlo. Una vez que se decide realizar una acci\'on evasiva, es necesario saber para que lado girar, es cuando entran entonces las otras partes de la imagen y se produce el movimiento para el lado que tenga el menor promedio de disparidad. El tercer y \'ultimo m\'etodo, introduce la condici\'on cuando las tres zonas de la imagen tienen un promedio de disparidad por encima de un l\'imite fijado y como reacci\'on a esta sitauci\'on, se debe girar 180 grados para volver por el camino por donde se vino. Una desventaja que puede observarse en los m\'etodos anteriores es que no se utiliza toda la informaci\'on disponible, dado que solo se hace uso de un \'�nico mapa de disparidad y eso puede llevar a problemas en la navegaci\'on. Para resolver dicho problema, el procedimiento propuesto, utiliza ambos mapas de disparidad, aunque no en su totalidad, para salvar los problemas que pueden aparecer de un lado pero que el otro lo soluciona.
+En \cite{KNG10}, se plantean diversas t\'ecnicas para mejorar el desempe\~no en la tarea de evasi\'on de obst\'aculos. La primera de ellas, sugiere tomar la imagen y dividirla en tres partes, una parte izquierda, una central y una derecha. Para cada una de las zonas mencionadas se calcula entonces el promedio de disparidad y luego se toma aquella asociada al menor, indicando la direcci\'on a tomar, asumiendo que dicha zona es la que contiene menor cantidad de obst\'aculos. No obstante, se propone un segundo m\'etodo, siendo \'este una evoluc\'ion del primero. Teniendo la imagen dividida en tres zonas, primeramente se toma la parte central y se buscan los p\'ixels que tengan una disparidad mayor a cierto valor l\'imite, se realiza un conteo, de forma de calcular el porcentaje de pixels con disparidad alta en la zona y poder determinar si, frente a la c\'amara hay un obst\'aculo cercano.
+%Para realizar dicha decisi\'on, se dispone de otro valor l\'imite sobre el promedio calculado y si este lo sobrepasa se considera que existe un objeto lo suficientemente cerca y es entonces cuando hay que esquivarlo. 
+Una vez que se decide realizar una acci\'on evasiva, es necesario saber para que lado girar. Es entonces cuando se analizan las otras zonas de la imagen y se produce el movimiento para el lado que tenga el menor promedio de disparidad. El tercer y \'ultimo m\'etodo, introduce la condici\'on cuando las tres zonas de la imagen tienen un promedio de disparidad por encima de un l\'imite fijado y como reacci\'on a esta sitauci\'on, se debe girar 180 grados para volver por el camino por donde se vino. Una desventaja que puede observarse en los m\'etodos anteriores es que no se utiliza toda la informaci\'on disponible, dado que solo se hace uso de un \'unico mapa de disparidad y eso puede llevar a problemas en la navegaci\'on. Para resolver dicho problema, el procedimiento propuesto, utiliza ambos mapas de disparidad, aunque no en su totalidad, para salvar los problemas que pueden aparecer de un lado pero que el otro lo soluciona.
 
 En \cite{RH04}, se plantea un m\'etodo para el procesamiento de las im\'agenes, en el cual utilizan una escala de grises para representar la distancia a la que se encuentra cada uno de los pixels. Adem\'as se sugiere el hecho de no prestar atenci\'on a la informaci\'on que provenga del \'area del piso, dado que, en general es algo que se encuentra a una distancia cercana y genera ruido en el mapa de disparidad, algo que puede ser perjudicial para el algoritmo de navegaci\'on. Otra mejora al procesamiento de la informaci\'on proveniente de las c\'amaras, consiste en realzar los bordes de la imagen, utilizando alg\'un algoritmo para este fin. De esta forma, es posible reducir el ruido generado cuando se realizan movimientos muy r\'apidos hacia adelante o hacia los costados.
 
@@ -588,7 +125,7 @@ En general, un \'ultimo paso es necesario. Una alineaci\'on horizontal de una im
 
 La heur\'istica de evasi\'on de obst\'aculos que se implementa est\'a basada en el M\'etodo de Estimaci\'on por Umbral (\emph{Threshold Estimation Method}) analizado en \cite{KNG10}. \'Este m\'etodo utiliza mapas de disparidad para aproximar la distancia a la que se encuentran los objeto capturados por la c\'amara est\'ereo. En lo que sigue, se presentan las variaciones implementadas sobre el algoritmo.
 
-En primer lugar, se divide el mapa de disparidad en tres ventanas verticales con base variable, tal como se muestra en la figura~\ref{fig:piernas_cerca}. En los experimentos se lleg\'o a que el ancho de la ventana central sea mayor que el de las ventanas laterales, dado que la c\'amara cuenta con un \'angulo de visi\'on reducido, logrando as\'i que el algoritmo obtenga mayor informaci\'on sobre los objetos que se encuentran delante y representan obst\'aculos potenciales. Adem\'as se modificaron independientemente los tama\~nos de las ventanas de los lados, con el fin de reducir el ruido generado por la falta de informaci\'on en los bordes de las im\'agenes. Por otro lado, se defini\'o un l\'imite para determinar la regi\'on de interes sobre la cual se procesan los datos \cite{H09}, prescindiendo de la informaci\'on ``ruidosa'' producida por el suelo (se considera que el robot se desplaza sobre un terreno plano).
+En primer lugar, se divide el mapa de disparidad en tres ventanas verticales con base variable, tal como se muestra en la figura~\ref{fig:piernas_cerca}. El ancho de la ventana central es mayor que el de las ventanas laterales, dado que la c\'amara cuenta con un \'angulo de visi\'on reducido, logrando as\'i que el algoritmo obtenga mayor informaci\'on sobre los objetos que se encuentran delante y representan obst\'aculos potenciales. Adem\'as se modificaron independientemente los tama\~nos de las ventanas de los lados, con el fin de reducir el ruido generado por la falta de informaci\'on en los bordes de las im\'agenes. Por otro lado, se defini\'o un l\'imite para determinar la regi\'on de interes sobre la cual se procesan los datos \cite{H09}, prescindiendo de la informaci\'on ``ruidosa'' producida por el suelo (se considera que el robot se desplaza sobre un terreno plano).
 
 \begin{figure}[ht]
 	\begin{center}
@@ -618,22 +155,7 @@ El segundo paso consiste en estimar los porcentajes de p\'ixeles del mapa de dis
 \label{fig:piernas}
 \end{figure}
 
-
-\begin{figure}[ht]
-	\begin{center}
-		\includegraphics[width=6cm]{./images/disparidad.jpg}
-		\caption{La zonas blancas representan los puntos de disparidad alta. Las grises, los puntos con disparidad invalida.}
-	\end{center}
-\end{figure}
-
-Una vez obtenidos los porcentajes, se procede a la toma de la decisi\'on propiamente dicha. En principio se analiza \'unicamente la zona central. Si el porcentaje es menor a un valor predeterminado (por ejemplo, 30\%), se considera que el camino se encuentra suficientemente libre y el robot puede contnuar su desplazamiento en linea recta. Si el ratio es superado, se procede a comparar los valores obtenidos para las franjas laterales. El lateral con el menor valor representa la direcci\'on con menos obstaculos. Se procede entonces a girar al robot {\bf sobre su eje} hacia esa direcci\'on. La velocidad de giro difiere de la velocidad de desplazamiento, y fue seleccionada como compromiso entre evitar proveer al sistema demasiada informaci\'on invalida (imagenes borrosas generadas por el movimiento de la camara) y  mantener la seguridad del equipamiento (evitando movimientos bruscos).
-\begin{figure}[ht]
-	\begin{center}
-		\includegraphics[width=6cm]{./images/disparidad.jpg}
-		\caption{Arriba: un objeto frente a la camara no es considerado como obstaculo, solo se evalua la franja central. Abajo: el objeto se considera como obstaculo, por lo que se evaluan las franjas laterales.}
-	\end{center}
-\end{figure}
-
+Una vez obtenidos los porcentajes, se procede a la toma de la decisi\'on propiamente dicha. En principio se analiza \'unicamente la zona central. Si el porcentaje de p\'ixeles con disparidad alta es menor a un valor predeterminado (por ejemplo, $30\%$), se considera que el camino se encuentra sin obst\'aculos cercanos y el robot puede continuar su desplazamiento en linea recta. En cambio, si el umbral es superado, se procede a comparar los porcentajes de p\'ixeles de alta disparidad de las ventanas laterales (cada uno respecto a la cantidad de p\'ixeles total de la ventana correspondiente), a diferencia de \cite{KNG10}. La ventana con menor valor asociado representa la direcci\'on con menos obst\'aculos, y por lo tanto se procede a girar el robot (sobre su eje) en dicho sentido. Cabe aclarar, que la velocidad angular del robot es mayor a la velocidad de traslaci\'on. \'Esta fue seleccionada con la intenci\'on de mitigar la informaci\'on borrosa (blur) generada por el movimiento de rotaci\'on, que conlleva a la obtenci\'on de mapas de disparidad con una gran cantidad de ruido.
 
 
 \section{Conclusiones}
