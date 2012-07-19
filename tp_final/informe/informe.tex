@@ -585,10 +585,36 @@ En general, un \'ultimo paso es necesario. Una alineaci\'on horizontal de una im
 %Explicacion de como se usa el mapa de disparidad (partiendo en 3 zonas etc.)(decir que solo se utiliza el mapa de un solo lado, izquierdo)
 \label{sec:heuristica}
 
-La heuristica de evasi\'on de obst\'aculos que se implementa esta basada en el M\'etodo de Estimacion por Umbral analizado en \cite{KNG10}. \'Este utiliza mapas de disparidad, donde la disparidad de cada punto de la imagen representa una medida de la distancia a la que se encuentran el objeto capturados por la camara. Se presentan aqui las variaciones implementadas sobre el algoritmo.
+La heur\'istica de evasi\'on de obst\'aculos implementada se basada en el M\'etodo de Estimaci\'on por Umbral analizado en \cite{KNG10}. \'Este m\'etodo utiliza el mapas de disparidad para deducir la distancia a la que se encuentran los objeto capturados por la c\'amara estereo. Se presenta aqu\'i una explicaci\'on del mismo, incluyendo las variaciones implementadas.
 
-En primer lugar, se divide el mapa de disparidad en tres franjas verticales de anchos no necesariamente equivalentes, y altura unica variable. Se utilizaron anchos distintos para cada franaj para compensar el ruido generado en las zonas de los bordes por la falta de informacion . La altura se calibra segun el angulo de la camara con respecto al suelo, de manera de evitar analizar los puntos correspondientes a este, pues no aportan datos relevantes para la navegacion (se considera que el suelo es plano).  Luego, se procede a calcular la cantidad de puntos de la franja central cuya disparidad es mayor a un determinado umbral (en nuestro caso, se consideraron como puntos de alta disparidad aquellos que superaran una disparidad de 75 pixels), y se calcula el porcentaje que representan en relacion a la cantidad total de pixels de la franja. Si este es inferior a un ratio previamente definido, se considera que el robot puede seguir avanzando derecho ya que no existen obstaculos en su camino. Si el ratio es superado, se procede a comparar los porcentajes de pixeles de alta disparidad de las franjas de los bordes (cada uno respecto a la cantidad de pixels total de la franaja correspondiente). El borde con el menor de los valores representa la direccion con menos obstaculos, y se procede a girar el robot hacia alli. 
-Cabe aclarar que la velocidad de giro del robot difiere de la velocidad de movimietno normal, y fue seleccionada de manera de evitar proveer al sistema demasiada informacion borrosa generada por el movimeitno de giro, a la vez que evita un angulo de giro demasiado pronunciado.
+En primer lugar, se dividide el mapa de disparidad en tres franjas verticales con base variable, tal como se muestra en la figura ¡¡FIGURA!!. Se decidi\'o que el ancho de la franja central fuese mayor que los anchos de los laterales ya que, dado que la c\'amara cuenta con un angulo de visi\'on reducido, se logra que el algoritmo obtenga mayor informaci\'on sobre los objetos que se encuentran en los costados pero representan obstaculos potenciales. Tambi\'en se variaron independientemente los anchos de las franjas laterales, aunque esta vez con el fin de reducir el ruido generado por la falta de informaci\'on en los bordes. Por otro lado, la base de las franjas se calibra con el fin de evitar analizar la disparidad de las zonas pertenecientes al terreno, pues no aportan datos relevantes para la navegacion \cite{KNG10} CAMBIAR ESTA CITA (se considera que el robot se desplaza sobre un terreno plano). 
+
+\begin{figure}[ht]
+	\begin{center}
+		\includegraphics[width=6cm]{./images/divisionPantalla.jpg}
+		\caption{L\'imites de las franjas de interes. La linea horizontal representa el borde inferior de las franjas.}
+	\end{center}
+\end{figure}
+
+El segundo paso consiste en estimar los porcentajes de pixeles del mapa de disparidad que representen objetos cercanos, los cuales se obtienen para cada una de las franjas por separado. Para \'esto, sobre cada area se contabilizan los pixeles que posean una disparidad mayor a un cierto umbral de tolerancia; mientras menor sea el umbral, mayor sera la distancia de los objetos considerados como cercanos. Observando que el algortimo de procesamiento de las imagenes genera un alto grado de ruido para los objetos proximos a la camara, se decidi\'o incluir tambien aquellos pixels que no cuenten con informaci\'on de disparidad v\'alida (particularmente, pixels con disparida negativa). Para evitar que \'estos tomen predominancia sobre los pixels de alta disparidad, se los incluye con un peso menor (70\% del valor real). Como se ver\'a a continuaci\'on, dado que la informaci\'on provista por las franjas laterales no es necesariamente utilizada, el \'analisis de disparidad de ambas zonas puede ser relegado hasta el momento de utilizaci\'on.
+
+\begin{figure}[ht]
+	\begin{center}
+		\includegraphics[width=6cm]{./images/disparidad.jpg}
+		\caption{La zonas blancas representan los puntos de disparidad alta. Las grises, los puntos con disparidad invalida.}
+	\end{center}
+\end{figure}
+
+Una vez obtenidos los porcentajes, se procede a la toma de decisi\'on propiamente dicha. En principio se analiza \'unicamente la zona central. Si el porcentaje es menor a un valor predeterminado (por ejemplo, 30\%), se considera que el camino se encuentra suficientemente libre y el robot puede contnuar su desplazamiento en linea recta. Si el ratio es superado, se procede a comparar los valores obtenidos para las franjas laterales. El lateral con el menor valor representa la direcci\'on con menos obstaculos. Se procede entonces a girar al robot {\bf sobre su eje} hacia esa direcci\'on. La velocidad de giro difiere de la velocidad de desplazamiento, y fue seleccionada como compromiso entre evitar proveer al sistema demasiada informaci\'on invalida (imagenes borrosas generadas por el movimiento de la camara) y  mantener la seguridad del equipamiento (evitando movimientos bruscos).
+
+\begin{figure}[ht]
+	\begin{center}
+		\includegraphics[width=6cm]{./images/disparidad.jpg}
+		\caption{Arriba: un objeto frente a la camara no es considerado como obstaculo, solo se evalua la franja central. Abajo: el objeto se considera como obstaculo, por lo que se evaluan las franjas laterales.}
+	\end{center}
+\end{figure}
+
+
 
 \section{Conclusiones}
 %comentar que se pueden usar los dos mapas (de la parte derecha e izquierdas, etc)
