@@ -64,6 +64,7 @@
 % draft mode.
 %
 \documentclass[journal]{IEEEtran}
+\usepackage{subfigure}
 %\usepackage[spanish]{babel}
 %
 % If IEEEtran.cls has not been installed into the LaTeX system files,
@@ -585,18 +586,38 @@ En general, un \'ultimo paso es necesario. Una alineaci\'on horizontal de una im
 %Explicacion de como se usa el mapa de disparidad (partiendo en 3 zonas etc.)(decir que solo se utiliza el mapa de un solo lado, izquierdo)
 \label{sec:heuristica}
 
-La heur\'istica de evasi\'on de obst\'aculos implementada se basada en el M\'etodo de Estimaci\'on por Umbral analizado en \cite{KNG10}. \'Este m\'etodo utiliza el mapas de disparidad para deducir la distancia a la que se encuentran los objeto capturados por la c\'amara estereo. Se presenta aqu\'i una explicaci\'on del mismo, incluyendo las variaciones implementadas.
+La heur\'istica de evasi\'on de obst\'aculos que se implementa est\'a basada en el M\'etodo de Estimaci\'on por Umbral (\emph{Threshold Estimation Method}) analizado en \cite{KNG10}. \'Este m\'etodo utiliza mapas de disparidad para aproximar la distancia a la que se encuentran los objeto capturados por la c\'amara est\'ereo. En lo que sigue, se presentan las variaciones implementadas sobre el algoritmo.
 
-En primer lugar, se dividide el mapa de disparidad en tres franjas verticales con base variable, tal como se muestra en la figura ¡¡FIGURA!!. Se decidi\'o que el ancho de la franja central fuese mayor que los anchos de los laterales ya que, dado que la c\'amara cuenta con un angulo de visi\'on reducido, se logra que el algoritmo obtenga mayor informaci\'on sobre los objetos que se encuentran en los costados pero representan obstaculos potenciales. Tambi\'en se variaron independientemente los anchos de las franjas laterales, aunque esta vez con el fin de reducir el ruido generado por la falta de informaci\'on en los bordes. Por otro lado, la base de las franjas se calibra con el fin de evitar analizar la disparidad de las zonas pertenecientes al terreno, pues no aportan datos relevantes para la navegacion \cite{KNG10} CAMBIAR ESTA CITA (se considera que el robot se desplaza sobre un terreno plano). 
+En primer lugar, se divide el mapa de disparidad en tres ventanas verticales con base variable, tal como se muestra en la figura~\ref{fig:piernas_cerca}. En los experimentos se lleg\'o a que el ancho de la ventana central sea mayor que el de las ventanas laterales, dado que la c\'amara cuenta con un \'angulo de visi\'on reducido, logrando as\'i que el algoritmo obtenga mayor informaci\'on sobre los objetos que se encuentran delante y representan obst\'aculos potenciales. Adem\'as se modificaron independientemente los tama\~nos de las ventanas de los lados, con el fin de reducir el ruido generado por la falta de informaci\'on en los bordes de las im\'agenes. Por otro lado, se defini\'o un l\'imite para determinar la regi\'on de interes sobre la cual se procesan los datos \cite{H09}, prescindiendo de la informaci\'on ``ruidosa'' producida por el suelo (se considera que el robot se desplaza sobre un terreno plano).
 
 \begin{figure}[ht]
 	\begin{center}
-		\includegraphics[width=6cm]{./images/divisionPantalla.jpg}
-		\caption{L\'imites de las franjas de interes. La linea horizontal representa el borde inferior de las franjas.}
+		\includegraphics[width=6cm]{./images/piernas_cerca.jpg}
 	\end{center}
+	\caption{Ventanas de una imagen. La linea horizontal representa la regi\'on de interes.}
+	\label{fig:piernas_cerca}
 \end{figure}
 
-El segundo paso consiste en estimar los porcentajes de pixeles del mapa de disparidad que representen objetos cercanos, los cuales se obtienen para cada una de las franjas por separado. Para \'esto, sobre cada area se contabilizan los pixeles que posean una disparidad mayor a un cierto umbral de tolerancia; mientras menor sea el umbral, mayor sera la distancia de los objetos considerados como cercanos. Observando que el algortimo de procesamiento de las imagenes genera un alto grado de ruido para los objetos proximos a la camara, se decidi\'o incluir tambien aquellos pixels que no cuenten con informaci\'on de disparidad v\'alida (particularmente, pixels con disparida negativa). Para evitar que \'estos tomen predominancia sobre los pixels de alta disparidad, se los incluye con un peso menor (70\% del valor real). Como se ver\'a a continuaci\'on, dado que la informaci\'on provista por las franjas laterales no es necesariamente utilizada, el \'analisis de disparidad de ambas zonas puede ser relegado hasta el momento de utilizaci\'on.
+El segundo paso consiste en estimar los porcentajes de p\'ixeles del mapa de disparidad que representen objetos cercanos, los cuales se obtienen para cada una de las ventanas por separado. Para \'esto, sobre cada \'area se contabilizan los p\'ixeles que posean una disparidad mayor a un cierto umbral de tolerancia; mientras menor sea el umbral, mayor ser\'a la cantidad de p\'ixeles considerados cercanos. Al observar que el algortimo de procesamiento de las im\'agenes genera un alto grado de ruido para los objetos pr\'oximos a la c\'amara, se decidi\'o incluir tambi\'en aquellos p\'ixeles que no cuenten con informaci\'on de disparidad. Para evitar que \'estos tomen predominancia sobre los p\'ixeles de alta disparidad, se los incorpora ponderandolos al $30\%$ del valor de un p\'ixel con disparidad alta. Cabe destacar que por motivos de eficiencia las zonas de los lados no son procesadas hasta el momento en que realmentes sea necesario disponer de su informaci\'on. En la figura~\ref{fig:piernas} se puede observar dicho comportamiento.
+
+
+\begin{figure}[ht]
+\centering
+\subfigure[Una persona a $1.5$ metros de distancia a la c\'amara, junto con su correspondiente mapa de disparidad.]{
+    \includegraphics[width=4cm]{./images/piernas_lejos.jpg}
+    \includegraphics[width=4cm]{./images/piernas_disparidad_lejos.jpg}
+    \label{fig:subfig1}
+}
+\subfigure[Cuando la persona se encuentra cercana a la c\'amara (a $50$ cent\'imetros aproximadamente), se puede observar, que en la ventana central de la imagen predom\'inan p\'ixeles con disparidad alta, como se puede ver en el mapa de disparidad (p\'ixeles verdes).]{
+    \includegraphics[width=4cm]{./images/piernas_cerca.jpg}
+    \includegraphics[width=4cm]{./images/piernas_disparidad_cerca.jpg}
+    \label{fig:subfig2}
+}
+
+\caption{Im\'agenes donde se muestran las ventanas y el \'area de interes procedas en cada momento.}
+\label{fig:piernas}
+\end{figure}
+
 
 \begin{figure}[ht]
 	\begin{center}
@@ -605,8 +626,7 @@ El segundo paso consiste en estimar los porcentajes de pixeles del mapa de dispa
 	\end{center}
 \end{figure}
 
-Una vez obtenidos los porcentajes, se procede a la toma de decisi\'on propiamente dicha. En principio se analiza \'unicamente la zona central. Si el porcentaje es menor a un valor predeterminado (por ejemplo, 30\%), se considera que el camino se encuentra suficientemente libre y el robot puede contnuar su desplazamiento en linea recta. Si el ratio es superado, se procede a comparar los valores obtenidos para las franjas laterales. El lateral con el menor valor representa la direcci\'on con menos obstaculos. Se procede entonces a girar al robot {\bf sobre su eje} hacia esa direcci\'on. La velocidad de giro difiere de la velocidad de desplazamiento, y fue seleccionada como compromiso entre evitar proveer al sistema demasiada informaci\'on invalida (imagenes borrosas generadas por el movimiento de la camara) y  mantener la seguridad del equipamiento (evitando movimientos bruscos).
-
+Una vez obtenidos los porcentajes, se procede a la toma de la decisi\'on propiamente dicha. En principio se analiza \'unicamente la zona central. Si el porcentaje es menor a un valor predeterminado (por ejemplo, 30\%), se considera que el camino se encuentra suficientemente libre y el robot puede contnuar su desplazamiento en linea recta. Si el ratio es superado, se procede a comparar los valores obtenidos para las franjas laterales. El lateral con el menor valor representa la direcci\'on con menos obstaculos. Se procede entonces a girar al robot {\bf sobre su eje} hacia esa direcci\'on. La velocidad de giro difiere de la velocidad de desplazamiento, y fue seleccionada como compromiso entre evitar proveer al sistema demasiada informaci\'on invalida (imagenes borrosas generadas por el movimiento de la camara) y  mantener la seguridad del equipamiento (evitando movimientos bruscos).
 \begin{figure}[ht]
 	\begin{center}
 		\includegraphics[width=6cm]{./images/disparidad.jpg}
