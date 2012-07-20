@@ -1630,7 +1630,7 @@
 \def\contentsname{Contents}
 \def\listfigurename{List of Figures}
 \def\listtablename{List of Tables}
-\def\refname{References}
+\def\refname{Referencias}
 \def\indexname{Index}
 \def\figurename{Fig.}
 \def\tablename{TABLE}
@@ -3151,7 +3151,7 @@ between column types.}%
 \@IEEEcompsocconfonly{\def\IEEEbibitemsep{1\baselineskip plus 0.25\baselineskip minus 0.25\baselineskip}}
 
 
-\def\thebibliography#1{\section*{REFERENCIAS}% \refname decia antes
+\def\thebibliography#1{\section*{\refname}% \refname decia antes
     \addcontentsline{toc}{section}{\refname}%
     % V1.6 add some rubber space here and provide a command trigger
     \footnotesize\@IEEEcompsocconfonly{\small}\vskip 0.3\baselineskip plus 0.1\baselineskip minus 0.1\baselineskip%
