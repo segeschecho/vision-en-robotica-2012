@@ -24,7 +24,7 @@
 
 
 \begin{abstract}
-En el presente trabajo se evaluar\'a un algoritmo de evasi\'on de obst\'aculos para navegaci\'on aut\'onoma de robots basado en mapas de profundidad. Aunque existen diversas tecnolog\'ias que permiten generar dichos mapas, los m\'etodos de visi\'on est\'ereo que generan mapas de disparidad han ganado relevancia en los \'ultimos a\~nos debido a la accesibilidad de los elementos de hardware necesarios, tanto como para obtener la informaci\'on sobre el entorno inmediato, como para procesarla. Se considerar\'an dos partes principales en el desarrollo propuesto: en primer lugar, se utilizar\'an las librer\'ias open source de procesamiento gr\'afico OpenCV y LIBELAS para, a partir de las im\'agenes provistas por una c\'amara \'estereo, generar mapas de disparidad de los que se pueda deducir informaci\'on relevante sobre la distancia de los objetos dentro de la ventana de visibilidad del robot; luego, se procesar\'an estos mapas para decidir si existe un obst\'aculo frente al robot y, de ser as\'i, divisar que acci\'on debe tomarse para evitarlo.
+En el presente trabajo se evaluar\'a un algoritmo de evasi\'on de obst\'aculos para la navegaci\'on aut\'onoma de robots basado en mapas de profundidad. Aunque existen diversas tecnolog\'ias que permiten generarlos, los m\'etodos de visi\'on est\'ereo que construyen mapas de disparidad han ganado relevancia en los \'ultimos a\~nos debido a la accesibilidad de los elementos de hardware necesarios, tanto como para obtener la informaci\'on sobre el entorno inmediato, como para procesarla. Se considerar\'an dos partes principales en el desarrollo propuesto: en primer lugar, se utilizar\'an librer\'ias de procesamiento gr\'afico para, a partir de las im\'agenes provistas por una c\'amara \'estereo, generar mapas de disparidad de los que se pueda deducir informaci\'on relevante sobre la distancia de los objetos dentro de la ventana de visibilidad del robot; luego, se procesar\'an estos mapas para decidir si existe un obst\'aculo frente al robot y, de ser as\'i, determinar qu\'e acci\'on se debe efectuar para su evasi\'on.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -38,13 +38,13 @@ Mapa de disparidad, Visi\'on est\'ereo, Evasi\'on de obst\'aculos, Navegaci\'on 
 \section{Introducci\'on}
 %comentar el uso de un sistema de navegacion, basado en camaras stereo. justificando (barato, accesible, costo computacional)
 
-En la \'ultima d\'ecada se ha dado un gran impulso al \'area de rob\'otica abocada a la navegaci\'on aut\'onoma de veh\'iculos. Dado que el campo de aplicaci\'on es diverso, abarcando desde sistemas tan cr\'iticos como la exploraci\'on de lugares inaccesibles para veh\'iculos tripulados, hasta sistemas tan sencillos como la realizaci\'on de tareas dom\'esticas aut\'onomas, se han desarrollado tecnolog\'ias de distinta complejidad y costo operativo. En especial, se ha hecho principal incapi\'e en los sistemas basados en visi\'on, dada la variedad y el bajo costo que presentan las c\'amaras hoy en d\'ia.
+En la \'ultima d\'ecada se ha dado un gran impulso al \'area de rob\'otica abocada a la navegaci\'on aut\'onoma de plataformas m\'oviles. Dado que el campo de aplicaci\'on es diverso, abarcando desde sistemas tan cr\'iticos como la exploraci\'on de lugares inaccesibles para veh\'iculos tripulados, hasta sistemas tan sencillos como la realizaci\'on de tareas dom\'esticas aut\'onomas, se han desarrollado tecnolog\'ias de distinta complejidad. En especial, se ha hecho principal incapi\'e en los sistemas basados en visi\'on, dada la variedad y el bajo costo que presentan las c\'amaras hoy en d\'ia, comparado con otros sensores.
 
-En el presente informe se exhibe un algoritmo de evasi\'on de obst\'aculos basado \'unicamente en visi\'on est\'ereo para la navegaci\'on aut\'onoma de un robot. Visi\'on est\'ereo es una herramienta muy utilizada para la navegaci\'on aut\'onoma en los \'ultimos a\~nos debido al bajo costo de las c\'amaras y a la gran cantidad de informaci\'on que brindan. El software aqu\'i presentado para lograr la detecci\'on de obst\'aculos hace uso de una c\'amara est\'ereo permitiendo aproximar la distancia relativa en la que se encuentran los objetos con respecto a la c\'amara. Cabe destacar, que dicho algoritmo puede ser adaptado a cualquier dispositivo que cuente con una c\'amara del tipo mencionado. En lo que aqu\'i refiere, se utiliz\'o la c\'amara \emph{Minoru}, y como plataforma de prueba el robot \emph{exabot} \cite{DPSC09}.
+En el presente informe se exhibe un algoritmo de evasi\'on de obst\'aculos basado \'unicamente en visi\'on est\'ereo para la navegaci\'on aut\'onoma de un robot. El software aqu\'i presentado hace uso de una c\'amara est\'ereo para lograr la detecci\'on de obst\'aculos, permitiendo aproximar la distancia relativa en la que se encuentran los objetos con respecto al robot. Cabe destacar, que dicho algoritmo puede ser adaptado a cualquier dispositivo que cuente con una c\'amara del tipo mencionado. En lo que aqu\'i refiere, se utiliz\'o la c\'amara \emph{Minoru}, y como plataforma de prueba el robot \emph{exabot} \cite{DPSC09}.
 
 %Otra de las ventajas de utilizar visi\'on est\'ereo para la navegaci\'on aut\'onoma, es la posibilidad de crear mapas 3D del entorno, si bien aqu\'i no se
 
-El documento se encuentra estructurado de la siguiente manera: la secci\'on~\ref{sec:trabajajo_relacionado} introduce el estado del arte en sistemas de evasi\'on de obst\'aculos mediante el uso de visi\'on est\'ereo, la secci\'on~\ref{sec:hardware} detalla el hardware utilizado durante el desarrollo del algoritmo, la secci\'on~\ref{sec:pro_img} presenta las librer\'ias OpenCV y LIBELAS utilizadas para el procesamiento de im\'agenes y la generaci\'on de mapas de disparidad, la secci\'on~\ref{sec:heuristica} explica el algoritmo de evasi\'on de obst\'aculos propuesto, finalmente la secci\'on~\ref{sec:conclusiones} comenta algunas conclusiones y trabajo futuro.
+El documento se encuentra estructurado de la siguiente manera: la secci\'on~\ref{sec:trabajajo_relacionado} introduce el estado del arte en sistemas de evasi\'on de obst\'aculos mediante el uso de visi\'on est\'ereo, la secci\'on~\ref{sec:hardware} detalla el hardware utilizado durante el desarrollo del algoritmo, la secci\'on~\ref{sec:pro_img} presenta las librer\'ias utilizadas para el procesamiento de im\'agenes y la generaci\'on de mapas de disparidad, la secci\'on~\ref{sec:heuristica} explica el algoritmo de evasi\'on de obst\'aculos propuesto, finalmente la secci\'on~\ref{sec:conclusiones} comenta algunas conclusiones y trabajo futuro.
 \medskip
 
 \hfill 20 de Julio de 2012
@@ -52,69 +52,83 @@ El documento se encuentra estructurado de la siguiente manera: la secci\'on~\ref
 \section{Trabajo Relacionado}
 \label{sec:trabajajo_relacionado}
 
-Una de las \'areas de mayor inter\'es dentro del campo de la rob\'otica es la de navegaci\'on aut\'onoma. Con el pasar del tiempo se han propuesto y creado diversos sistemas de navegaci\'on que, adem\'as de las metodolog\'ias algor\'itmicas utilizadas (detecci\'on de caracter\'isticas, odometr\'ia, odometr\'ia visual, etc), se diferencian en las tecnolog\'ias elegidas para obtener la informaci\'on sobre el entorno. Algunas de las tecnolog\'ias m\'as utilizadas son:
+Una de las \'areas de mayor inter\'es dentro del campo de la rob\'otica es la de navegaci\'on aut\'onoma. Con el pasar del tiempo se han propuesto y creado diversos sistemas de navegaci\'on que, adem\'as de las metodolog\'ias algor\'itmicas utilizadas (detecci\'on de caracter\'isticas, odometr\'ia, odometr\'ia visual, etc), se diferencian en las tecnolog\'ias elegidas para obtener la informaci\'on sobre el entorno. Algunas de las m\'as utilizadas son:
 
 \begin{itemize}
 	\item \emph{C\'amaras de video}, que obtienen la informaci\'on en forma de im\'agenes. Los m\'etodos mas populares, utilizan una c\'amara (visi\'on monocular) o dos c\'amaras (visi\'on est\'ereo).
 	
-	\item Sensores de tipo \emph{sonar} o \emph{infrarojo}, para detectar objetos pr\'oximos.
+	\item Sensores de tipo \emph{sonar} o \emph{infrarojo}, para la detecci\'on de objetos pr\'oximos.
 	
 	\item \emph{Radares} de microondas y radares \emph{l\'aser} (LIDAR).
 
 	\item \emph{GPS}, en conjunto con un mapa del terreno por donde se desplazar\'a el robot.
 \end{itemize}
 
-Si bien los sistemas m\'as simples utilizan s\'olo alguna de \'estas tecnolog\'ias, distintos tipos de sensores pueden combinarse para obtener informaci\'on m\'as rica sobre el mundo. Todos \'estos pueden ser utilizados, adem\'as, en problemas de localizaci\'on y construcci\'on de mapas \cite{KNG10}.
+Si bien los sistemas m\'as simples utilizan s\'olo alguna de \'estas tecnolog\'ias, distintos tipos de sensores se pueden combinar para obtener informaci\'on m\'as precisa sobre el mundo. Todos \'estos pueden ser utilizados, adem\'as, en problemas de localizaci\'on y construcci\'on de mapas \cite{KNG10}.
 
-Las c\'amaras est\'ereo representan un caso de inter\'es particular puesto que, dado que es posible calcular la profundidad relativa de los objetos en el \'area de visi\'on con un costo computacional relativamente bajo, pueden ser utilizadas de forma eficiente para la detecc\'ion de elementos en el espacio por donde se desplaza el robot. Partiendo de esta idea, en el trabajo actual se demuestra cómo es posible implementar un sistema de evasi\'on de obst\'aculos utilizando \'unicamente la informaci\'on provista por una c\'amara de \'estas caracter\'isticas.
+Las c\'amaras est\'ereo representan un caso de inter\'es particular puesto que es posible calcular la profundidad relativa de los objetos en el \'area de visi\'on con un costo computacional relativamente bajo. Partiendo de esta idea, en el trabajo actual se demuestra c\'omo es posible implementar un sistema de evasi\'on de obst\'aculos utilizando \'unicamente la informaci\'on provista por una c\'amara de \'estas caracter\'isticas.
 
-En \cite{KNG10} se plantean tres t\'ecnicas para llevar a cabo la tarea de evasi\'on de obst\'aculos en base a la utilizaci\'on de mapas de profundidad o disparidad. El primer paso es com\'un a las tres: se propone dividir el mapa de disparidad en tres partes, una izquierda, una central y una derecha. La diferencia reside en como se procesa la informacion a partir de aqu\'i. En el primer m\'etodo propone calcular el promedio de disparidad en cada una de las zonas. Entonces, se dirigir\'e al robot en la direcci\'on correspondiente a la zona con el menor de los valores obtenidos, asumiendo que es aquella asociada a la menor cantidad de obst\'aculos. El segundo m\'etodo propuesto consiste en una evoluc\'ion del reci\'en comentado. En principio s\'olo se considera la parte central del mapa de disparidad. Se realiza un conteo sobre los p\'ixels que presentan una disparidad mayor a un cierto valor l\'imite, y se calcula el porcentaje que \'estos representan en relaci\'on al total de pixeles de esa zona particular. Si este porcentaje es alto (mayor a un valor previamente fijado), se deduce que frente a la c\'amara se encuentra un obst\'aculo. Es entonces que se decide realizar una acci\'on evasiva. Para poder elegir una direcci\'on hacia la cual girar, se analizan las zonas laterales y se procede hacia la que contenga el menor promedio de disparidad. El \'ultimo m\'etodo considera la condici\'on de que las tres zonas contengan un promedio de disparidad por encima de un umbral fijado. Si el robot se encuentra en este caso deber\'a reaccionar con una acci\'on de escape (por ejemplo, girar 180 grados para volver, o volver sobre el camino por donde se llego a la posici\'on actual). Una desventaja que puede observarse en los m\'etodos anteriores es que no se utiliza toda la informaci\'on disponible generada por la c\'amara est\'ereo, dado que solo se hace uso de un \'unico mapa de disparidad y esto puede llevar a problemas en la navegaci\'on. Para resolver dicho problema, en el procedimiento propuesto se utilizan ambos mapas de disparidad, rescatando la informaci\'on de cada uno para suplir las carencias mutuas (por ejemplo, si uno de los laterales contiene demasiado ruido en uno de los mapas, pero no en el otro).
+En \cite{KNG10} se comparan tres t\'ecnicas para llevar a cabo la tarea de evasi\'on de obst\'aculos en base a la utilizaci\'on de mapas de disparidad. El primer paso es com\'un a las tres: se propone dividir el mapa de disparidad en tres partes: una izquierda, una central y una derecha. La diferencia reside en como se procesa la informacion a partir de aqu\'i. En el primer m\'etodo se propone calcular el promedio de disparidad en cada una de las zonas. Entonces, se dirige al robot en la direcci\'on correspondiente a la zona con el menor de los valores obtenidos, asumiendo que es aquella asociada a la menor cantidad de obst\'aculos. El segundo m\'etodo propuesto consiste en una evoluci\'on del reci\'en comentado. En principio s\'olo se considera la parte central del mapa de disparidad. Se realiza un conteo sobre los p\'ixeles que presentan una disparidad mayor a un cierto valor l\'imite, y se calcula el porcentaje que \'estos representan en relaci\'on al total de esa zona particular. Si este porcentaje es alto (mayor a un valor previamente fijado), se deduce que frente a la c\'amara se encuentra un obst\'aculo. Es entonces que se decide realizar una acci\'on evasiva. Para poder elegir una direcci\'on hacia la cual girar, se analizan las zonas laterales y se procede hacia la que contenga el menor promedio de disparidad. El \'ultimo m\'etodo considera la condici\'on de que las tres zonas contengan un promedio de disparidad por encima de un umbral preestablecido. Si el robot se encuentra en este caso, deber\'a actuar con una acci\'on de escape, por ejemplo, girar $180$ grados, o volver en reversa sobre el camino por donde se llego a la posici\'on actual.
 
-En \cite{RH04} se plantea un m\'etodo para el procesamiento de las im\'agenes que utiliza una escala de grises para representar la distancia a la que se encuentra cada uno de los pixels. Adem\'as se sugiere no prestar atenci\'on a la informaci\'on que provenga del \'area del piso dado que, en general, no provee informaci\'on \'util si el terreno es plano y puede ser una fuente de ruido para el mapa de disparidad. Otra mejora al procesamiento de la informaci\'on proveniente de las c\'amaras consiste en realzar los bordes de la imagen. De esta manera, es posible reducir el ruido generado cuando se realizan movimientos bruscos hacia adelante o hacia los costados.
+En \cite{RH04} se plantea un m\'etodo para el procesamiento de im\'agenes que utilizan una escala de grises para representar la distancia a la que se encuentra cada uno de los p\'ixeles. Adem\'as se sugiere no prestar atenci\'on a la informaci\'on que provenga del \'area del piso, dado que, en general, no provee informaci\'on \'util si el terreno es plano, siendo una fuente de ruido para el mapa de disparidad. Otra mejora al procesamiento de la informaci\'on proveniente de las c\'amaras consiste en realzar los bordes de la imagen. De esta manera, es posible reducir el ruido generado cuando se realizan movimientos de rotaci\'on.
 
-En \cite{H09} se sugiere el uso de solo una parte de la imagen, un \'area peque\~na en comparaci\'on al tama\~no total de la misma. \'Esto es lo que se conoce como regi\'on de inter\'es. Aunque no se disminuye la complejidad del proceso, sí se logra reducir el tiempo requerido para poder obtener el resultado. Un problema que podr\'ia presentar este proceder es que, si el \'area de inter\'es es demasiado peque\~na, se omita informaci\'on relevante sobre la escena a procesar. El m\'etodo aqu\'i propuesto tambi\'en utiliza una reducci\'on de las areas a procesar, con el fin de no inclu\'ir la informaci\'on superflua proveniente del terreno propiamente dicho.
+En \cite{H09} se sugiere el uso de solo una parte de la imagen, un \'area peque\~na en comparaci\'on al tama\~no total de la misma. \'Esto es lo que se conoce como \emph{regi\'on de inter\'es}. Aunque no se disminuye la complejidad del proceso, s\'i se logra reducir el tiempo requerido para poder obtener el resultado. Un problema que podr\'ia presentar este proceder es que, si el \'area de inter\'es es demasiado peque\~na, se ignora informaci\'on relevante sobre la escena a procesar. El m\'etodo aqu\'i propuesto tambi\'en utiliza una reducci\'on de las \'areas a procesar con el fin de no inclu\'ir la informaci\'on superflua proveniente del terreno propiamente dicho.
 
 \section{Hardware Utilizado}
 % Descripcion del robot, descripcion de la minoru, explicacion (breve) de la calibracion (uso de toolbox calib)
 \label{sec:hardware}
 
 
-Durante el desarrollo de este trabajo se utiliz\'o el robot {\bf Exabot}, dise\~nado y fabricado en la facultad FCEyN-UBA, Argentina. Se trata de un veh\'iculo m\'ovil con cuatro ruedas, unidas por dos orugas, y dos motores, lo que permite movimientos con dos grados de libertad en el plano. Se configur\'o con una c\'amara est\'ereo y montaje para computadoras port\'atiles. La interfaz de comunicaci\'on con el mismo es v\'ia red, que se utiliza \'unicamente para enviar comandos.
+Durante el desarrollo de este trabajo se utiliz\'o el robot \emph{Exabot} (figura~\ref{fig:exabot}), dise\~nado y fabricado en la facultad \emph{FCEyN-UBA}, Argentina. Se trata de un veh\'iculo m\'ovil con cuatro ruedas, unidas por dos orugas, y dos motores, lo que permite movimientos con dos grados de libertad en el plano. Se configur\'o con una c\'amara est\'ereo y montaje para computadoras port\'atiles. La interfaz de comunicaci\'on con el mismo es v\'ia red, que se utiliza \'unicamente para enviar comandos.
 
 \begin{figure}[ht]
 	\begin{center}
 		\includegraphics[width=6cm]{./images/exabot_04.png}
 		\includegraphics[width=6cm]{./images/exabot_03.png}
-		\caption{Configuraci\'on de Exabot utilizada}
 	\end{center}
+	\caption{Configuraci\'on de Exabot utilizada}
+	\label{fig:exabot}
 \end{figure}
 
-El equipo de visi\'on est\'ereo montado en este trabajo es una c\'amara est\'ereo {\bf Minoru}. La misma se conecta v\'ia USB a la computadora port\'atil. Sus caracter\'isticas son las siguientes: 60 mm de base est\'ereo, USB 2.0, resoluciones desde 320x240 a 1280x480, 15~30fps, 1.5 W en modo operativo y 2 mW en modo suspendido. La resoluci\'on utilizada en este trabajo para las im\'agenes es de 640x480, capturadas a 15fps. Cabe aclarar que si bien la cantidad de im\'agenes disponibles por segundo es la mencionada anteriormente, las que realmente se procesan en general son menos, debido a la complejidad del algoritmo y el poder de c\'omputo del hardware.
+El equipo de visi\'on est\'ereo montado en este trabajo es una c\'amara est\'ereo \emph{Minoru}. La misma se conecta v\'ia USB a la computadora port\'atil. Sus caracter\'isticas son las siguientes: 60 mm de base est\'ereo, USB $2.0$, resoluciones desde $320 \times 240$ a $1280 \times 480$, $15 \sim 30fps$, $1.5$ $W$ en modo operativo y $2$ $mW$ en modo suspendido. La resoluci\'on utilizada en este trabajo para las im\'agenes es de $640 \times 480$, capturadas a $15fps$. Cabe aclarar que si bien la cantidad de im\'agenes disponibles por segundo es la mencionada anteriormente, las que realmente se procesan en general son menos, debido a la complejidad del algoritmo y el poder de c\'omputo del hardware.
 
-En el contexto de algoritmos de Visi\'on, es mandatario calibrar las c\'amaras para poder identificar sus par\'ametros intr\'insecos (relativos a la c\'amara: distancia focal, punto principal, distorsi\'on radial) y extr\'insecos (de la c\'amara con respecto al mundo: rotaci\'on y traslaci\'on). Estos par\'ametros son luego utilizados para realizar las correctas transformaciones proyectivas a la imagen, que logran extraer informaci\'on de cada p\'ixel.
+En el contexto de algoritmos de visi\'on, es mandatario calibrar las c\'amaras para poder identificar sus par\'ametros intr\'insecos (relativos a la c\'amara: distancia focal, punto principal, distorsi\'on radial) y extr\'insecos (de la c\'amara con respecto al mundo: rotaci\'on y traslaci\'on). Estos par\'ametros son luego utilizados para realizar las correctas transformaciones proyectivas a la imagen, que logran extraer informaci\'on de cada p\'ixel.
 
 En este trabajo, utilizamos la matriz de calibraci\'on de cada c\'amara para rectificar las im\'agenes y calcular su mapa de disparidad correspondiente, como veremos en la secci\'on~\ref{sec:pro_img}.
 
-La calibraci\'on de las c\'amaras se realiz\'o utilizando un paquete de MATLAB llamado {\bf Toolbox Calib} \cite{B00}. El producto de esta calibraci\'on est\'ereo es un archivo con los valores de los par\'ametros para ambas c\'amaras. Con este archivo se procede a generar otro con formato XML de una estructura en particular, que permite leerlo con la librer\'ia OpenCV.
+La calibraci\'on de las c\'amaras se realiz\'o utilizando una extensi\'on de MATLAB llamada \emph{Toolbox Calib} \cite{B00}. El producto de esta calibraci\'on est\'ereo es un archivo con los valores de los par\'ametros para ambas c\'amaras. Con este archivo se procede a generar otro con formato XML de una estructura en particular, que se adapta como fuente de entrada a las librer\'ias utilizadas.
 
 \section{Procesamiento de las Ima\'genes}
 \label{sec:pro_img}
 %explicar la rectificacion vertical y alineacion horizontal usando libelas y opencv y la generacion de mapas de disparidad
 
-Para realizar un algoritmo de evasi\'on de obst\'aculos, en este trabajo se utilizan mapas de disparidad, que contienen informaci\'on de profundidad para cada uno de los pixeles con respecto a la c\'amara. Esto es posible gracias a la visi\'on est\'ereo. Una de las pre-condiciones consiste en tener ambas im\'agenes de forma tal que, los pixels que se correspondan entre una im\'agen y otra se encuentren a la misma altura. Se llama disparidad a la distancia de un pixel en una imagen con su correspondiente en la otra. Aquellos pertenecientes a un objeto cercano, tendr\'an mayor disparidad que otros pertenecientes a un objeto lejano. Los puntos en com\'un en cada imagen se buscan por medio de un algoritmo de correspondencia.
+Para realizar un algoritmo de evasi\'on de obst\'aculos, en este trabajo se utilizan mapas de disparidad, que contienen informaci\'on de profundidad para cada uno de los p\'ixeles con respecto a la c\'amara. Esto es posible gracias a la visi\'on est\'ereo. Una de las precondiciones consiste en tener ambas im\'agenes de forma tal que, los p\'ixeles que se correspondan entre una im\'agen y otra se encuentren a la misma altura. Se llama disparidad a la distancia de un p\'ixel en una imagen con su correspondiente en la otra. Aquellos pertenecientes a un objeto cercano, tendr\'an mayor disparidad que otros pertenecientes a un objeto lejano. Los puntos en com\'un en cada imagen se buscan por medio de un algoritmo de correspondencia.
 
-La precondici\'on se debe cumplir antes de generar el mapa, por esta razo\'n debe realizarce una rectificaci\'on de ambas im\'agenes, una alineaci\'on vertical (de ambas) y horizontal (de la im\'agen derecha sobre la izquierda), de forma que una l\'inea se encuentre a la misma altura en una imagen y en otra. Estos par\'ametros son obtenidos con la ayuda de la librer\'ia $OpenCV$ \cite{opencv}.
+La precondici\'on se debe cumplir antes de generar el mapa, por esta raz\'on debe realizarse una rectificaci\'on de ambas im\'agenes, una alineaci\'on vertical (de ambas) y horizontal (de la im\'agen derecha sobre la izquierda), de forma que una l\'inea se encuentre a la misma altura en una imagen y en otra. Para llevar a cabo estos procesos se hizo uso de la librer\'ia open-source \emph{OpenCV} \cite{opencv}.
 
-En general, un \'ultimo paso es necesario. Una alineaci\'on horizontal de una imagen sobre otra para definir que se considera como disparidad cero, es decir la distancia mas lejana que se quiere representar. Dicho valor puede variar dependiendo el ambiente en el cual se trabaje, por ejemplo, si el ambiente es de interior, es probable, que la disparidad cero se encuentre a una distancia mas cercana que si el ambiente es exterior, y esto resulta en una alineaci\'on diferente para cada caso.
+Finalmente se al\'inea horizontalmente una imagen sobre otra para definir cu\'al es la distancia m\'as lejana que se desea considerar (figura~\ref{fig:disparidad2}). Los puntos ubicados en este l\'imite son denominados \emph{puntos con disparidad cero}. Dicho valor puede variar seg\'un las necesidades del problema a resolver. En general se toma como referencia el punto m\'as lejano del ambiente en el cual se trabaja, por ejemplo, si el ambiente es interior, es frecuente que los puntos con disparidad cero se encuentren a una distancia m\'as cercana que si el ambiente es exterior, resultando en una alineaci\'on diferente para cada caso.
 
 %mapas de disparidad
-
 \begin{figure}[ht]
-	\begin{center}
-		\includegraphics[width=6cm]{./images/original.jpg}
-		\includegraphics[width=6cm]{./images/disparidad.jpg}
-		\caption{Captura de la c\'amara izquierda de la c\'amara Minoru (imagen superior) y su correspondiente mapa de disparidad (imagen inferiror).}
-	\end{center}
+\centering
+\subfigure[Capturas originales de la c\'amara Minoru, izquierda y derecha respectivamente.]{
+    \includegraphics[width=4cm]{./images/original_izquierda.jpg}
+    \includegraphics[width=4cm]{./images/original_derecha.jpg}
+    \label{fig:disparidad1}
+}
+
+\subfigure[Superposici\'on de las im\'agenes izquierda y derecha, en escala de grises.]{
+    \includegraphics[width=4cm]{./images/alineacionHorinzontal.jpg}
+    \label{fig:disparidad2}
+}
+
+\subfigure[Mapa de disparidad resultante.]{
+    \includegraphics[width=4cm]{./images/disparidad.jpg}
+    \label{fig:disparidad3}
+}
+
+\caption{Im\'agenes donde se muestran los resultados parciales durante el proceso de obtenci\'on del mapa de disparidad.}
+\label{fig:piernas}
 \end{figure}
 
 \section{Heur\'istica de Evasi\'on de Obst\'aculos}
