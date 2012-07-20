@@ -50,7 +50,7 @@ El documento se encuentra estructurado de la siguiente manera: la secci\'on~\ref
 \hfill 20 de Julio de 2012
 
 \section{Trabajo Relacionado}
-\label{sec:trabajajo_relacionado}
+\label{sec:trabajo_relacionado}
 
 Una de las \'areas de mayor inter\'es dentro del campo de la rob\'otica es la de navegaci\'on aut\'onoma. Con el pasar del tiempo se han propuesto y creado diversos sistemas de navegaci\'on que, adem\'as de las metodolog\'ias algor\'itmicas utilizadas (detecci\'on de caracter\'isticas, odometr\'ia, odometr\'ia visual, etc), se diferencian en las tecnolog\'ias elegidas para obtener la informaci\'on sobre el entorno. Algunas de las m\'as utilizadas son:
 
@@ -98,15 +98,33 @@ En este trabajo, utilizamos la matriz de calibraci\'on de cada c\'amara para rec
 
 La calibraci\'on de las c\'amaras se realiz\'o utilizando una extensi\'on de MATLAB llamada \emph{Toolbox Calib} \cite{B00}. El producto de esta calibraci\'on est\'ereo es un archivo con los valores de los par\'ametros para ambas c\'amaras. Con este archivo se procede a generar otro con formato XML de una estructura en particular, que se adapta como fuente de entrada a las librer\'ias utilizadas.
 
-\section{Procesamiento de las Ima\'genes}
+\section{Procesamiento de las Im\'agenes}
 \label{sec:pro_img}
 %explicar la rectificacion vertical y alineacion horizontal usando libelas y opencv y la generacion de mapas de disparidad
 
-Para realizar un algoritmo de evasi\'on de obst\'aculos, en este trabajo se utilizan mapas de disparidad, que contienen informaci\'on de profundidad para cada uno de los p\'ixeles con respecto a la c\'amara. Esto es posible gracias a la visi\'on est\'ereo. Una de las precondiciones consiste en tener ambas im\'agenes de forma tal que, los p\'ixeles que se correspondan entre una im\'agen y otra se encuentren a la misma altura. Se llama disparidad a la distancia de un p\'ixel en una imagen con su correspondiente en la otra. Aquellos pertenecientes a un objeto cercano, tendr\'an mayor disparidad que otros pertenecientes a un objeto lejano. Los puntos en com\'un en cada imagen se buscan por medio de un algoritmo de correspondencia.
+Para realizar un algoritmo de evasi\'on de obst\'aculos, en este trabajo se utilizan mapas de disparidad, que contienen informaci\'on de profundidad para cada uno de los p\'ixeles con respecto a la c\'amara. Esto es posible gracias a la visi\'on est\'ereo. Una de las precondiciones consiste en tener ambas im\'agenes de forma tal que, los p\'ixeles que se correspondan entre una im\'agen y otra se encuentren a la misma altura. Se llama disparidad a la distancia de un p\'ixel en una imagen con su correspondiente en la otra. Aquellos pertenecientes a un objeto cercano, tendr\'an mayor disparidad que otros pertenecientes a un objeto lejano (figura~\ref{fig:disparidaddistancia}). Los puntos en com\'un en cada imagen se buscan por medio de un algoritmo de correspondencia.
+
+\begin{figure}[ht]
+\centering
+\subfigure[Disposici\'on de los objetos respecto a la c\'amara]{
+    \includegraphics[width=4cm]{./images/disparidad_distancias.jpg}
+    \label{fig:disparidaddistancias1}
+}
+
+\subfigure[Captura de las im\'agenes superpuestas, donde se observa que los objetos lejanos tienen menor disparidad que los objetos cercanos]{
+    \includegraphics[width=4cm]{./images/disparidad_distancias2.jpg}
+    \label{fig:disparidaddistancias2}
+}
+
+\caption{Comparaci\'on de la disparidad de objetos lejanos con respecto a objetos cercanos}
+\label{fig:disparidaddistancia}
+\end{figure}
 
 La precondici\'on se debe cumplir antes de generar el mapa, por esta raz\'on debe realizarse una rectificaci\'on de ambas im\'agenes, una alineaci\'on vertical (de ambas) y horizontal (de la im\'agen derecha sobre la izquierda), de forma que una l\'inea se encuentre a la misma altura en una imagen y en otra. Para llevar a cabo estos procesos se hizo uso de la librer\'ia open-source \emph{OpenCV} \cite{opencv}.
 
-Finalmente se al\'inea horizontalmente una imagen sobre otra para definir cu\'al es la distancia m\'as lejana que se desea considerar (figura~\ref{fig:disparidad2}). Los puntos ubicados en este l\'imite son denominados \emph{puntos con disparidad cero}. Dicho valor puede variar seg\'un las necesidades del problema a resolver. En general se toma como referencia el punto m\'as lejano del ambiente en el cual se trabaja, por ejemplo, si el ambiente es interior, es frecuente que los puntos con disparidad cero se encuentren a una distancia m\'as cercana que si el ambiente es exterior, resultando en una alineaci\'on diferente para cada caso.
+A continuaci\'on se al\'inea horizontalmente una imagen sobre otra para definir cu\'al es la distancia m\'as lejana que se desea considerar (figura~\ref{fig:disparidad2}). Los puntos ubicados en este l\'imite son denominados \emph{puntos con disparidad cero}. Dicho valor puede variar seg\'un las necesidades del problema a resolver. En general se toma como referencia el punto m\'as lejano del ambiente en el cual se trabaja, por ejemplo, si el ambiente es interior, es frecuente que los puntos con disparidad cero se encuentren a una distancia m\'as cercana que si el ambiente es exterior, resultando en una alineaci\'on diferente para cada caso.
+
+Finalmente se procede a calcular el mapa de disparidad. Para este fin se utiliz\'o la librer\'ia open-source LIBELAS (Library for Efficient LArge-scale Stereo Matching) \cite{G10}. Esta librer\'ia tiene la capacidad de proveer dos mapas de disparidad por cada par de cuadros: el izquierdo con respecto a la derecha, y el derecho con respecto a la izquierda. Para la evasi\'on de obst\'aculos que se detallar\'a en las secciones siguientes, solo se considerar\'a analizar el izquierdo. Se representa el resultado con colores HSV (figura~\ref{fig:disparidad3}), de modo que se puede apreciar f\'acilmente la distancia a los objetos.
 
 %mapas de disparidad
 \begin{figure}[ht]
@@ -124,6 +142,7 @@ Finalmente se al\'inea horizontalmente una imagen sobre otra para definir cu\'al
 
 \subfigure[Mapa de disparidad resultante.]{
     \includegraphics[width=4cm]{./images/disparidad.jpg}
+    \includegraphics[width=.33cm]{./images/hsv.jpg}
     \label{fig:disparidad3}
 }
 
@@ -135,9 +154,9 @@ Finalmente se al\'inea horizontalmente una imagen sobre otra para definir cu\'al
 %Explicacion de como se usa el mapa de disparidad (partiendo en 3 zonas etc.)(decir que solo se utiliza el mapa de un solo lado, izquierdo)
 \label{sec:heuristica}
 
-La heur\'istica de evasi\'on de obst\'aculos que se implementa est\'a basada en el M\'etodo de Estimaci\'on por Umbral (\emph{Threshold Estimation Method}) analizado en \cite{KNG10}. \'Este m\'etodo utiliza mapas de disparidad para aproximar la distancia a la que se encuentran los objeto capturados por la c\'amara est\'ereo. En lo que sigue, se presentan las variaciones implementadas sobre el algoritmo.
+La heur\'istica de evasi\'on de obst\'aculos que se implementa est\'a basada en el M\'etodo de Estimaci\'on por Umbral (\emph{Threshold Estimation Method}) analizado en \cite{KNG10}. \'Este m\'etodo utiliza mapas de disparidad para aproximar la distancia a la que se encuentran los objetos de la im\'agen capturada por la c\'amara est\'ereo. A continuaci\'on, se presentan las variaciones implementadas sobre este algoritmo.
 
-En primer lugar, se divide el mapa de disparidad en tres ventanas verticales con base variable, tal como se muestra en la figura~\ref{fig:piernas_cerca}. El ancho de la ventana central es mayor que el de las ventanas laterales, dado que la c\'amara cuenta con un \'angulo de visi\'on reducido, logrando as\'i que el algoritmo obtenga mayor informaci\'on sobre los objetos que se encuentran delante y representan obst\'aculos potenciales. Adem\'as se modificaron independientemente los tama\~nos de las ventanas de los lados, con el fin de reducir el ruido generado por la falta de informaci\'on en los bordes de las im\'agenes. Por otro lado, se defini\'o un l\'imite para determinar la regi\'on de interes sobre la cual se procesan los datos \cite{H09}, prescindiendo de la informaci\'on ``ruidosa'' producida por el suelo (se considera que el robot se desplaza sobre un terreno plano).
+En primer lugar, se divide el mapa de disparidad en tres ventanas verticales de tama\~no configurable (l\'ineas rojas de la figura~\ref{fig:piernas_cerca}). Se configur\'o el ancho de la ventana central para que sea mayor que el de las laterales. De esta manera se intenta minimizar las limitaciones causadas por el \'angulo de visi\'on reducido de las c\'amaras, logrando as\'i que la ventana central obtenga mayor informaci\'on hacia sus costados. De este modo se intenta abarcar un \'area suficiente para que se detecten los objetos que se encuentran delante como obst\'aculos potenciales. Adem\'as, se configuraron las ventanas de los lados con un de distinto ancho, a fin de reducir el ruido generado por la falta de informaci\'on en los bordes de los mapas de disparidad (zonas negras en los bordes de la figura~\ref{fig:disparidad3}). Por otro lado, se estableci\'o un l\'imite para determinar la regi\'on de interes sobre la cual se procesan los datos \cite{H09} (l\'inea verde de la figura~\ref{fig:piernas_cerca}), prescindiendo de la informaci\'on ``ruidosa'' producida por el suelo. Es importante aclarar que el algoritmo asume que el terreno por donde se encuentra navegando el robot es plano.
 
 \begin{figure}[ht]
 	\begin{center}
@@ -147,7 +166,7 @@ En primer lugar, se divide el mapa de disparidad en tres ventanas verticales con
 	\label{fig:piernas_cerca}
 \end{figure}
 
-El segundo paso consiste en estimar los porcentajes de p\'ixeles del mapa de disparidad que representen objetos cercanos, los cuales se obtienen para cada una de las ventanas por separado. Para \'esto, sobre cada \'area se contabilizan los p\'ixeles que posean una disparidad mayor a un cierto umbral de tolerancia; mientras menor sea el umbral, mayor ser\'a la cantidad de p\'ixeles considerados cercanos. Al observar que el algortimo de procesamiento de las im\'agenes genera un alto grado de ruido para los objetos pr\'oximos a la c\'amara, se decidi\'o incluir tambi\'en aquellos p\'ixeles que no cuenten con informaci\'on de disparidad. Para evitar que \'estos tomen predominancia sobre los p\'ixeles de alta disparidad, se los incorpora ponderandolos al $30\%$ del valor de un p\'ixel con disparidad alta. Cabe destacar que por motivos de eficiencia las zonas de los lados no son procesadas hasta el momento en que realmentes sea necesario disponer de su informaci\'on. En la figura~\ref{fig:piernas} se puede observar dicho comportamiento.
+El segundo paso consiste en estimar los porcentajes de p\'ixeles del mapa de disparidad que representen objetos cercanos, los cuales se obtienen para cada una de las ventanas por separado. Para \'esto, sobre cada \'area se contabilizan los p\'ixeles que posean una disparidad mayor a un cierto umbral de tolerancia; mientras menor sea el umbral, mayor ser\'a la cantidad de p\'ixeles considerados cercanos. Al observar que el algortimo de c\'alculo de mapas de disparidad genera un alto grado de ruido, se decidi\'o incluir tambi\'en aquellos p\'ixeles que no cuenten con informaci\'on de disparidad (zonas negras de la figura ~\ref{fig:piernas}. Para evitar que \'estos predominen sobre los p\'ixeles de alta disparidad, se los incorpora ponder\'andolos al $30\%$ del valor de un p\'ixel con disparidad alta. Cabe destacar que por motivos de eficiencia las zonas de los lados no son procesadas hasta el momento en que realmente sea necesario, como veremos a continuaci\'on.
 
 
 \begin{figure}[ht]
@@ -155,28 +174,35 @@ El segundo paso consiste en estimar los porcentajes de p\'ixeles del mapa de dis
 \subfigure[Una persona a $1.5$ metros de distancia a la c\'amara, junto con su correspondiente mapa de disparidad.]{
     \includegraphics[width=4cm]{./images/piernas_lejos.jpg}
     \includegraphics[width=4cm]{./images/piernas_disparidad_lejos.jpg}
+    \includegraphics[width=.33cm]{./images/hsv.jpg}
     \label{fig:subfig1}
 }
 \subfigure[Cuando la persona se encuentra cercana a la c\'amara (a $50$ cent\'imetros aproximadamente), se puede observar, que en la ventana central de la imagen predom\'inan p\'ixeles con disparidad alta, como se puede ver en el mapa de disparidad (p\'ixeles verdes).]{
     \includegraphics[width=4cm]{./images/piernas_cerca.jpg}
     \includegraphics[width=4cm]{./images/piernas_disparidad_cerca.jpg}
+    \includegraphics[width=.33cm]{./images/hsv.jpg}
     \label{fig:subfig2}
 }
 
-\caption{Im\'agenes donde se muestran las ventanas y el \'area de interes procedas en cada momento.}
+\caption{Im\'agenes donde se muestran las ventanas y el \'area de inter\'es del proceso en cada momento.}
 \label{fig:piernas}
 \end{figure}
 
-Una vez obtenidos los porcentajes, se procede a la toma de la decisi\'on propiamente dicha. En principio se analiza \'unicamente la zona central. Si el porcentaje de p\'ixeles con disparidad alta es menor a un valor predeterminado (por ejemplo, $30\%$), se considera que el camino se encuentra sin obst\'aculos cercanos y el robot puede continuar su desplazamiento en linea recta. En cambio, si el umbral es superado, se procede a comparar los porcentajes de p\'ixeles de alta disparidad de las ventanas laterales (cada uno respecto a la cantidad de p\'ixeles total de la ventana correspondiente), a diferencia de \cite{KNG10}. La ventana con menor valor asociado representa la direcci\'on con menos obst\'aculos, y por lo tanto se procede a girar el robot (sobre su eje) en dicho sentido. Cabe aclarar, que la velocidad angular del robot es mayor a la velocidad de traslaci\'on. \'Esta fue seleccionada con la intenci\'on de mitigar la informaci\'on borrosa (blur) generada por el movimiento de rotaci\'on, que conlleva a la obtenci\'on de mapas de disparidad con una gran cantidad de ruido.
+Una vez obtenidos los porcentajes, se procede a tomar la decisi\'on del pr\'oximo movimiento. En un principio, se analiza \'unicamente la zona central. Si el porcentaje de p\'ixeles con disparidad alta es menor a un cierto valor predeterminado (por ejemplo, $30\%$), se considera que el camino se encuentra sin obst\'aculos cercanos y el robot puede continuar su desplazamiento en linea recta. En cambio, si el umbral es superado, se procede a comparar los porcentajes de p\'ixeles de alta disparidad de las ventanas laterales (cada uno respecto a la cantidad de p\'ixeles total de la ventana correspondiente), a diferencia de \cite{KNG10}. La ventana con menor valor asociado representa la direcci\'on con menos obst\'aculos, y por lo tanto se procede a girar el robot sobre su eje en dicho sentido. Cabe aclarar que es posible configurar una velocidad angular del robot distinta a la velocidad de lineal. Lo antedicho se puede utilizar para mitigar la informaci\'on borrosa (efecto de blur en las im\'agenes) generada por el movimiento de rotaci\'on, que conlleva la obtenci\'on de mapas de disparidad corruptos.
 
+
+\section{Experimentos realizados}
+
+Las pruebas del algoritmo fueron llevadas a cabo sobre una computadora port\'atil con procesador Intel Core i3$ \sim $2.1GHz dual core, 3GB de RAM DDR3. Se logr\'o alcanzar un procesamiento de $4 \sim 5$ cuadros por segundo, suficientes para que el robot reaccione en tiempo real a una velocidad lineal y angular bajas.
+
+El ambiente sobre el que se realizaron los experimentos fue mayormente de interiores, con no m\'as de 10 metros de distancia m\'axima. Se ubicaron objetos de tama\~no medio y grande, como por ejemplo bolsos de viaje y cajas de $40 \times 60$ cm., y se pudo observar un buen desempe\~no, esquivando todos los obst\'aculos correctamente, a\'un cuando la disposici\'on de los mismos se modificaba peri\'odicamente.
+
+Se pudo ver que la detecci\'on de los objetos depende directamente de su tama\~no, textura y luminosidad. Esto se debe a que la b\'usqueda de correspondencia de los p\'ixeles entre las dos im\'agenes es m\'as imprecisa cuando el objeto tiene, por ejemplo una textura uniforme, como ser una pared lisa. Tambi\'en depende de la c\'amara utilizada. Si la misma tiene una definici\'on baja, es de esperarse que el desempe\~no sea pobre.
 
 \section{Conclusiones}
 %comentar que se pueden usar los dos mapas (de la parte derecha e izquierdas, etc)
 \label{sec:conclusiones}
-Se desarrollo un algoritmo para la evasi\'on de obst\'aculos basado en mapas de disparidad. Para el procesamiento de los mapas de profundida, se utilizaron las librer\'ias OpenCV (Open Source Computer Vision) que cuenta con funciones para visi\'on en computadora en tiempo real y LIBELAS (Library for Efficient LArge-scale Stereo Matching) espec\'ifica para la manipulaci\'on de imagenes est\'ereo de gran resoluci\'on. Por otro lado, se realizaron experimentos que verificaron el correcto comportamiento del m\'etodo implementado para la evasi\'on de obst\'aculos en tiempo real. Como trabajo futuro se podr\'ia integrar la informaci\'on provista por los mapas de disparidad resultantes de las imagenes izquierda y derecha logrando as\'i una mejor aproximaci\'on de profundidad. Adem\'as queda abierta la posibilidad de incorporar un m\'etodo de localizaci\'on y construcci\'on simult\'anea de Mapas, SLAM (por sus siglas en ingl\'es de Simultaneous localization and mapping) junto con un mecanismo de planeamiento de navegaci\'on.
-
-
-
+Se desarroll\'o un algoritmo para la evasi\'on de obst\'aculos basado en mapas de disparidad. Por los experimentos realizados, se pudo verificar que la generaci\'on de los mapas es muy costosa. Un posible trabajo a futuro podr\'ia ser mejorar la complejidad computacional de este procedimiento, as\'i como tambi\'en su efectividad. A pesar de esto, se logr\'o que el robot reaccione en tiempo real y pueda esquivar todos los obst\'aculos del entorno. Otro trabajo a futuro ser\'ia el de integrar la informaci\'on provista por los mapas de disparidad resultantes de las imagenes izquierda y derecha, logrando as\'i una mejor aproximaci\'on de profundidad. Adem\'as queda abierta la posibilidad de incorporar un m\'etodo de localizaci\'on y construcci\'on simult\'anea de Mapas, SLAM (por sus siglas en ingl\'es de Simultaneous localization and mapping) junto con un mecanismo de planeamiento de navegaci\'on.
 
 
 \nocite{KNG10}
