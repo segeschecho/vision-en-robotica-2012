@@ -1639,7 +1639,7 @@
 \def\appendixname{Appendix}
 \def\abstractname{Abstract}
 % IEEE specific names
-\def\IEEEkeywordsname{Index Terms}
+\def\IEEEkeywordsname{Palabras Clave}
 \def\IEEEproofname{Proof}
 
 
@@ -3151,7 +3151,7 @@ between column types.}%
 \@IEEEcompsocconfonly{\def\IEEEbibitemsep{1\baselineskip plus 0.25\baselineskip minus 0.25\baselineskip}}
 
 
-\def\thebibliography#1{\section*{\refname}%
+\def\thebibliography#1{\section*{REFERENCIAS}% \refname decia antes
     \addcontentsline{toc}{section}{\refname}%
     % V1.6 add some rubber space here and provide a command trigger
     \footnotesize\@IEEEcompsocconfonly{\small}\vskip 0.3\baselineskip plus 0.1\baselineskip minus 0.1\baselineskip%
