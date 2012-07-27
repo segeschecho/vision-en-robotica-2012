@@ -21,7 +21,7 @@
 #define Y_DELTA                   0.09f
 
 #define TEST
-//#define EXABOT_SEND_COMMANDS
+#define EXABOT_SEND_COMMANDS
 
 struct Vector2D {
   float x;
